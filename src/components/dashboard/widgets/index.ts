@@ -1,0 +1,8 @@
+export { StatsWidget } from './StatsWidget'
+export { PacsWidget } from './PacsWidget'
+export { VtsWidget } from './VtsWidget'
+export { CalendarWidget } from './CalendarWidget'
+export { ResourcesWidget } from './ResourcesWidget'
+export { NotesWidget } from './NotesWidget'
+export { NewsWidget } from './NewsWidget'
+export { GradesWidget } from './GradesWidget'

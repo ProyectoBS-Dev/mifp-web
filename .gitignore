@@ -139,4 +139,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 docs/
+structure/
+.pnpm-store/
 *.DS_Store

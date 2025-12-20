@@ -167,6 +167,26 @@ export type Database = {
           created_at?: string
         }
       }
+      user_grid_layout: {
+        Row: {
+          id: string
+          user_id: string
+          layout_config: Json
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          layout_config?: Json
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          layout_config?: Json
+          updated_at?: string
+        }
+      }
       // TODO: Añadir el resto de tablas cuando se necesiten
     }
     Enums: {

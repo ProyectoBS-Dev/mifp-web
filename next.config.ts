@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'avatars.githubusercontent.com', // GitHub avatars
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com', // Unsplash images
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.dicebear.com', // Avatar placeholders
+      },
     ],
   },
 

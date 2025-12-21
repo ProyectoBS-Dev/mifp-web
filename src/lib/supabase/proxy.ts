@@ -2,7 +2,8 @@
 // Supabase Session Handler para Next.js 16 Proxy
 // ============================================
 
-import { createServerClient } from '@supabase/ssr'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
@@ -18,14 +19,14 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
+        setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value }: { name: string; value: string }) =>
             request.cookies.set(name, value)
           )
           supabaseResponse = NextResponse.next({
             request,
           })
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value, options }: { name: string; value: string; options?: CookieOptions }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
         },
@@ -63,17 +64,29 @@ export async function updateSession(request: NextRequest) {
   // VERIFICACIÓN DE ONBOARDING (para usuarios autenticados)
   // ============================================
   if (user) {
-    // Consultar el estado de onboarding
-    const { data: profile } = await supabase
+    // IMPORTANTE: Usamos admin client para bypasear RLS
+    // Esto evita que el usuario sea redirigido a onboarding 
+    // cuando la consulta con RLS falla
+    const adminClient = createAdminClient()
+
+    const { data: profile, error } = await adminClient
       .from('users')
       .select('onboarding_completed')
       .eq('id', user.id)
       .single()
 
+    // Si hay error de consulta (no de "no encontrado"), permitir acceso
+    // para evitar loops de redirección
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error checking onboarding status:', error)
+      return supabaseResponse
+    }
+
     // Determinar si completó onboarding:
     // - Si profile existe y onboarding_completed es true → completado
     // - Si profile es null o onboarding_completed es false/null → no completado
-    const onboardingCompleted = profile?.onboarding_completed === true
+    const profileData = profile as { onboarding_completed: boolean } | null
+    const onboardingCompleted = profileData?.onboarding_completed === true
 
     // Caso 1: Usuario autenticado en /login o /registro
     // → Redirigir a /onboarding si no completó, o a /dashboard si ya completó

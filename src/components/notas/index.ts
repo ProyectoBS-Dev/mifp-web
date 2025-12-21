@@ -1,0 +1,1 @@
+export { NotasCalculator } from './NotasCalculator'

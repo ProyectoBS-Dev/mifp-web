@@ -1,12 +1,22 @@
 import { Metadata } from 'next'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { SettingsPanel } from '@/components/ajustes'
 
 export const metadata: Metadata = {
   title: 'Ajustes | MiFP',
-  description: 'Configura tu cuenta',
+  description: 'Configura tu cuenta y preferencias',
 }
 
-export default function AjustesPage() {
+export default async function AjustesPage() {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) {
+    redirect('/login')
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -16,58 +26,7 @@ export default function AjustesPage() {
         </p>
       </div>
       
-      <div className="grid gap-6">
-        {/* Apariencia */}
-        <Card>
-          <CardHeader>
-            <CardTitle>🎨 Apariencia</CardTitle>
-            <CardDescription>Personaliza el aspecto de la aplicación</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm text-muted-foreground">
-              El tema se puede cambiar usando el toggle en la barra de navegación.
-              <br />
-              Próximamente: más opciones de personalización.
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Notificaciones */}
-        <Card>
-          <CardHeader>
-            <CardTitle>🔔 Notificaciones</CardTitle>
-            <CardDescription>Gestiona cómo recibes las notificaciones</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8">
-              <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                <span className="text-2xl">🔔</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Próximamente podrás configurar tus preferencias de notificaciones
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Cuenta */}
-        <Card>
-          <CardHeader>
-            <CardTitle>👤 Cuenta</CardTitle>
-            <CardDescription>Gestiona tu cuenta</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8">
-              <div className="mx-auto w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
-                <span className="text-2xl">⚠️</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Próximamente: cambiar contraseña, exportar datos, eliminar cuenta
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <SettingsPanel userEmail={user.email || ''} />
     </div>
   )
 }

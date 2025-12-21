@@ -49,7 +49,8 @@ const WIDGET_COMPONENTS: Record<WidgetType, React.ComponentType> = {
 
 export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
   const [layouts, setLayouts] = useState<Layouts>({
-    lg: initialLayout || DEFAULT_LAYOUT_LG,
+    xl: initialLayout?.length ? initialLayout : DEFAULT_LAYOUT_LG,
+    lg: initialLayout?.length ? initialLayout : DEFAULT_LAYOUT_LG,
     md: DEFAULT_LAYOUT_MD,
     sm: DEFAULT_LAYOUT_SM,
     xs: DEFAULT_LAYOUT_XS,
@@ -63,12 +64,14 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
     const supabase = createClient()
     
     try {
+      // Guardar el layout de pantalla grande (xl o lg)
+      const layoutToSave = newLayouts.xl || newLayouts.lg
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any)
         .from('user_grid_layout')
         .upsert({
           user_id: userId,
-          layout_config: newLayouts.lg,
+          layout_config: layoutToSave,
           updated_at: new Date().toISOString(),
         }, {
           onConflict: 'user_id'
@@ -102,6 +105,7 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
     if (initialLayout && initialLayout.length > 0) {
       setLayouts(prev => ({
         ...prev,
+        xl: initialLayout,
         lg: initialLayout,
       }))
     }
@@ -143,8 +147,8 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
       <ResponsiveGridLayout
         className="layout"
         layouts={layouts}
-        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
-        cols={{ lg: 12, md: 10, sm: 6, xs: 4 }}
+        breakpoints={{ xl: 1536, lg: 1200, md: 996, sm: 768, xs: 480 }}
+        cols={{ xl: 12, lg: 12, md: 10, sm: 6, xs: 4 }}
         rowHeight={80}
         onLayoutChange={handleLayoutChange}
         isDraggable={isEditing}

@@ -1,6 +1,7 @@
 'use client'
 
-import { TrendingUp, BookOpen, CheckCircle, Clock } from 'lucide-react'
+import { TrendingUp, BookOpen, CheckCircle, Clock, Loader2 } from 'lucide-react'
+import { useDashboardStats } from '@/hooks'
 
 interface StatItemProps {
   icon: React.ReactNode
@@ -34,41 +35,43 @@ function StatItem({ icon, label, value, trend, trendUp }: StatItemProps) {
 }
 
 export function StatsWidget() {
-  // TODO: Conectar con datos reales de Supabase
-  const stats = {
-    asignaturas: 6,
-    pacsEntregadas: 12,
-    pacsTotal: 18,
-    vtsAsistidas: 8,
-    mediaActual: 7.5,
+  const { data: stats, isLoading } = useDashboardStats()
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    )
   }
 
-  const porcentajePacs = Math.round((stats.pacsEntregadas / stats.pacsTotal) * 100)
+  const porcentajePacs = stats?.pacsTotal 
+    ? Math.round((stats.pacsCompletadas / stats.pacsTotal) * 100) 
+    : 0
 
   return (
     <div className="grid grid-cols-2 gap-4 h-full">
       <StatItem
         icon={<BookOpen className="h-4 w-4" />}
         label="Asignaturas"
-        value={stats.asignaturas}
+        value={stats?.asignaturas || 0}
       />
       <StatItem
         icon={<CheckCircle className="h-4 w-4" />}
-        label="PACs entregadas"
-        value={`${stats.pacsEntregadas}/${stats.pacsTotal}`}
-        trend={`${porcentajePacs}%`}
+        label="PACs completadas"
+        value={`${stats?.pacsCompletadas || 0}/${stats?.pacsTotal || 0}`}
+        trend={stats?.pacsTotal ? `${porcentajePacs}%` : undefined}
         trendUp={porcentajePacs >= 50}
       />
       <StatItem
         icon={<Clock className="h-4 w-4" />}
-        label="VTs asistidas"
-        value={stats.vtsAsistidas}
+        label="VTs vistas"
+        value={`${stats?.vtsVistas || 0}/${stats?.vtsTotal || 0}`}
       />
       <StatItem
         icon={<TrendingUp className="h-4 w-4" />}
         label="Media actual"
-        value={stats.mediaActual.toFixed(1)}
-        trend="+0.3"
+        value={stats?.mediaNotas?.toFixed(1) || '-'}
         trendUp={true}
       />
     </div>

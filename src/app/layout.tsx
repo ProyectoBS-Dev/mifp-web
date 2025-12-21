@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Onest } from 'next/font/google'
+import { QueryProvider } from '@/providers/QueryProvider'
 import './globals.css'
 
 const onest = Onest({
@@ -42,7 +43,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${onest.variable} font-sans antialiased bg-background text-foreground`}>
-        {children}
+        <QueryProvider>
+          {children}
+        </QueryProvider>
       </body>
     </html>
   )

@@ -105,14 +105,14 @@ export const DEFAULT_WIDGETS: WidgetConfig[] = [
 
 // Layout por defecto para pantalla grande (lg)
 export const DEFAULT_LAYOUT_LG: DashboardLayoutItem[] = [
-  { i: 'stats', x: 0, y: 0, w: 4, h: 2, minW: 2, minH: 2 },
-  { i: 'pacs', x: 4, y: 0, w: 4, h: 2, minW: 2, minH: 2 },
-  { i: 'vts', x: 8, y: 0, w: 4, h: 2, minW: 2, minH: 2 },
-  { i: 'calendar', x: 0, y: 2, w: 6, h: 4, minW: 3, minH: 3 },
-  { i: 'grades', x: 6, y: 2, w: 6, h: 4, minW: 3, minH: 3 },
-  { i: 'resources', x: 0, y: 6, w: 4, h: 3, minW: 2, minH: 2 },
-  { i: 'notes', x: 4, y: 6, w: 4, h: 3, minW: 2, minH: 2 },
-  { i: 'news', x: 8, y: 6, w: 4, h: 3, minW: 2, minH: 2 },
+  { i: 'calendar', x: 0, y: 0, w: 4, h: 5, minW: 3, minH: 3 },
+  { i: 'pacs', x: 4, y: 0, w: 4, h: 4, minW: 2, minH: 2 },
+  { i: 'vts', x: 8, y: 0, w: 4, h: 4, minW: 2, minH: 2 },
+  { i: 'resources', x: 4, y: 4, w: 4, h: 4, minW: 2, minH: 2 },
+  { i: 'notes', x: 8, y: 4, w: 4, h: 3, minW: 2, minH: 2 },
+  { i: 'stats', x: 0, y: 5, w: 4, h: 3, minW: 2, minH: 2 },
+  { i: 'news', x: 8, y: 7, w: 4, h: 4, minW: 2, minH: 2 },
+  { i: 'grades', x: 0, y: 8, w: 8, h: 3, minW: 3, minH: 2 },
 ]
 
 // Layout para tablet (md)

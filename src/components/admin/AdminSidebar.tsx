@@ -9,6 +9,7 @@ import {
   BookOpen,
   Video,
   Package,
+  Newspaper,
   LucideIcon
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -23,6 +24,7 @@ interface NavItem {
 const adminNavItems: NavItem[] = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/guias-didacticas', label: 'Guías Didácticas', icon: FileText },
+  { href: '/admin/noticias', label: 'Noticias', icon: Newspaper },
   { href: '#', label: 'Asignaturas', icon: BookOpen, disabled: true },
   { href: '#', label: 'VTs', icon: Video, disabled: true },
   { href: '#', label: 'Recursos', icon: Package, disabled: true },

@@ -1,1 +1,3 @@
-export { NewsFeed } from './NewsFeed'
+export * from './NewsFeed'
+export * from './ReactionBar'
+export * from './PostContent'

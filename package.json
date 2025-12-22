@@ -75,5 +75,17 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.0"
   },
-  "packageManager": "pnpm@9.15.1"
+  "packageManager": "pnpm@10.26.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@img/sharp-darwin-arm64",
+      "@img/sharp-darwin-x64",
+      "@img/sharp-linux-x64",
+      "@napi-rs/canvas-darwin-arm64",
+      "@napi-rs/canvas-darwin-x64",
+      "@napi-rs/canvas-linux-x64-gnu",
+      "sharp",
+      "unrs-resolver"
+    ]
+  }
 }

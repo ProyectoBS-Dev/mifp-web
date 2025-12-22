@@ -1,4 +1,5 @@
 export * from './database'
+export * from './calendario'
 
 // Tipos de usuario
 export interface UserProfile {

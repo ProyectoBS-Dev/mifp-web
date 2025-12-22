@@ -6,6 +6,7 @@ export * from './useApuntes'
 export * from './useMissingGDs'
 export * from './useReactions'
 export * from './useNoticias'
+export * from './useCalendarEvents'
 
 // Hooks de UI
 export * from './useTheme'

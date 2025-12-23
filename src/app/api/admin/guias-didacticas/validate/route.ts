@@ -100,6 +100,12 @@ async function insertDataManually(
   let insertedPACs = 0
   let insertedVTs = 0
 
+  // Helper: extraer número del código del RA (ej: "RA5" → 5, "RA6" → 6)
+  const extractRANumber = (codigo: string): number => {
+    const match = codigo.match(/\d+/)
+    return match ? parseInt(match[0], 10) : 0
+  }
+
   try {
     // 1. Insertar RAs
     for (const ra of datos.ras) {
@@ -123,14 +129,20 @@ async function insertDataManually(
         continue
       }
 
-      raIdMap.set(ra.numero, insertedRA.id)
+      // FIX: Usar el número del código (RA5 → 5) en vez del número secuencial
+      // Esto permite que las PACs con ra_numero: 5 encuentren el RA correcto
+      const raNumeroFromCodigo = extractRANumber(ra.codigo)
+      raIdMap.set(raNumeroFromCodigo, insertedRA.id)
       insertedRAs++
     }
 
     // 2. Insertar PACs
     for (const pac of datos.pacs) {
       const raId = raIdMap.get(pac.ra_numero)
-      if (!raId) continue
+      if (!raId) {
+        console.warn(`PAC "${pac.titulo}" omitida: RA ${pac.ra_numero} no encontrado en el mapa. RAs disponibles: ${Array.from(raIdMap.keys()).join(', ')}`)
+        continue
+      }
 
       const { error } = await adminClient
         .from('asignatura_pacs')

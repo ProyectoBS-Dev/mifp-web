@@ -20,6 +20,12 @@ export interface PACItem {
 
 export type PrioridadPAC = 'alta' | 'media' | 'normal'
 
+/**
+ * Calcula la prioridad de una PAC según su fecha límite
+ * - Alta: ≤7 días
+ * - Media: 8-14 días
+ * - Normal: >14 días
+ */
 export function getPrioridad(fechaLimite: string): PrioridadPAC {
   const diasRestantes = Math.ceil(
     (new Date(fechaLimite).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
@@ -30,7 +36,25 @@ export function getPrioridad(fechaLimite: string): PrioridadPAC {
 }
 
 export const prioridadConfig = {
-  alta: { label: 'Urgente', color: 'text-red-500', bgColor: 'bg-red-500/10', badge: '🔴' },
-  media: { label: 'Próxima', color: 'text-yellow-500', bgColor: 'bg-yellow-500/10', badge: '🟡' },
-  normal: { label: 'Normal', color: 'text-green-500', bgColor: 'bg-green-500/10', badge: '🟢' },
-}
+  alta: { 
+    label: 'Alta', 
+    color: 'text-vt-red', 
+    bgColor: 'bg-vt-red/10', 
+    borderColor: 'border-vt-red/50',
+    badge: '🔴' 
+  },
+  media: { 
+    label: 'Media', 
+    color: 'text-vt-yellow-dark', 
+    bgColor: 'bg-vt-yellow/10', 
+    borderColor: 'border-vt-yellow/50',
+    badge: '🟡' 
+  },
+  normal: { 
+    label: 'Normal', 
+    color: 'text-vt-green', 
+    bgColor: 'bg-vt-green/10', 
+    borderColor: 'border-vt-green/50',
+    badge: '🟢' 
+  },
+} as const

@@ -1,89 +1,155 @@
 'use client'
 
-import { Clock, Heart, MessageSquare } from 'lucide-react'
+import Link from 'next/link'
+import { MessageSquare, ThumbsUp, Heart, Sparkles, Flame, Lightbulb } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useNoticias, type NoticiaConMeta, type NoticiaCategoria } from '@/hooks/useNoticias'
+import { useMultipleReactions } from '@/hooks/useReactions'
+import type { ReactionCounts } from '@/components/novedades/ReactionBar'
 
-interface NewsItem {
-  id: string
-  titulo: string
-  extracto: string
-  fecha: string
-  reacciones: number
-  comentarios: number
-  destacada: boolean
+// Colores por categoría (consistente con NewsFeed.tsx)
+const CATEGORIA_STYLES: Record<NoticiaCategoria, { bgColor: string; color: string; label: string }> = {
+  comunicado: { bgColor: 'bg-vt-blue', color: 'text-white', label: 'COMUNICADO' },
+  recurso: { bgColor: 'bg-vt-green', color: 'text-white', label: 'RECURSO' },
+  evento: { bgColor: 'bg-vt-purple', color: 'text-white', label: 'EVENTO' },
+  general: { bgColor: 'bg-vt-gray-dark-2', color: 'text-white', label: 'GENERAL' },
 }
 
-function NewsCard({ news }: { news: NewsItem }) {
+// Formatear fecha relativa
+function formatFecha(dateString: string): string {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) return 'Hoy'
+  if (diffDays === 1) return 'Ayer'
+  if (diffDays < 7) return `Hace ${diffDays} días`
+
+  return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+}
+
+// Componente para mostrar conteo de reacciones (solo lectura)
+function ReactionCountsDisplay({ counts }: { counts: ReactionCounts }) {
+  const totalReactions = counts.like + counts.love + counts.clap + counts.fire + counts.thinking
+
+  if (totalReactions === 0) return null
+
+  const reactions = [
+    { type: 'like', count: counts.like, icon: ThumbsUp, color: 'text-blue-500' },
+    { type: 'love', count: counts.love, icon: Heart, color: 'text-red-500' },
+    { type: 'clap', count: counts.clap, icon: Sparkles, color: 'text-yellow-500' },
+    { type: 'fire', count: counts.fire, icon: Flame, color: 'text-orange-500' },
+    { type: 'thinking', count: counts.thinking, icon: Lightbulb, color: 'text-purple-500' },
+  ].filter(r => r.count > 0)
+
   return (
-    <div
-      className={cn(
-        'p-3 rounded-lg border transition-colors cursor-pointer hover:bg-muted/50',
-        news.destacada && 'border-vt-green/50 bg-vt-green/5'
-      )}
-    >
-      {news.destacada && (
-        <span className="inline-block px-2 py-0.5 text-[10px] font-medium bg-vt-green/20 text-vt-green rounded-full mb-2">
-          Destacada
+    <div className="flex items-center gap-2">
+      {reactions.map(({ type, count, icon: Icon, color }) => (
+        <span key={type} className="flex items-center gap-0.5 text-xs text-muted-foreground">
+          <Icon className={cn('h-3 w-3', color)} />
+          <span>{count}</span>
         </span>
-      )}
-      <h4 className="text-sm font-semibold line-clamp-1">{news.titulo}</h4>
-      <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-        {news.extracto}
+      ))}
+    </div>
+  )
+}
+
+interface NewsCardProps {
+  noticia: NoticiaConMeta
+  reactionCounts: ReactionCounts
+}
+
+function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
+  const catStyle = CATEGORIA_STYLES[noticia.categoria]
+
+  return (
+    <div className="p-3 rounded-lg border transition-colors hover:bg-muted/50">
+      {/* Header: Avatar + Autor + Fecha */}
+      <div className="flex items-center gap-2 mb-2">
+        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium overflow-hidden">
+          {noticia.autor?.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img 
+              src={noticia.autor.avatar_url} 
+              alt={noticia.autor.full_name || 'Avatar'} 
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span>{noticia.autor?.full_name?.charAt(0) || 'A'}</span>
+          )}
+        </div>
+        <span className="text-xs text-muted-foreground">
+          {noticia.autor?.full_name || 'Anónimo'}
+        </span>
+        <span className="text-xs text-muted-foreground">·</span>
+        <span className="text-xs text-muted-foreground">
+          {formatFecha(noticia.created_at)}
+        </span>
+      </div>
+
+      {/* Título + Categoría */}
+      <div className="flex items-start gap-2 mb-1">
+        <h4 className="text-sm font-semibold line-clamp-1 flex-1">{noticia.titulo}</h4>
+        <span className={cn(
+          'px-1.5 py-0.5 text-[10px] font-bold tracking-wide rounded-full shrink-0',
+          catStyle.bgColor,
+          catStyle.color
+        )}>
+          {catStyle.label}
+        </span>
+      </div>
+
+      {/* Extracto */}
+      <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+        {noticia.extracto}
       </p>
-      <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-        <span className="flex items-center gap-1">
-          <Clock className="h-3 w-3" />
-          {news.fecha}
-        </span>
-        <span className="flex items-center gap-1">
-          <Heart className="h-3 w-3" />
-          {news.reacciones}
-        </span>
-        <span className="flex items-center gap-1">
-          <MessageSquare className="h-3 w-3" />
-          {news.comentarios}
-        </span>
+
+      {/* Footer: Leer más + Reacciones */}
+      <div className="flex items-center justify-between">
+        <Link 
+          href={`/posts/${noticia.id}`}
+          className="text-xs text-primary hover:underline font-medium"
+        >
+          Leer más →
+        </Link>
+        <ReactionCountsDisplay counts={reactionCounts} />
       </div>
     </div>
   )
 }
 
 export function NewsWidget() {
-  // TODO: Conectar con datos reales de Supabase (noticias tabla)
-  const news: NewsItem[] = [
-    {
-      id: '1',
-      titulo: 'Nuevas fechas de exámenes publicadas',
-      extracto:
-        'Se han actualizado las fechas para los exámenes del primer semestre. Revisa el calendario.',
-      fecha: '19 Dic',
-      reacciones: 24,
-      comentarios: 5,
-      destacada: true,
-    },
-    {
-      id: '2',
-      titulo: 'Recursos actualizados de Programación',
-      extracto:
-        'Se han añadido nuevos PDFs y ejercicios para el tema 5 de Programación.',
-      fecha: '18 Dic',
-      reacciones: 12,
-      comentarios: 2,
-      destacada: false,
-    },
-    {
-      id: '3',
-      titulo: 'Consejos para aprobar Base de Datos',
-      extracto:
-        'Un profesor comparte tips y recomendaciones para el examen de BBDD.',
-      fecha: '15 Dic',
-      reacciones: 45,
-      comentarios: 8,
-      destacada: false,
-    },
-  ]
+  const { noticias, isLoading } = useNoticias()
+  
+  // Tomar solo las primeras 3 noticias para el widget
+  const displayNoticias = noticias.slice(0, 3)
+  const noticiaIds = displayNoticias.map(n => n.id)
+  
+  const { reactionsByNoticia } = useMultipleReactions(noticiaIds)
 
-  if (news.length === 0) {
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        <div className="flex justify-end">
+          <div className="h-4 w-16 bg-muted animate-pulse rounded" />
+        </div>
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="p-3 rounded-lg border animate-pulse">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-6 w-6 rounded-full bg-muted" />
+              <div className="h-3 w-20 bg-muted rounded" />
+            </div>
+            <div className="h-4 w-3/4 bg-muted rounded mb-2" />
+            <div className="h-3 w-full bg-muted rounded mb-1" />
+            <div className="h-3 w-2/3 bg-muted rounded" />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (displayNoticias.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center">
         <MessageSquare className="h-8 w-8 text-muted-foreground/50 mb-2" />
@@ -94,8 +160,23 @@ export function NewsWidget() {
 
   return (
     <div className="space-y-3">
-      {news.map((item) => (
-        <NewsCard key={item.id} news={item} />
+      {/* Link Ver todo */}
+      <div className="flex justify-end -mt-1 mb-1">
+        <Link 
+          href="/novedades" 
+          className="text-xs text-primary hover:underline font-medium"
+        >
+          Ver todo →
+        </Link>
+      </div>
+
+      {/* Lista de noticias */}
+      {displayNoticias.map((noticia) => (
+        <NewsCard 
+          key={noticia.id} 
+          noticia={noticia}
+          reactionCounts={reactionsByNoticia[noticia.id]?.counts || { like: 0, love: 0, clap: 0, fire: 0, thinking: 0 }}
+        />
       ))}
     </div>
   )

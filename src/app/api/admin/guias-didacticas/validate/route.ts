@@ -168,13 +168,6 @@ async function insertDataManually(
 
     // 3. Insertar VTs
     for (const vt of datos.vts) {
-      let fechaProgramada = null
-      if (vt.fecha) {
-        fechaProgramada = vt.hora_inicio 
-          ? `${vt.fecha} ${vt.hora_inicio}` 
-          : vt.fecha
-      }
-
       const { error } = await adminClient
         .from('asignatura_vts')
         .insert({
@@ -182,7 +175,9 @@ async function insertDataManually(
           semestre_id: gd.semestre_id,
           numero: vt.numero,
           titulo: vt.titulo,
-          fecha_programada: fechaProgramada,
+          fecha_programada: vt.fecha || null,
+          // hora_inicio es columna TIME separada, no va concatenada con fecha
+          hora_inicio: vt.hora_inicio || null,
           duracion_minutos: vt.duracion_minutos
         })
 

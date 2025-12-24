@@ -6,9 +6,9 @@ export interface VTItem {
   numero: number
   titulo: string
   fecha_programada: string
-  hora_inicio: string
+  hora_inicio: string | null
   duracion_minutos: number
-  enlace_grabacion?: string
+  enlace_grabacion?: string | null
   vista: boolean
 }
 

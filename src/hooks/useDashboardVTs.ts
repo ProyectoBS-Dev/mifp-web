@@ -88,17 +88,22 @@ export function useDashboardVTs() {
 
 export function useToggleVTVista() {
   const queryClient = useQueryClient()
-  const supabase = createClient()
 
   return useMutation({
     mutationFn: async ({ userVtId, vista }: { userVtId: string; vista: boolean }) => {
+      // Crear cliente dentro de la mutación para asegurar que las cookies están disponibles
+      const supabase = createClient()
+      
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await (supabase as any)
         .from('user_asignatura_vts')
-        .update({ vista, updated_at: new Date().toISOString() })
+        .update({ vista })
         .eq('id', userVtId)
 
-      if (error) throw error
+      if (error) {
+        console.error('Error toggling VT vista:', error)
+        throw error
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard-vts'] })

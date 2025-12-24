@@ -92,7 +92,7 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
       <div className="flex items-start gap-2 mb-1">
         <h4 className="text-sm font-semibold line-clamp-1 flex-1">{noticia.titulo}</h4>
         <span className={cn(
-          'px-1.5 py-0.5 text-[10px] font-bold tracking-wide rounded-full shrink-0',
+          'px-2 py-px text-[10px] font-bold tracking-wide rounded-full shrink-0',
           catStyle.bgColor,
           catStyle.color
         )}>

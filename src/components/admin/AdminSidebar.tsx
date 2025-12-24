@@ -25,8 +25,8 @@ const adminNavItems: NavItem[] = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/guias-didacticas', label: 'Guías Didácticas', icon: FileText },
   { href: '/admin/noticias', label: 'Noticias', icon: Newspaper },
+  { href: '/admin/vts', label: 'Videotutorías', icon: Video },
   { href: '#', label: 'Asignaturas', icon: BookOpen, disabled: true },
-  { href: '#', label: 'VTs', icon: Video, disabled: true },
   { href: '#', label: 'Recursos', icon: Package, disabled: true },
   { href: '#', label: 'Usuarios', icon: Users, disabled: true },
 ]

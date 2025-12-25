@@ -49,7 +49,10 @@ export default function LandingPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              Diseñado para estudiantes de ILERNA
+              V1.0.0 - Presentamos MiFP - puedes conocer más en el<Link href="/novedades" className="text-primary hover:underline">blog</Link>
+              <Link href="/novedades" className="text-primary hover:underline">
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </div>
             
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
@@ -256,7 +259,7 @@ export default function LandingPage() {
                 <span className="text-xl font-bold gradient-text">MiFP</span>
               </Link>
               <p className="text-sm text-muted-foreground max-w-sm">
-                Tu compañero de estudios para FP. Gestiona PACs, videotutorías y notas 
+                Tu compañero de estudios para FP. Gestiona PACs, videotutorías, recursos y notas 
                 de forma sencilla.
               </p>
             </div>

@@ -90,7 +90,7 @@ export const DEFAULT_WIDGETS: WidgetConfig[] = [
   {
     id: 'news',
     type: 'news',
-    title: 'Novedades',
+    title: 'Blog',
     icon: '📰',
     description: 'Últimas noticias'
   },

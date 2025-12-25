@@ -1,14 +1,21 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { 
-  GraduationCap, 
-  Calendar, 
-  BarChart3, 
-  FileText, 
+import Image from 'next/image'
+import {
+  GraduationCap,
+  Calendar,
+  BarChart3,
+  FileText,
   BookOpen,
   Bell,
   ArrowRight,
-  Github
+  Github,
+  UserPlus,
+  LogIn,
+  Heart,
+  Rocket,
+  TabletSmartphone,
+  MonitorSmartphoneIcon
 } from 'lucide-react'
 import {
   Accordion,
@@ -30,10 +37,14 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Button variant="ghost" asChild>
-              <Link href="/login">Iniciar sesión</Link>
+              <Link href="/login">
+                <LogIn className="h-5 w-5" />
+                Iniciar sesión</Link>
             </Button>
             <Button asChild>
-              <Link href="/registro">Empezar gratis</Link>
+              <Link href="/registro">
+                <UserPlus className="h-5 w-5" />
+                Empezar gratis</Link>
             </Button>
           </div>
         </div>
@@ -49,47 +60,48 @@ export default function LandingPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              V1.0.0 - Presentamos MiFP - puedes conocer más en el<Link href="/novedades" className="text-primary hover:underline">blog</Link>
-              <Link href="/novedades" className="text-primary hover:underline">
+              V1.0.0 - Presentamos MiFP - puedes conocer más en el<Link href="/blog" className="text-primary hover:underline">blog</Link>
+              <Link href="/blog" className="text-primary hover:underline">
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </div>
-            
+
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
               Tu compañero de estudios{' '}
               <span className="gradient-text">FP</span>
             </h1>
-            
+
             <p className="mt-6 text-lg sm:text-xl leading-8 text-muted-foreground">
-              Gestiona tus PACs, videotutorías y notas de forma sencilla. 
+              Gestiona tus PACs, videotutorías, recursosy notas de forma sencilla.
               Organiza tu tiempo y mejora tu rendimiento académico.
             </p>
-            
+
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button asChild size="lg" className="w-full sm:w-auto">
                 <Link href="/registro">
-                  Empezar gratis
+                  Crear cuenta
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
-                <Link href="/login">Ya tengo cuenta</Link>
+                <Link href="/login">
+                  Ya tengo cuenta</Link>
               </Button>
             </div>
 
             {/* Stats */}
             <div className="mt-16 grid grid-cols-3 gap-8 border-t pt-8">
               <div>
-                <div className="text-3xl font-bold text-primary">DAM</div>
-                <div className="text-sm text-muted-foreground">Multiplataforma</div>
+                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-primary"><TabletSmartphone className="h-6 w-6" />DAM</div>
+                <div className="text-sm text-muted-foreground text-center">Multiplataforma</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-primary">DAW</div>
-                <div className="text-sm text-muted-foreground">Web</div>
+                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-primary"><MonitorSmartphoneIcon className="h-6 w-6" />DAW</div>
+                <div className="text-sm text-muted-foreground text-center">Web</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-primary">100%</div>
-                <div className="text-sm text-muted-foreground">Gratis</div>
+                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-primary"><Rocket className="h-6 w-6" />100%</div>
+                <div className="text-sm text-muted-foreground text-center">Gratis</div>
               </div>
             </div>
           </div>
@@ -192,34 +204,34 @@ export default function LandingPage() {
               <AccordionItem value="item-1">
                 <AccordionTrigger>¿Es gratis?</AccordionTrigger>
                 <AccordionContent>
-                  Sí, MiFP es completamente gratis. Es un proyecto creado por y para estudiantes de FP.
+                  Sí, MiFP es completamente gratis. Es un proyecto creado por estudiantes de FP de Grado Superior de iLERNA Online y para estudiantes de FP.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2">
                 <AccordionTrigger>¿Solo funciona para ILERNA?</AccordionTrigger>
                 <AccordionContent>
-                  Actualmente está optimizado para estudiantes de ILERNA Online, con el sistema de 
+                  Actualmente está optimizado para estudiantes de ILERNA Online, con el sistema de
                   evaluación específico (PACs, VTs, exámenes). Aunque puede adaptarse a otros centros.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-3">
                 <AccordionTrigger>¿Qué grados están disponibles?</AccordionTrigger>
                 <AccordionContent>
-                  Actualmente soportamos DAM (Desarrollo de Aplicaciones Multiplataforma) y 
+                  Actualmente soportamos DAM (Desarrollo de Aplicaciones Multiplataforma) y
                   DAW (Desarrollo de Aplicaciones Web), con todas sus asignaturas.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-4">
                 <AccordionTrigger>¿Cómo calcula las notas?</AccordionTrigger>
                 <AccordionContent>
-                  Utilizamos el sistema oficial de evaluación de ILERNA: PACs (interactivas y desarrollo), 
-                  Videotutorías y Examen Final, con los pesos correspondientes de cada Resultado de Aprendizaje.
+                  Utilizamos el sistema oficial de evaluación de ILERNA: PACs (interactivas y desarrollo),
+                  Videotutorías y Examen Final, con los pesos correspondientes de cada Resultado de Aprendizaje (RA) establecidos en la Guía Didáctica de cada asignatura.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-5">
                 <AccordionTrigger>¿Mis datos están seguros?</AccordionTrigger>
                 <AccordionContent>
-                  Sí, utilizamos Supabase con encriptación y Row Level Security (RLS). 
+                  Sí, utilizamos Supabase con encriptación y Row Level Security (RLS).
                   Tus datos son privados y solo tú puedes acceder a ellos.
                 </AccordionContent>
               </AccordionItem>
@@ -259,7 +271,7 @@ export default function LandingPage() {
                 <span className="text-xl font-bold gradient-text">MiFP</span>
               </Link>
               <p className="text-sm text-muted-foreground max-w-sm">
-                Tu compañero de estudios para FP. Gestiona PACs, videotutorías, recursos y notas 
+                Tu compañero de estudios para FP. Gestiona PACs, videotutorías, recursos y notas
                 de forma sencilla.
               </p>
             </div>
@@ -268,6 +280,7 @@ export default function LandingPage() {
             <div>
               <h4 className="font-semibold mb-4">Producto</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/blog" className="hover:text-primary">Blog</Link></li>
                 <li><Link href="/registro" className="hover:text-primary">Crear cuenta</Link></li>
                 <li><Link href="/login" className="hover:text-primary">Iniciar sesión</Link></li>
               </ul>
@@ -284,16 +297,31 @@ export default function LandingPage() {
           </div>
 
           <div className="border-t mt-8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} MiFP. Hecho con ❤️ para estudiantes de FP.
+            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              © {new Date().getFullYear()} MiFP. Hecho con <Heart className="h-4 w-4 text-red-500" /> para estudiantes de FP.
             </p>
-            <div className="flex items-center gap-4">
-              <Link 
-                href="https://github.com" 
-                target="_blank"
-                className="text-muted-foreground hover:text-primary"
-              >
-                <Github className="h-5 w-5" />
+            <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center gap-1">
+                <Github className="h-4 w-4 text-primary" />
+                <span className="text-sm">GitHub:</span>
+              </div>
+              <Link target="_blank" href="https://github.com/benriosdev" className="transition-opacity hover:opacity-60">
+                <Image
+                  src="/images/boy-nobg.png"
+                  alt="Estudiante"
+                  width={48}
+                  height={40}
+                  className="object-contain"
+                />
+              </Link>
+              <Link target="_blank" href="https://github.com/SilviaPescador" className="transition-opacity hover:opacity-60">
+                <Image
+                  src="/images/girl-nobg.png"
+                  alt="Estudiante"
+                  width={48}
+                  height={40}
+                  className="object-contain"
+                />
               </Link>
             </div>
           </div>

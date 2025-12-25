@@ -8,15 +8,39 @@ const onest = Onest({
   variable: '--font-onest',
 })
 
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.app'
+
 export const metadata: Metadata = {
-  title: 'MiFP - Tu compañero de estudios',
-  description: 'Plataforma de gestión académica para estudiantes de FP en ILERNA',
-  keywords: ['FP', 'ILERNA', 'DAM', 'DAW', 'estudiantes', 'gestión académica'],
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: 'MiFP - Tu compañero de estudios de FP',
+    template: '%s | MiFP',
+  },
+  description: 'Plataforma de gestión académica para estudiantes de Formación Profesional en ILERNA. Gestiona tus PACs, videotutorías, notas y más.',
+  keywords: ['FP', 'ILERNA', 'DAM', 'DAW', 'estudiantes', 'gestión académica', 'formación profesional', 'ciclos formativos', 'PACs', 'videotutorías'],
   authors: [{ name: 'MiFP Team' }],
+  creator: 'MiFP',
+  publisher: 'MiFP',
   openGraph: {
-    title: 'MiFP - Tu compañero de estudios',
-    description: 'Plataforma de gestión académica para estudiantes de FP en ILERNA',
+    title: 'MiFP - Tu compañero de estudios de FP',
+    description: 'Plataforma de gestión académica para estudiantes de Formación Profesional en ILERNA',
+    url: baseUrl,
+    siteName: 'MiFP',
+    locale: 'es_ES',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MiFP - Tu compañero de estudios de FP',
+    description: 'Plataforma de gestión académica para estudiantes de FP en ILERNA',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  verification: {
+    // Añadir verificación de Google Search Console cuando esté disponible
+    // google: 'tu-codigo-de-verificacion',
   },
 }
 

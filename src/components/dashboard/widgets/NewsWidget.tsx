@@ -5,7 +5,7 @@ import { MessageSquare, ThumbsUp, Heart, Sparkles, Flame, Lightbulb } from 'luci
 import { cn } from '@/lib/utils'
 import { useNoticias, type NoticiaConMeta, type NoticiaCategoria } from '@/hooks/useNoticias'
 import { useMultipleReactions } from '@/hooks/useReactions'
-import type { ReactionCounts } from '@/components/novedades/ReactionBar'
+import type { ReactionCounts } from '@/components/blog/ReactionBar'
 
 // Colores por categoría (consistente con NewsFeed.tsx)
 const CATEGORIA_STYLES: Record<NoticiaCategoria, { bgColor: string; color: string; label: string }> = {
@@ -80,7 +80,7 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
           )}
         </div>
         <span className="text-xs text-muted-foreground">
-          {noticia.autor?.full_name || 'Anónimo'}
+          {noticia.autor?.full_name || 'Equipo MiFP'}
         </span>
         <span className="text-xs text-muted-foreground">·</span>
         <span className="text-xs text-muted-foreground">
@@ -108,7 +108,7 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
       {/* Footer: Leer más + Reacciones */}
       <div className="flex items-center justify-between">
         <Link 
-          href={`/posts/${noticia.id}`}
+          href={`/blog/${noticia.id}`}
           className="text-xs text-primary hover:underline font-medium"
         >
           Leer más →
@@ -163,7 +163,7 @@ export function NewsWidget() {
       {/* Link Ver todo */}
       <div className="flex justify-end -mt-1 mb-1">
         <Link 
-          href="/novedades" 
+          href="/blog" 
           className="text-xs text-primary hover:underline font-medium"
         >
           Ver todo →

@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { PostContent } from '@/components/novedades/PostContent'
+import { PostContent } from '@/components/blog/PostContent'
 import type { NoticiaConMeta, NoticiaCategoria } from '@/hooks/useNoticias'
 
 // Extraer categoría del contenido
@@ -37,6 +37,8 @@ async function getPost(id: string): Promise<NoticiaConMeta | null> {
       autor:users!autor_id(id, full_name, email, avatar_url)
     `)
     .eq('id', id)
+    .eq('publicada', true)
+    .is('deleted_at', null)
     .single()
 
   if (error || !data) {
@@ -98,6 +100,8 @@ async function getAdjacentPosts(currentId: string): Promise<{
   }
 }
 
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.app'
+
 export async function generateMetadata({ 
   params 
 }: { 
@@ -110,13 +114,50 @@ export async function generateMetadata({
     return { title: 'Post no encontrado | MiFP' }
   }
 
+  const autorNombre = post.autor?.full_name || post.autor?.email?.split('@')[0] || 'MiFP'
+
   return {
-    title: `${post.titulo} | MiFP`,
+    title: `${post.titulo} | MiFP Blog`,
     description: post.extracto,
+    keywords: ['FP', 'ILERNA', 'formación profesional', post.categoria],
+    authors: [{ name: autorNombre }],
+    alternates: {
+      canonical: `${baseUrl}/blog/${id}`,
+    },
     openGraph: {
       title: post.titulo,
       description: post.extracto,
+      url: `${baseUrl}/blog/${id}`,
+      siteName: 'MiFP',
+      images: post.imagen_url ? [{
+        url: post.imagen_url,
+        width: 1200,
+        height: 630,
+        alt: post.titulo,
+      }] : undefined,
+      locale: 'es_ES',
+      type: 'article',
+      publishedTime: post.created_at,
+      modifiedTime: post.updated_at || post.created_at,
+      authors: [autorNombre],
+      section: post.categoria,
+    },
+    twitter: {
+      card: post.imagen_url ? 'summary_large_image' : 'summary',
+      title: post.titulo,
+      description: post.extracto,
       images: post.imagen_url ? [post.imagen_url] : undefined,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   }
 }
@@ -137,3 +178,4 @@ export default async function PostPage({
 
   return <PostContent post={post} prevPost={prev} nextPost={next} />
 }
+

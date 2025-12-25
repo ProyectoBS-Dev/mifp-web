@@ -1,12 +1,16 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, ArrowRight, Share2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Share2, Sparkles, UserPlus } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { ReactionBar } from './ReactionBar'
+import { ReactionBar, type ReactionType } from './ReactionBar'
+import { LoginPromptModal } from './LoginPromptModal'
 import { useReactions } from '@/hooks/useReactions'
+import { useQuery } from '@tanstack/react-query'
+import { createClient } from '@/lib/supabase/client'
 import type { NoticiaConMeta } from '@/hooks/useNoticias'
 
 function formatDate(dateString: string) {
@@ -95,8 +99,29 @@ interface PostContentProps {
 }
 
 export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
+  const [showLoginModal, setShowLoginModal] = useState(false)
   const { counts, userReaction, react } = useReactions(post.id)
-  const autorNombre = post.autor?.full_name || post.autor?.email?.split('@')[0] || 'Anónimo'
+  const autorNombre = post.autor?.full_name || post.autor?.email?.split('@')[0] || 'Equipo MiFP'
+  
+  const supabase = createClient()
+
+  // Verificar si hay usuario autenticado
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      return user
+    },
+    staleTime: 60000 * 5,
+  })
+
+  const handleReact = (type: ReactionType) => {
+    if (!currentUser) {
+      setShowLoginModal(true)
+      return
+    }
+    react(type)
+  }
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -165,7 +190,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
                   Siguiente artículo
                 </p>
                 <Link 
-                  href={`/posts/${nextPost.id}`}
+                  href={`/blog/${nextPost.id}`}
                   className="text-sm text-primary hover:underline line-clamp-2"
                 >
                   {nextPost.titulo}
@@ -180,7 +205,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
                   Artículo anterior
                 </p>
                 <Link 
-                  href={`/posts/${prevPost.id}`}
+                  href={`/blog/${prevPost.id}`}
                   className="text-sm text-primary hover:underline line-clamp-2"
                 >
                   {prevPost.titulo}
@@ -191,27 +216,13 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
 
           <div className="border-t pt-4">
             <Link 
-              href="/novedades"
+              href="/blog"
               className="text-sm text-primary hover:underline inline-flex items-center gap-1"
             >
               <ArrowLeft className="h-4 w-4" />
               Volver al blog
             </Link>
           </div>
-
-          {/* Reacciones en sidebar */}
-          {/* <div className="border-t pt-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3">
-              Reacciones
-            </p>
-            <ReactionBar
-              noticiaId={post.id}
-              counts={counts}
-              userReaction={userReaction}
-              onReact={(_, type) => react(type)}
-              size="md"
-            />
-          </div> */}
         </aside>
 
         {/* Contenido */}
@@ -228,7 +239,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
               noticiaId={post.id}
               counts={counts}
               userReaction={userReaction}
-              onReact={(_, type) => react(type)}
+              onReact={(_, type) => handleReact(type)}
               size="md"
             />
             <Button variant="outline" size="sm" className="gap-2" onClick={handleShare}>
@@ -240,7 +251,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
           <div className="flex items-center gap-2">
             {prevPost && (
               <Button variant="ghost" size="sm" asChild>
-                <Link href={`/posts/${prevPost.id}`} className="gap-1">
+                <Link href={`/blog/${prevPost.id}`} className="gap-1">
                   <ArrowLeft className="h-4 w-4" />
                   Anterior
                 </Link>
@@ -248,7 +259,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
             )}
             {nextPost && (
               <Button variant="ghost" size="sm" asChild>
-                <Link href={`/posts/${nextPost.id}`} className="gap-1">
+                <Link href={`/blog/${nextPost.id}`} className="gap-1">
                   Siguiente
                   <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -257,6 +268,41 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
           </div>
         </div>
       </footer>
+
+      {/* CTA para usuarios no autenticados */}
+      {!currentUser && (
+        <div className="mt-12 p-8 rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="flex-shrink-0">
+              <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center">
+                <Sparkles className="h-8 w-8 text-primary" />
+              </div>
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-xl font-bold mb-2">¿Te ha gustado este artículo?</h3>
+              <p className="text-muted-foreground">
+                Regístrate gratis para acceder a todas las herramientas de MiFP: 
+                gestión de PACs, videotutorías, notas y mucho más.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button asChild size="lg" className="gap-2">
+                <Link href="/registro">
+                  <UserPlus className="h-5 w-5" />
+                  Crear cuenta gratis
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de login para reacciones */}
+      <LoginPromptModal 
+        open={showLoginModal} 
+        onOpenChange={setShowLoginModal}
+      />
     </div>
   )
 }
+

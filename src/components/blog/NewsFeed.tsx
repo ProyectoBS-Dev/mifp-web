@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { 
@@ -18,9 +18,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ReactionBar, type ReactionType, type ReactionCounts } from './ReactionBar'
+import { LoginPromptModal } from './LoginPromptModal'
 import { useNoticias, type NoticiaConMeta, type NoticiaCategoria } from '@/hooks/useNoticias'
 import { useMultipleReactions } from '@/hooks/useReactions'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 
 const CATEGORY_CONFIG: Record<NoticiaCategoria, { label: string; color: string; bgColor: string }> = {
@@ -48,7 +49,7 @@ interface NewsCardProps {
 
 function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps) {
   const category = CATEGORY_CONFIG[news.categoria]
-  const autorNombre = news.autor?.full_name || news.autor?.email?.split('@')[0] || 'Anónimo'
+  const autorNombre = news.autor?.full_name || news.autor?.email?.split('@')[0] || 'Equipo MiFP'
 
   return (
     <article className="group bg-card rounded-2xl border shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300">
@@ -98,7 +99,7 @@ function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps
 
         {/* Título */}
         <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-          <Link href={`/posts/${news.id}`}>
+          <Link href={`/blog/${news.id}`}>
             {news.titulo}
           </Link>
         </h3>
@@ -111,7 +112,7 @@ function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps
         {/* Footer */}
         <div className="flex items-center justify-between pt-3 border-t">
           <Link 
-            href={`/posts/${news.id}`}
+            href={`/blog/${news.id}`}
             className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1"
           >
             Leer más
@@ -134,6 +135,7 @@ function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps
 
 export function NewsFeed() {
   const [filter, setFilter] = useState<NoticiaCategoria | 'all'>('all')
+  const [showLoginModal, setShowLoginModal] = useState(false)
   const { noticias, isLoading } = useNoticias(filter === 'all' ? undefined : filter)
   
   // Obtener IDs de noticias para cargar reacciones
@@ -142,6 +144,16 @@ export function NewsFeed() {
   
   const supabase = createClient()
   const queryClient = useQueryClient()
+
+  // Verificar si hay usuario autenticado
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      return user
+    },
+    staleTime: 60000 * 5,
+  })
 
   // Mutación para reaccionar
   const reactMutation = useMutation({
@@ -192,8 +204,13 @@ export function NewsFeed() {
   })
 
   const handleReact = useCallback((noticiaId: string, type: ReactionType) => {
+    // Si no hay usuario autenticado, mostrar modal de login
+    if (!currentUser) {
+      setShowLoginModal(true)
+      return
+    }
     reactMutation.mutate({ noticiaId, type })
-  }, [reactMutation])
+  }, [reactMutation, currentUser])
 
   if (isLoading) {
     return (
@@ -260,6 +277,13 @@ export function NewsFeed() {
           </p>
         </div>
       )}
+
+      {/* Modal de login para reacciones */}
+      <LoginPromptModal 
+        open={showLoginModal} 
+        onOpenChange={setShowLoginModal}
+      />
     </div>
   )
 }
+

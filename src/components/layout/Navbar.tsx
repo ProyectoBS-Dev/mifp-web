@@ -18,7 +18,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: <Home className="h-4 w-4" /> },
   { href: '/notas', label: 'Notas', icon: <BookOpen className="h-4 w-4" /> },
-  { href: '/novedades', label: 'Novedades', icon: <Newspaper className="h-4 w-4" /> },
+  { href: '/blog', label: 'Blog', icon: <Newspaper className="h-4 w-4" /> },
 ]
 
 interface NavbarProps {

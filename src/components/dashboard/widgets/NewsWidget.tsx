@@ -76,7 +76,7 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
               className="h-full w-full object-cover"
             />
           ) : (
-            <span>{noticia.autor?.full_name?.charAt(0) || 'A'}</span>
+            <span>{noticia.autor?.full_name?.charAt(0) || 'M'}</span>
           )}
         </div>
         <span className="text-xs text-muted-foreground">

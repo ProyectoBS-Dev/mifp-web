@@ -130,21 +130,23 @@ export function NewsWidget() {
 
   if (isLoading) {
     return (
-      <div className="space-y-3">
-        <div className="flex justify-end">
+      <div className="flex flex-col h-full">
+        <div className="flex justify-end mb-2">
           <div className="h-4 w-16 bg-muted animate-pulse rounded" />
         </div>
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="p-3 rounded-lg border animate-pulse">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="h-6 w-6 rounded-full bg-muted" />
-              <div className="h-3 w-20 bg-muted rounded" />
+        <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="p-3 rounded-lg border animate-pulse">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="h-6 w-6 rounded-full bg-muted" />
+                <div className="h-3 w-20 bg-muted rounded" />
+              </div>
+              <div className="h-4 w-3/4 bg-muted rounded mb-2" />
+              <div className="h-3 w-full bg-muted rounded mb-1" />
+              <div className="h-3 w-2/3 bg-muted rounded" />
             </div>
-            <div className="h-4 w-3/4 bg-muted rounded mb-2" />
-            <div className="h-3 w-full bg-muted rounded mb-1" />
-            <div className="h-3 w-2/3 bg-muted rounded" />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     )
   }
@@ -159,9 +161,9 @@ export function NewsWidget() {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col h-full">
       {/* Link Ver todo */}
-      <div className="flex justify-end -mt-1 mb-1">
+      <div className="flex justify-end mb-2">
         <Link 
           href="/blog" 
           className="text-xs text-primary hover:underline font-medium"
@@ -171,13 +173,15 @@ export function NewsWidget() {
       </div>
 
       {/* Lista de noticias */}
-      {displayNoticias.map((noticia) => (
-        <NewsCard 
-          key={noticia.id} 
-          noticia={noticia}
-          reactionCounts={reactionsByNoticia[noticia.id]?.counts || { like: 0, love: 0, clap: 0, fire: 0, thinking: 0 }}
-        />
-      ))}
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1">
+        {displayNoticias.map((noticia) => (
+          <NewsCard 
+            key={noticia.id} 
+            noticia={noticia}
+            reactionCounts={reactionsByNoticia[noticia.id]?.counts || { like: 0, love: 0, clap: 0, fire: 0, thinking: 0 }}
+          />
+        ))}
+      </div>
     </div>
   )
 }

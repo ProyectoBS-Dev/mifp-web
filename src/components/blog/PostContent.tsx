@@ -102,6 +102,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
   const [showLoginModal, setShowLoginModal] = useState(false)
   const { counts, userReaction, react } = useReactions(post.id)
   const autorNombre = post.autor?.full_name || post.autor?.email?.split('@')[0] || 'Equipo MiFP'
+  const autorInicial = post.autor?.full_name?.charAt(0) || 'M'
   
   const supabase = createClient()
 
@@ -174,7 +175,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
             <Avatar className="h-12 w-12">
               <AvatarImage src={post.autor?.avatar_url || undefined} />
               <AvatarFallback className="bg-primary/10 text-primary">
-                {autorNombre[0]}
+                {autorInicial}
               </AvatarFallback>
             </Avatar>
             <div>

@@ -50,6 +50,7 @@ interface NewsCardProps {
 function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps) {
   const category = CATEGORY_CONFIG[news.categoria]
   const autorNombre = news.autor?.full_name || news.autor?.email?.split('@')[0] || 'Equipo MiFP'
+  const autorInicial = news.autor?.full_name?.charAt(0) || 'M'
 
   return (
     <article className="group bg-card rounded-2xl border shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300">
@@ -85,7 +86,7 @@ function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps
           <Avatar className="h-6 w-6">
             <AvatarImage src={news.autor?.avatar_url || undefined} />
             <AvatarFallback className="text-xs bg-primary/10 text-primary">
-              {autorNombre[0]}
+              {autorInicial}
             </AvatarFallback>
           </Avatar>
           <span className="text-sm text-muted-foreground">

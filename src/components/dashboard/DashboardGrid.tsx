@@ -185,7 +185,7 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
               </div>
               
               {/* Widget Content */}
-              <div className="p-4 h-[calc(100%-52px)] overflow-auto">
+              <div className="p-4 h-[calc(100%-52px)] overflow-hidden flex flex-col">
                 <WidgetComponent />
               </div>
             </div>

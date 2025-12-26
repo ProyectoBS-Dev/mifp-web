@@ -218,7 +218,7 @@ export function PacsWidget() {
       </div>
 
       {/* Lista de PACs */}
-      <div className="flex-1 overflow-y-auto space-y-2">
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1">
         {/* PACs Pendientes */}
         {pendientes.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-6 text-center">

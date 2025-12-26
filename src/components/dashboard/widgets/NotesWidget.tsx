@@ -54,7 +54,7 @@ export function NotesWidget() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-1 space-y-2 overflow-auto">
+      <div className="flex-1 min-h-0 space-y-2 overflow-y-auto pr-1">
         {(!notes || notes.length === 0) && !isAdding && (
           <div className="flex flex-col items-center justify-center h-full text-center py-4">
             <StickyNote className="h-8 w-8 text-muted-foreground/50 mb-2" />

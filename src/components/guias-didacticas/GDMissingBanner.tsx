@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertTriangle, Upload } from 'lucide-react'
+import { Upload } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { GDUploadModal } from './GDUploadModal'
@@ -21,8 +21,7 @@ export function GDMissingBanner() {
   return (
     <>
       <Alert className="mb-6 border-yellow-500/50 bg-yellow-500/10">
-        <AlertTriangle className="h-4 w-4 text-yellow-500" />
-        <AlertDescription className="flex items-center justify-between w-full ml-2">
+        <AlertDescription className="flex items-center justify-between w-full">
           <div>
             <span className="font-medium text-yellow-600 dark:text-yellow-400">
               ⚠️ Faltan datos de {missingGDs.length} asignatura{missingGDs.length > 1 ? 's' : ''}

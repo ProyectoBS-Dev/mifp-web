@@ -3,6 +3,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 
+// Re-export del cliente para uso interno del hook
+const getSupabase = () => createClient()
+
 export interface Noticia {
   id: string
   titulo: string
@@ -69,7 +72,7 @@ export interface NoticiaConMeta extends Noticia {
 
 // Hook para obtener todas las noticias publicadas
 export function useNoticias(filter?: NoticiaCategoria) {
-  const supabase = createClient()
+  const supabase = getSupabase()
 
   const { data: noticias = [], isLoading, error } = useQuery({
     queryKey: ['noticias', filter],
@@ -112,7 +115,7 @@ export function useNoticias(filter?: NoticiaCategoria) {
 
 // Hook para obtener una noticia por ID
 export function useNoticia(id: string) {
-  const supabase = createClient()
+  const supabase = getSupabase()
 
   const { data: noticia, isLoading, error } = useQuery({
     queryKey: ['noticia', id],
@@ -147,8 +150,8 @@ export function useNoticia(id: string) {
 }
 
 // Hook para crear/editar noticias (admin/editor)
+// Usa API routes para evitar recursión en políticas RLS de noticias + users
 export function useNoticiasMutation() {
-  const supabase = createClient()
   const queryClient = useQueryClient()
 
   const createNoticia = useMutation({
@@ -158,24 +161,19 @@ export function useNoticiasMutation() {
       imagen_url?: string
       publicada?: boolean
     }) => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('No autenticado')
+      // Usar API route para bypass RLS (evita recursión infinita)
+      const response = await fetch('/api/admin/noticias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: noticia, error } = await (supabase as any)
-        .from('noticias')
-        .insert({
-          titulo: data.titulo,
-          contenido: data.contenido,
-          imagen_url: data.imagen_url || null,
-          autor_id: user.id,
-          publicada: data.publicada ?? true,
-        })
-        .select()
-        .single()
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Error al crear la noticia')
+      }
 
-      if (error) throw error
-      return noticia
+      return response.json()
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['noticias'] })
@@ -190,16 +188,19 @@ export function useNoticiasMutation() {
       imagen_url?: string
       publicada?: boolean
     }) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: noticia, error } = await (supabase as any)
-        .from('noticias')
-        .update(data)
-        .eq('id', id)
-        .select()
-        .single()
+      // Usar API route para bypass RLS (evita recursión infinita)
+      const response = await fetch(`/api/admin/noticias?id=${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
 
-      if (error) throw error
-      return noticia
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Error al actualizar la noticia')
+      }
+
+      return response.json()
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['noticias'] })

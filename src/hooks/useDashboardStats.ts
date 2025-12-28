@@ -3,6 +3,22 @@
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 
+export type NivelGamificacion = 'pichon' | 'junior' | 'leyenda' | 'maestro'
+
+export const nivelConfig: Record<NivelGamificacion, { label: string; emoji: string; range: [number, number] }> = {
+  pichon: { label: 'Pichón', emoji: '🐣', range: [0, 25] },
+  junior: { label: 'Mouredev Junior', emoji: '👨‍💻', range: [26, 50] },
+  leyenda: { label: 'Leyenda', emoji: '🔥', range: [51, 75] },
+  maestro: { label: 'Maestro', emoji: '🧙‍♂️', range: [76, 100] },
+}
+
+function calculateNivel(porcentaje: number): NivelGamificacion {
+  if (porcentaje <= 25) return 'pichon'
+  if (porcentaje <= 50) return 'junior'
+  if (porcentaje <= 75) return 'leyenda'
+  return 'maestro'
+}
+
 export interface DashboardStats {
   asignaturas: number
   pacsTotal: number
@@ -11,7 +27,8 @@ export interface DashboardStats {
   vtsTotal: number
   vtsVistas: number
   vtsPendientes: number
-  mediaNotas: number | null
+  nivel: NivelGamificacion
+  porcentajeTotal: number
 }
 
 export function useDashboardStats() {
@@ -41,7 +58,7 @@ export function useDashboardStats() {
       const { data: pacs } = await (supabase as any)
         .from('user_asignatura_pacs')
         .select(`
-          id, completada, nota,
+          id, completada,
           user_asignatura:user_asignaturas!inner(
             semestre:semestres!inner(activo)
           )
@@ -50,9 +67,6 @@ export function useDashboardStats() {
 
       const pacsData = pacs || []
       const pacsCompletadas = pacsData.filter((p: { completada: boolean }) => p.completada).length
-      const notasValidas = pacsData
-        .filter((p: { nota: number | null }) => p.nota !== null)
-        .map((p: { nota: number }) => p.nota)
 
       // Obtener VTs del usuario
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,10 +83,10 @@ export function useDashboardStats() {
       const vtsData = vts || []
       const vtsVistas = vtsData.filter((v: { vista: boolean }) => v.vista).length
 
-      // Calcular media de notas
-      const mediaNotas = notasValidas.length > 0
-        ? notasValidas.reduce((a: number, b: number) => a + b, 0) / notasValidas.length
-        : null
+      // Calcular porcentaje total para nivel de gamificación
+      const vtsPercent = vtsData.length > 0 ? (vtsVistas / vtsData.length) * 100 : 0
+      const pacsPercent = pacsData.length > 0 ? (pacsCompletadas / pacsData.length) * 100 : 0
+      const porcentajeTotal = Math.round((vtsPercent + pacsPercent) / 2)
 
       return {
         asignaturas: asignaturasCount,
@@ -82,7 +96,8 @@ export function useDashboardStats() {
         vtsTotal: vtsData.length,
         vtsVistas,
         vtsPendientes: vtsData.length - vtsVistas,
-        mediaNotas: mediaNotas ? Math.round(mediaNotas * 100) / 100 : null,
+        nivel: calculateNivel(porcentajeTotal),
+        porcentajeTotal,
       }
     },
     staleTime: 1000 * 60 * 2,

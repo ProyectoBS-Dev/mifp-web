@@ -1,24 +1,38 @@
 'use client'
 
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { useMemo } from 'react'
+import { TrendingUp, Loader2, GraduationCap } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useNotas, calcularNotaRA, calcularNotaModulo } from '@/hooks/useNotas'
+import Link from 'next/link'
 
 interface GradeItem {
+  asignaturaId: string
   asignatura: string
   codigo: string
   nota: number | null
-  tendencia: 'up' | 'down' | 'stable'
+  tieneGD: boolean
+  todosRAsAprobados: boolean
+  examenAprobado: boolean
 }
 
 function getGradeColor(nota: number | null) {
   if (nota === null) return 'text-muted-foreground'
-  if (nota >= 9) return 'text-vt-green'
-  if (nota >= 7) return 'text-vt-blue'
-  if (nota >= 5) return 'text-vt-yellow-dark'
-  return 'text-vt-red'
+  if (nota >= 9) return 'text-emerald-600 dark:text-emerald-400'
+  if (nota >= 7) return 'text-blue-600 dark:text-blue-400'
+  if (nota >= 5) return 'text-amber-600 dark:text-amber-400'
+  return 'text-red-600 dark:text-red-400'
+}
+
+function getGradeBadge(nota: number | null) {
+  if (nota === null) return null
+  if (nota >= 5) return { text: '✓', className: 'text-emerald-500' }
+  return { text: '✗', className: 'text-red-500' }
 }
 
 function GradeRow({ grade }: { grade: GradeItem }) {
+  const badge = getGradeBadge(grade.nota)
+  
   return (
     <div className="flex items-center justify-between py-2 border-b last:border-0">
       <div className="flex-1 min-w-0">
@@ -26,27 +40,24 @@ function GradeRow({ grade }: { grade: GradeItem }) {
         <p className="text-xs text-muted-foreground">{grade.codigo}</p>
       </div>
       <div className="flex items-center gap-2">
-        <span
-          className={cn(
-            'text-lg font-bold',
-            getGradeColor(grade.nota)
-          )}
-        >
-          {grade.nota !== null ? grade.nota.toFixed(1) : '-'}
-        </span>
-        {grade.nota !== null && (
-          <div
-            className={cn(
-              'p-1 rounded',
-              grade.tendencia === 'up' && 'bg-vt-green/10 text-vt-green',
-              grade.tendencia === 'down' && 'bg-vt-red/10 text-vt-red',
-              grade.tendencia === 'stable' && 'bg-muted text-muted-foreground'
+        {grade.tieneGD ? (
+          <>
+            <span
+              className={cn(
+                'text-lg font-bold',
+                getGradeColor(grade.nota)
+              )}
+            >
+              {grade.nota !== null ? grade.nota.toFixed(1) : '-'}
+            </span>
+            {badge && (
+              <span className={cn('text-sm font-bold', badge.className)}>
+                {badge.text}
+              </span>
             )}
-          >
-            {grade.tendencia === 'up' && <TrendingUp className="h-3 w-3" />}
-            {grade.tendencia === 'down' && <TrendingDown className="h-3 w-3" />}
-            {grade.tendencia === 'stable' && <Minus className="h-3 w-3" />}
-          </div>
+          </>
+        ) : (
+          <span className="text-xs text-muted-foreground italic">Sin GD</span>
         )}
       </div>
     </div>
@@ -54,51 +65,113 @@ function GradeRow({ grade }: { grade: GradeItem }) {
 }
 
 export function GradesWidget() {
-  // TODO: Conectar con datos reales de Supabase
-  const grades: GradeItem[] = [
-    {
-      asignatura: 'Programación',
-      codigo: 'PRO',
-      nota: 8.5,
-      tendencia: 'up',
-    },
-    {
-      asignatura: 'Base de Datos',
-      codigo: 'BBD',
-      nota: 7.2,
-      tendencia: 'stable',
-    },
-    {
-      asignatura: 'Entornos de Desarrollo',
-      codigo: 'EDD',
-      nota: 9.1,
-      tendencia: 'up',
-    },
-    {
-      asignatura: 'Sistemas Informáticos',
-      codigo: 'SIS',
-      nota: 6.8,
-      tendencia: 'down',
-    },
-    {
-      asignatura: 'Lenguaje de Marcas',
-      codigo: 'LLM',
-      nota: null,
-      tendencia: 'stable',
-    },
-  ]
+  const { data, isLoading, error } = useNotas()
 
-  // Calcular media
-  const notasValidas = grades.filter((g) => g.nota !== null).map((g) => g.nota as number)
-  const media = notasValidas.length > 0
-    ? notasValidas.reduce((a, b) => a + b, 0) / notasValidas.length
-    : null
+  // Calcular notas por asignatura
+  const grades = useMemo((): GradeItem[] => {
+    if (!data?.asignaturas) return []
+    
+    return data.asignaturas.map(asig => {
+      if (!asig.tieneGD || asig.ras.length === 0) {
+        return {
+          asignaturaId: asig.asignaturaId,
+          asignatura: asig.nombre,
+          codigo: asig.codigo,
+          nota: null,
+          tieneGD: false,
+          todosRAsAprobados: false,
+          examenAprobado: false
+        }
+      }
+
+      // Calcular nota de cada RA
+      const notasMap = new Map<string, number>()
+      let todosRAsAprobados = true
+      let examenAprobado = asig.notaExamen !== null && asig.notaExamen >= 5
+      
+      asig.ras.forEach(ra => {
+        const pacsDelRA = asig.pacs.filter(p => p.raId === ra.id)
+        const resultado = calcularNotaRA(pacsDelRA, asig.notaExamen)
+        if (resultado.notaRA !== null) {
+          notasMap.set(ra.id, resultado.notaRA)
+          if (resultado.notaRA < 5) todosRAsAprobados = false
+        } else {
+          todosRAsAprobados = false
+        }
+      })
+
+      // Calcular nota del módulo
+      const notaModulo = calcularNotaModulo(asig.ras, notasMap, data.fct.nota)
+
+      return {
+        asignaturaId: asig.asignaturaId,
+        asignatura: asig.nombre,
+        codigo: asig.codigo,
+        nota: data.fct.nota !== null && notaModulo.notaConFCT !== null 
+          ? notaModulo.notaConFCT 
+          : notaModulo.notaSinFCT,
+        tieneGD: true,
+        todosRAsAprobados,
+        examenAprobado
+      }
+    })
+  }, [data])
+
+  // Calcular media general
+  const media = useMemo(() => {
+    const notasValidas = grades
+      .filter((g) => g.tieneGD && g.nota !== null)
+      .map((g) => g.nota as number)
+    
+    return notasValidas.length > 0
+      ? notasValidas.reduce((a, b) => a + b, 0) / notasValidas.length
+      : null
+  }, [grades])
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center">
+        <p className="text-sm text-destructive">Error al cargar</p>
+        <p className="text-xs text-muted-foreground mt-1">{error.message}</p>
+      </div>
+    )
+  }
+
+  // Empty state
+  if (!data?.semestreActivo || grades.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center">
+        <GraduationCap className="h-8 w-8 text-muted-foreground/50 mb-2" />
+        <p className="text-sm text-muted-foreground">
+          Sin asignaturas matriculadas
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          {data?.semestreActivo ? data.semestreActivo.nombre : 'No hay semestre activo'}
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="h-full flex flex-col">
-      {/* Media general */}
-      <div className="flex items-center justify-between pb-3 mb-3 border-b">
-        <span className="text-sm font-medium">Media general</span>
+      {/* Header: Media general */}
+      <div className="flex items-center justify-between pb-3 mb-3 border-b shrink-0">
+        <div>
+          <span className="text-sm font-medium">Media general</span>
+          {data.fct.nota !== null && (
+            <span className="text-xs text-muted-foreground ml-1">(con FCT)</span>
+          )}
+        </div>
         <span
           className={cn(
             'text-2xl font-bold',
@@ -109,11 +182,22 @@ export function GradesWidget() {
         </span>
       </div>
 
-      {/* Lista de notas */}
-      <div className="flex-1 overflow-auto">
+      {/* Lista de notas con scroll */}
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1">
         {grades.map((grade) => (
-          <GradeRow key={grade.codigo} grade={grade} />
+          <GradeRow key={grade.asignaturaId} grade={grade} />
         ))}
+      </div>
+
+      {/* Footer: Link a notas completas */}
+      <div className="pt-2 mt-2 border-t shrink-0">
+        <Link 
+          href="/notas" 
+          className="flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+        >
+          <TrendingUp className="h-3 w-3" />
+          Ver detalles completos
+        </Link>
       </div>
     </div>
   )

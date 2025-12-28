@@ -8,6 +8,7 @@ export * from './useReactions'
 export * from './useNoticias'
 export * from './useCalendarEvents'
 export * from './useNotas'
+export * from './useRecursos'
 
 // Hooks de UI
 export * from './useTheme'

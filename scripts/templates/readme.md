@@ -1,0 +1,1 @@
+* Si asignaturas_ids es null, el recurso será visible para todas las asignaturas

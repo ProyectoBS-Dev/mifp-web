@@ -56,6 +56,13 @@
     --vt-c-blue-lighter: #50a2ff;
     --vt-c-blue-dark: #3468a3;
     --vt-c-blue-darker: #255489;
+
+    /* Azul - Pulse animate-ping */
+    --vt-c-sky: #57e1fc;
+    --vt-c-sky-light: #549ced;
+    --vt-c-sky-lighter: #50a2ff;
+    --vt-c-sky-dark: #3468a3;
+    --vt-c-sky-darker: #255489;
     
     /* Estados y Acentos */
     --vt-c-yellow: #ffc517;

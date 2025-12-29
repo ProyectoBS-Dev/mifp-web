@@ -21,7 +21,7 @@ interface RecursoData {
   titulo: string
   descripcion: string | null
   url: string | null
-  asignatura_id: string | null
+  asignaturas: { id: string; nombre: string; codigo: string }[]
 }
 
 async function getRecurso(id: string): Promise<RecursoData | null> {
@@ -30,16 +30,33 @@ async function getRecurso(id: string): Promise<RecursoData | null> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
     .from('recursos')
-    .select('id, tipo, titulo, descripcion, url, asignatura_id')
+    .select(`
+      id, tipo, titulo, descripcion, url,
+      recursos_asignaturas(
+        asignatura:asignaturas(id, nombre, codigo)
+      )
+    `)
     .eq('id', id)
-    .is('deleted_at', null) // Solo si no está eliminado
+    .is('deleted_at', null)
     .single()
 
   if (error || !data) {
     return null
   }
 
-  return data as RecursoData
+  // Transformar datos
+  const asignaturas = data.recursos_asignaturas
+    ?.map((ra: { asignatura: { id: string; nombre: string; codigo: string } | null }) => ra.asignatura)
+    .filter(Boolean) || []
+
+  return {
+    id: data.id,
+    tipo: data.tipo,
+    titulo: data.titulo,
+    descripcion: data.descripcion,
+    url: data.url,
+    asignaturas,
+  }
 }
 
 export default async function EditarRecursoPage({ params }: PageProps) {
@@ -79,10 +96,11 @@ export default async function EditarRecursoPage({ params }: PageProps) {
           titulo: recurso.titulo,
           descripcion: recurso.descripcion,
           url: recurso.url,
-          asignatura_id: recurso.asignatura_id,
+          asignaturas: recurso.asignaturas,
         }} 
       />
     </div>
   )
 }
+
 

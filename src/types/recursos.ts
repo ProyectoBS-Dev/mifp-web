@@ -16,12 +16,11 @@ export interface Recurso {
   url: string | null           // Para enlaces externos
   archivo_path: string | null  // Path en Cloudflare R2 (pdf/podcast)
   duracion: number | null      // Para podcasts (segundos)
-  asignatura_id: string | null
-  asignatura?: {
+  asignaturas?: {
     id: string
     nombre: string
     codigo: string
-  } | null
+  }[]
   created_by: string | null
   created_at: string
 }
@@ -29,12 +28,14 @@ export interface Recurso {
 /**
  * Metadatos JSON que acompaña a cada archivo en Cloudflare R2
  * Ejemplo: clean-code-ep1.mp3 → clean-code-ep1.json
+ * Soporta tanto asignatura_id (string) como asignatura_ids (array) para backwards compatibility
  */
 export interface RecursoMetadataJSON {
   titulo: string
   descripcion?: string
-  asignatura_id?: string
-  duracion?: number  // Solo para podcasts (segundos)
+  asignatura_id?: string        // Backwards compatible: single ID
+  asignatura_ids?: string[]     // New: multiple IDs
+  duracion?: number             // Solo para podcasts (segundos)
 }
 
 /**

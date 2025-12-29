@@ -1,7 +1,7 @@
 {
-  "titulo": "Título del podcast",
-  "descripcion": "Descripción breve del contenido del podcast",
-  "asignatura_id": null,
-  "duracion": 0
+  "titulo": "Libro BBDD A",
+  "descripcion": "Podcast de resumen del libro BBDD A",
+  "asignatura_ids": ["ID", "ID2"],
+  "duracion": 2739
 }
 

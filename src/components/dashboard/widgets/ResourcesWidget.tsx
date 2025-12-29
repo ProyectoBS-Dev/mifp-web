@@ -41,6 +41,24 @@ const RESOURCE_ICONS: Record<RecursoTipo, React.ReactNode> = {
   podcast: <Headphones className="h-4 w-4" />,
 }
 
+// Helper para detectar recursos nuevos (últimas 24h)
+function isNew(createdAt: string): boolean {
+  const createdDate = new Date(createdAt)
+  const now = new Date()
+  const diffHours = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60)
+  return diffHours < 24
+}
+
+// Componente de indicador "Nuevo" (punto pulsante)
+function NewIndicator() {
+  return (
+    <span className="relative flex h-2 w-2 shrink-0">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-vt-sky opacity-75"></span>
+      <span className="relative inline-flex rounded-full h-2 w-2 bg-vt-sky"></span>
+    </span>
+  )
+}
+
 // ============================================
 // Componentes auxiliares
 // ============================================
@@ -92,15 +110,20 @@ function PDFCard({ recurso, onPreview }: PDFCardProps) {
         {RESOURCE_ICONS.pdf}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{recurso.titulo}</p>
+        <div className="flex items-center gap-1.5">
+          {isNew(recurso.created_at) && <NewIndicator />}
+          <p className="text-sm font-medium truncate">{recurso.titulo}</p>
+        </div>
         {recurso.descripcion && (
           <p className="text-xs text-muted-foreground line-clamp-1">
             {recurso.descripcion}
           </p>
         )}
-        {recurso.asignatura && (
+        {recurso.asignaturas && recurso.asignaturas.length > 0 && (
           <p className="text-xs text-muted-foreground mt-0.5">
-            📁 {recurso.asignatura.nombre}
+            📁 {recurso.asignaturas.length === 1 
+              ? recurso.asignaturas[0].nombre 
+              : `${recurso.asignaturas.length} asignaturas`}
           </p>
         )}
       </div>
@@ -143,7 +166,10 @@ function EnlaceCard({ recurso }: { recurso: Recurso }) {
         {RESOURCE_ICONS.enlace}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{recurso.titulo}</p>
+        <div className="flex items-center gap-1.5">
+          {isNew(recurso.created_at) && <NewIndicator />}
+          <p className="text-sm font-medium truncate">{recurso.titulo}</p>
+        </div>
         {recurso.descripcion && (
           <p className="text-xs text-muted-foreground line-clamp-1">
             {recurso.descripcion}
@@ -173,6 +199,7 @@ function PodcastCard({ recurso }: { recurso: Recurso }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
+            {isNew(recurso.created_at) && <NewIndicator />}
             <p className="text-sm font-medium truncate flex-1">{recurso.titulo}</p>
             {recurso.duracion && (
               <span className="text-xs text-muted-foreground flex-shrink-0">

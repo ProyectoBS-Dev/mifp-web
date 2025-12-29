@@ -29,12 +29,13 @@ export async function GET(request: Request) {
         url,
         archivo_path,
         duracion,
-        asignatura_id,
         created_by,
         created_at,
-        asignatura:asignaturas(id, nombre, codigo)
+        recursos_asignaturas(
+          asignatura:asignaturas(id, nombre, codigo)
+        )
       `)
-      .is('deleted_at', null) // Solo recursos no eliminados
+      .is('deleted_at', null)
       .order('created_at', { ascending: false })
 
     if (tipo) {
@@ -51,7 +52,20 @@ export async function GET(request: Request) {
       )
     }
 
-    return NextResponse.json(data)
+    // Transformar datos
+    const transformed = (data || []).map((r: {
+      recursos_asignaturas: Array<{ asignatura: { id: string; nombre: string; codigo: string } | null }>;
+      [key: string]: unknown
+    }) => {
+      const asignaturas = r.recursos_asignaturas
+        ?.map((ra) => ra.asignatura)
+        .filter(Boolean) || []
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { recursos_asignaturas, ...rest } = r
+      return { ...rest, asignaturas }
+    })
+
+    return NextResponse.json(transformed)
   } catch (error) {
     console.error('Error en GET /api/recursos:', error)
     return NextResponse.json(
@@ -95,7 +109,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { tipo, titulo, descripcion, url, asignatura_id } = body
+    const { tipo, titulo, descripcion, url, asignatura_ids } = body
 
     // Validar campos requeridos
     if (!tipo || !titulo) {
@@ -122,10 +136,9 @@ export async function POST(request: Request) {
         titulo,
         descripcion: descripcion || null,
         url: url || null,
-        asignatura_id: asignatura_id || null,
         created_by: user.id,
       })
-      .select()
+      .select('id')
       .single()
 
     if (error) {
@@ -134,6 +147,24 @@ export async function POST(request: Request) {
         { error: 'Error creando recurso' },
         { status: 500 }
       )
+    }
+
+    // Insertar relaciones con asignaturas
+    if (asignatura_ids && Array.isArray(asignatura_ids) && asignatura_ids.length > 0) {
+      const relations = asignatura_ids.map((asignaturaId: string) => ({
+        recurso_id: data.id,
+        asignatura_id: asignaturaId,
+      }))
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error: relationError } = await (supabase as any)
+        .from('recursos_asignaturas')
+        .insert(relations)
+
+      if (relationError) {
+        console.error('Error insertando asignaturas:', relationError)
+        // No fallamos, el recurso ya fue creado
+      }
     }
 
     return NextResponse.json(data, { status: 201 })

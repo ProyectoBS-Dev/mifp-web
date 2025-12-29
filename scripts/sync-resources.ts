@@ -203,25 +203,56 @@ async function syncBucket(
       ? `${bucketConfig.publicUrl.replace(/\/$/, '')}/${file.key}`
       : null
 
-    // Insertar en Supabase
-    const { error: insertError } = await supabase.from('recursos').insert({
-      tipo: bucketConfig.tipo,
-      titulo: metadata?.titulo || formatTitle(file.key),
-      descripcion: metadata?.descripcion || null,
-      asignatura_id: metadata?.asignatura_id || null,
-      duracion: metadata?.duracion || null,
-      url: publicUrl,
-      archivo_path: file.key,
-    })
+    // Parsear asignatura_ids (soporta ambos formatos para backwards compatibility)
+    let asignaturaIds: string[] = []
+    if (metadata?.asignatura_ids && Array.isArray(metadata.asignatura_ids)) {
+      asignaturaIds = metadata.asignatura_ids
+    } else if (metadata?.asignatura_id) {
+      asignaturaIds = [metadata.asignatura_id]
+    }
+
+    // Insertar en Supabase (tabla recursos)
+    const { data: insertedRecurso, error: insertError } = await supabase
+      .from('recursos')
+      .insert({
+        tipo: bucketConfig.tipo,
+        titulo: metadata?.titulo || formatTitle(file.key),
+        descripcion: metadata?.descripcion || null,
+        duracion: metadata?.duracion || null,
+        url: publicUrl,
+        archivo_path: file.key,
+      })
+      .select('id')
+      .single()
 
     if (insertError) {
       result.errors.push(`Error insertando ${file.key}: ${insertError.message}`)
       log(`Error insertando ${file.key}: ${insertError.message}`, 'error')
-    } else {
-      result.inserted++
-      result.details.insertedFiles.push(file.key)
-      log(`Insertado: ${metadata?.titulo || formatTitle(file.key)}`, 'success')
+      continue
     }
+
+    // Insertar relaciones en recursos_asignaturas
+    if (asignaturaIds.length > 0 && insertedRecurso) {
+      const asignaturaRelations = asignaturaIds.map((asignaturaId) => ({
+        recurso_id: insertedRecurso.id,
+        asignatura_id: asignaturaId,
+      }))
+
+      const { error: relationError } = await supabase
+        .from('recursos_asignaturas')
+        .insert(asignaturaRelations)
+
+      if (relationError) {
+        result.errors.push(`Error insertando asignaturas para ${file.key}: ${relationError.message}`)
+        log(`Error insertando asignaturas para ${file.key}: ${relationError.message}`, 'error')
+      } else {
+        log(`  → Asociado a ${asignaturaIds.length} asignatura(s)`, 'info')
+      }
+    }
+
+    result.inserted++
+    result.details.insertedFiles.push(file.key)
+    log(`Insertado: ${metadata?.titulo || formatTitle(file.key)}`, 'success')
   }
 
   // 4. Soft-delete de recursos huérfanos (archivos eliminados de R2)

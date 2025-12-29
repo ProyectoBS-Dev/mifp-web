@@ -33,10 +33,10 @@ interface Recurso {
   archivo_path: string | null
   duracion: number | null
   created_at: string
-  asignatura: {
+  asignaturas: {
     nombre: string
     codigo: string
-  } | null
+  }[]
 }
 
 const TIPO_ICONS = {
@@ -65,12 +65,25 @@ async function getRecursos(): Promise<Recurso[]> {
     .from('recursos')
     .select(`
       id, tipo, titulo, descripcion, url, archivo_path, duracion, created_at,
-      asignatura:asignaturas(nombre, codigo)
+      recursos_asignaturas(
+        asignatura:asignaturas(nombre, codigo)
+      )
     `)
-    .is('deleted_at', null) // Solo recursos no eliminados
+    .is('deleted_at', null)
     .order('created_at', { ascending: false })
 
-  return (data || []) as Recurso[]
+  // Transformar datos
+  return (data || []).map((r: {
+    recursos_asignaturas: Array<{ asignatura: { nombre: string; codigo: string } | null }>;
+    [key: string]: unknown
+  }) => {
+    const asignaturas = r.recursos_asignaturas
+      ?.map((ra) => ra.asignatura)
+      .filter(Boolean) || []
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { recursos_asignaturas, ...rest } = r
+    return { ...rest, asignaturas } as Recurso
+  })
 }
 
 async function getStats() {
@@ -232,8 +245,12 @@ export default async function RecursosAdminPage() {
                           </p>
                         )}
                         <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                          {recurso.asignatura && (
-                            <span>📁 {recurso.asignatura.nombre}</span>
+                          {recurso.asignaturas && recurso.asignaturas.length > 0 && (
+                            <span>
+                              📁 {recurso.asignaturas.length === 1 
+                                ? recurso.asignaturas[0].nombre 
+                                : `${recurso.asignaturas.length} asignaturas`}
+                            </span>
                           )}
                           {recurso.url && recurso.tipo === 'enlace' && (
                             <span className="truncate max-w-[200px]">

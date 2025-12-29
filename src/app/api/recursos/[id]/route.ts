@@ -31,13 +31,14 @@ export async function GET(request: Request, { params }: RouteParams) {
         url,
         archivo_path,
         duracion,
-        asignatura_id,
         created_by,
         created_at,
-        asignatura:asignaturas(id, nombre, codigo)
+        recursos_asignaturas(
+          asignatura:asignaturas(id, nombre, codigo)
+        )
       `)
       .eq('id', id)
-      .is('deleted_at', null) // Solo si no está eliminado
+      .is('deleted_at', null)
       .single()
 
     if (error) {
@@ -54,7 +55,15 @@ export async function GET(request: Request, { params }: RouteParams) {
       )
     }
 
-    return NextResponse.json(data)
+    // Transformar datos
+    const asignaturas = data.recursos_asignaturas
+      ?.map((ra: { asignatura: { id: string; nombre: string; codigo: string } | null }) => ra.asignatura)
+      .filter(Boolean) || []
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { recursos_asignaturas, ...rest } = data
+    const transformed = { ...rest, asignaturas }
+
+    return NextResponse.json(transformed)
   } catch (error) {
     console.error('Error en GET /api/recursos/[id]:', error)
     return NextResponse.json(
@@ -98,45 +107,65 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     }
 
     const body = await request.json()
-    const { titulo, descripcion, url, asignatura_id } = body
+    const { titulo, descripcion, url, asignatura_ids } = body
 
-    // Actualizar solo los campos proporcionados
+    // Actualizar solo los campos proporcionados del recurso
     const updateData: Record<string, unknown> = {}
     if (titulo !== undefined) updateData.titulo = titulo
     if (descripcion !== undefined) updateData.descripcion = descripcion
     if (url !== undefined) updateData.url = url
-    if (asignatura_id !== undefined) updateData.asignatura_id = asignatura_id
 
-    if (Object.keys(updateData).length === 0) {
-      return NextResponse.json(
-        { error: 'No hay campos para actualizar' },
-        { status: 400 }
-      )
-    }
+    // Actualizar recurso si hay campos
+    if (Object.keys(updateData).length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
+        .from('recursos')
+        .update(updateData)
+        .eq('id', id)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
-      .from('recursos')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) {
-      if (error.code === 'PGRST116') {
+      if (error) {
+        if (error.code === 'PGRST116') {
+          return NextResponse.json(
+            { error: 'Recurso no encontrado' },
+            { status: 404 }
+          )
+        }
+        console.error('Error actualizando recurso:', error)
         return NextResponse.json(
-          { error: 'Recurso no encontrado' },
-          { status: 404 }
+          { error: 'Error actualizando recurso' },
+          { status: 500 }
         )
       }
-      console.error('Error actualizando recurso:', error)
-      return NextResponse.json(
-        { error: 'Error actualizando recurso' },
-        { status: 500 }
-      )
     }
 
-    return NextResponse.json(data)
+    // Actualizar asignaturas si se proporcionaron
+    if (asignatura_ids !== undefined) {
+      // Eliminar relaciones existentes
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any)
+        .from('recursos_asignaturas')
+        .delete()
+        .eq('recurso_id', id)
+
+      // Insertar nuevas relaciones
+      if (Array.isArray(asignatura_ids) && asignatura_ids.length > 0) {
+        const relations = asignatura_ids.map((asignaturaId: string) => ({
+          recurso_id: id,
+          asignatura_id: asignaturaId,
+        }))
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: relationError } = await (supabase as any)
+          .from('recursos_asignaturas')
+          .insert(relations)
+
+        if (relationError) {
+          console.error('Error actualizando asignaturas:', relationError)
+        }
+      }
+    }
+
+    return NextResponse.json({ success: true, id })
   } catch (error) {
     console.error('Error en PATCH /api/recursos/[id]:', error)
     return NextResponse.json(

@@ -2,14 +2,17 @@
 // 📚 Hook useRecursos
 // ============================================
 // Obtiene recursos de estudio desde Supabase
-// Los archivos están en Cloudflare R2
+// Filtra por asignaturas en las que el usuario está matriculado
+// Los recursos sin asignaturas son visibles para todos
 
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import type { Recurso, RecursoTipo } from '@/types/recursos'
 
 /**
- * Hook para obtener todos los recursos
+ * Hook para obtener todos los recursos visibles para el usuario
+ * - Recursos sin asignaturas: visibles para todos
+ * - Recursos con asignaturas: solo visibles si el usuario está matriculado
  */
 export function useRecursos() {
   const supabase = createClient()
@@ -17,8 +20,25 @@ export function useRecursos() {
   return useQuery({
     queryKey: ['recursos'],
     queryFn: async (): Promise<Recurso[]> => {
+      // 1. Obtener usuario actual
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        return []
+      }
+
+      // 2. Obtener asignaturas del usuario
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data: userAsignaturas } = await (supabase as any)
+        .from('user_asignaturas')
+        .select('asignatura_id')
+        .eq('user_id', user.id)
+
+      const userAsignaturaIds = (userAsignaturas as { asignatura_id: string }[] | null)?.map(ua => ua.asignatura_id) || []
+
+      // 3. Obtener todos los recursos con sus asignaturas
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: recursos, error } = await (supabase as any)
         .from('recursos')
         .select(`
           id,
@@ -28,12 +48,13 @@ export function useRecursos() {
           url,
           archivo_path,
           duracion,
-          asignatura_id,
           created_by,
           created_at,
-          asignatura:asignaturas(id, nombre, codigo)
+          recursos_asignaturas(
+            asignatura:asignaturas(id, nombre, codigo)
+          )
         `)
-        .is('deleted_at', null) // Solo recursos no eliminados
+        .is('deleted_at', null)
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -41,7 +62,36 @@ export function useRecursos() {
         throw error
       }
 
-      return (data || []) as Recurso[]
+      // 4. Transformar y filtrar recursos
+      const filteredRecursos = (recursos || [])
+        .map((r: { 
+          recursos_asignaturas: Array<{ asignatura: { id: string; nombre: string; codigo: string } | null }>;
+          [key: string]: unknown 
+        }) => {
+          // Extraer asignaturas del join
+          const asignaturas = r.recursos_asignaturas
+            ?.map((ra: { asignatura: { id: string; nombre: string; codigo: string } | null }) => ra.asignatura)
+            .filter(Boolean) || []
+          
+          // Remover el campo anidado
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { recursos_asignaturas, ...rest } = r
+          
+          return {
+            ...rest,
+            asignaturas,
+          } as Recurso
+        })
+        .filter((recurso: Recurso) => {
+          // Recursos sin asignaturas: visibles para todos
+          if (!recurso.asignaturas || recurso.asignaturas.length === 0) {
+            return true
+          }
+          // Recursos con asignaturas: solo si el usuario está matriculado en alguna
+          return recurso.asignaturas.some(a => userAsignaturaIds.includes(a.id))
+        })
+
+      return filteredRecursos as Recurso[]
     },
     staleTime: 1000 * 60 * 10, // 10 minutos
   })
@@ -64,6 +114,7 @@ export function useRecursosByType() {
 
 /**
  * Hook para obtener recursos de un tipo específico
+ * Nota: Este hook obtiene todos sin filtrar por usuario (uso admin)
  */
 export function useRecursosByTipo(tipo: RecursoTipo) {
   const supabase = createClient()
@@ -82,13 +133,14 @@ export function useRecursosByTipo(tipo: RecursoTipo) {
           url,
           archivo_path,
           duracion,
-          asignatura_id,
           created_by,
           created_at,
-          asignatura:asignaturas(id, nombre, codigo)
+          recursos_asignaturas(
+            asignatura:asignaturas(id, nombre, codigo)
+          )
         `)
         .eq('tipo', tipo)
-        .is('deleted_at', null) // Solo recursos no eliminados
+        .is('deleted_at', null)
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -96,7 +148,18 @@ export function useRecursosByTipo(tipo: RecursoTipo) {
         throw error
       }
 
-      return (data || []) as Recurso[]
+      // Transformar datos
+      return (data || []).map((r: { 
+        recursos_asignaturas: Array<{ asignatura: { id: string; nombre: string; codigo: string } | null }>;
+        [key: string]: unknown 
+      }) => {
+        const asignaturas = r.recursos_asignaturas
+          ?.map((ra: { asignatura: { id: string; nombre: string; codigo: string } | null }) => ra.asignatura)
+          .filter(Boolean) || []
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { recursos_asignaturas, ...rest } = r
+        return { ...rest, asignaturas } as Recurso
+      })
     },
     staleTime: 1000 * 60 * 10, // 10 minutos
   })

@@ -150,3 +150,101 @@ export const DEFAULT_LAYOUT_XS: DashboardLayoutItem[] = [
   { i: 'notes', x: 0, y: 16, w: 4, h: 3, minW: 2, minH: 2 },
   { i: 'news', x: 0, y: 19, w: 4, h: 3, minW: 2, minH: 2 },
 ]
+
+// ============================================
+// Utilidades para derivar layouts responsivos
+// ============================================
+
+/**
+ * Ordena widgets por posición (izquierda→derecha, arriba→abajo)
+ * para mantener coherencia visual entre breakpoints
+ */
+export function sortWidgetsByPosition(layout: DashboardLayoutItem[]): string[] {
+  return [...layout]
+    .sort((a, b) => {
+      // Primero por fila (y), luego por columna (x)
+      if (a.y !== b.y) return a.y - b.y
+      return a.x - b.x
+    })
+    .map(item => item.i)
+}
+
+/**
+ * Limpia propiedades innecesarias del layout antes de guardar
+ * (react-grid-layout añade 'moved', 'static', etc.)
+ * Solo guarda las propiedades esenciales para reconstruir el layout
+ */
+export function cleanLayoutForSave(layout: DashboardLayoutItem[]): DashboardLayoutItem[] {
+  return layout.map(item => {
+    // Solo incluir propiedades que tienen valor
+    const cleaned: DashboardLayoutItem = {
+      i: item.i,
+      x: item.x,
+      y: item.y,
+      w: item.w,
+      h: item.h,
+    }
+    // Solo añadir minW/minH si tienen valor definido
+    if (item.minW !== undefined) cleaned.minW = item.minW
+    if (item.minH !== undefined) cleaned.minH = item.minH
+    return cleaned
+  })
+}
+
+/**
+ * Deriva un layout responsivo a partir del orden de widgets del layout principal
+ * @param widgetOrder - Array de IDs de widgets en el orden deseado
+ * @param baseLayout - Layout base con las dimensiones para ese breakpoint
+ * @param cols - Número de columnas para ese breakpoint
+ */
+export function deriveResponsiveLayout(
+  widgetOrder: string[],
+  baseLayout: DashboardLayoutItem[],
+  cols: number
+): DashboardLayoutItem[] {
+  const result: DashboardLayoutItem[] = []
+  let currentY = 0
+
+  for (const widgetId of widgetOrder) {
+    const baseItem = baseLayout.find(item => item.i === widgetId)
+    if (!baseItem) continue
+
+    // Ajustar ancho al máximo de columnas si es necesario
+    const w = Math.min(baseItem.w, cols)
+    
+    result.push({
+      i: widgetId,
+      x: 0, // Siempre empieza en x=0 para móvil (una columna)
+      y: currentY,
+      w: cols, // Ancho completo en layouts pequeños
+      h: baseItem.h,
+      minW: Math.min(baseItem.minW || 2, cols),
+      minH: baseItem.minH || 2,
+    })
+    
+    currentY += baseItem.h
+  }
+
+  return result
+}
+
+/**
+ * Genera todos los layouts responsivos basándose en el layout principal (lg/xl)
+ */
+export function generateResponsiveLayouts(mainLayout: DashboardLayoutItem[]): {
+  xl: DashboardLayoutItem[]
+  lg: DashboardLayoutItem[]
+  md: DashboardLayoutItem[]
+  sm: DashboardLayoutItem[]
+  xs: DashboardLayoutItem[]
+} {
+  const widgetOrder = sortWidgetsByPosition(mainLayout)
+  
+  return {
+    xl: mainLayout,
+    lg: mainLayout,
+    md: deriveResponsiveLayout(widgetOrder, DEFAULT_LAYOUT_MD, 10),
+    sm: deriveResponsiveLayout(widgetOrder, DEFAULT_LAYOUT_SM, 6),
+    xs: deriveResponsiveLayout(widgetOrder, DEFAULT_LAYOUT_XS, 4),
+  }
+}

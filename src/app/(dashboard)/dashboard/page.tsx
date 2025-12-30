@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   description: 'Tu panel de control personalizado',
 }
 
+// Forzar renderizado dinámico para que siempre lea el layout actualizado
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage() {
   const supabase = await createClient()
   
@@ -28,7 +31,6 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .single()
 
-  // Verificar que el layout tenga elementos, si no, usar undefined para que use el default
   const savedLayout = layoutData?.layout_config?.length > 0 
     ? (layoutData.layout_config as DashboardLayoutItem[]) 
     : undefined

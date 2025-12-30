@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Newspaper, LogIn, UserPlus, Bell, Heart } from 'lucide-react'
+import { UserNav } from '@/components/layout/UserNav'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { UserMenu } from '@/components/layout/UserMenu'
 import { createClient } from '@/lib/supabase/client'
@@ -31,7 +33,7 @@ export default function BlogLayout({
     const checkUser = async () => {
       const supabase = createClient()
       const { data: { user: authUser } } = await supabase.auth.getUser()
-      
+
       if (authUser) {
         // Obtener perfil del usuario
         const { data: profile } = await supabase
@@ -65,32 +67,16 @@ export default function BlogLayout({
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-1">
-            {user ? (
-              // Navegación para usuarios autenticados
+            {isLoading ? (
+              // Skeleton durante la carga
               <>
-                <Link
-                  href="/dashboard"
-                  className={cn(
-                    'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
-                    'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  )}
-                >
-                  <Home className="h-4 w-4" />
-                  Dashboard
-                </Link>
-                <Link
-                  href="/blog"
-                  className={cn(
-                    'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
-                    pathname === '/blog' || pathname.startsWith('/blog/')
-                      ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  )}
-                >
-                  <Newspaper className="h-4 w-4" />
-                  Blog
-                </Link>
+                <Skeleton className="h-8 w-24 rounded-lg" />
+                <Skeleton className="h-8 w-20 rounded-lg" />
+                <Skeleton className="h-8 w-16 rounded-lg" />
               </>
+            ) : user ? (
+              // Navegación para usuarios autenticados
+              <UserNav />
             ) : (
               // Navegación para visitantes
               <>
@@ -122,7 +108,13 @@ export default function BlogLayout({
 
           {/* Right side */}
           <div className="ml-auto flex items-center gap-2">
-            {!isLoading && (
+            {isLoading ? (
+              // Skeleton durante la carga
+              <>
+                <Skeleton className="h-8 w-8 rounded-md" />
+                <Skeleton className="h-8 w-8 rounded-full" />
+              </>
+            ) : (
               <>
                 {user ? (
                   // Usuario autenticado

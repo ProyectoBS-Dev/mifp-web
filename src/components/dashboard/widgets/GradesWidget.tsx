@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { TrendingUp, Loader2, GraduationCap } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useNotas, calcularNotaRA, calcularNotaModulo } from '@/hooks/useNotas'
+import { useNotas, calcularNotaRA, calcularNotaModulo, calcularMediaPACsRA } from '@/hooks/useNotas'
 import Link from 'next/link'
 
 interface GradeItem {
@@ -11,6 +11,7 @@ interface GradeItem {
   asignatura: string
   codigo: string
   nota: number | null
+  mediaEC: number | null
   tieneGD: boolean
   todosRAsAprobados: boolean
   examenAprobado: boolean
@@ -45,10 +46,10 @@ function GradeRow({ grade }: { grade: GradeItem }) {
             <span
               className={cn(
                 'text-lg font-bold',
-                getGradeColor(grade.nota)
+                getGradeColor(grade.mediaEC)
               )}
             >
-              {grade.nota !== null ? grade.nota.toFixed(1) : '-'}
+              {grade.mediaEC !== null ? grade.mediaEC.toFixed(1) : '-'}
             </span>
             {badge && (
               <span className={cn('text-sm font-bold', badge.className)}>
@@ -78,30 +79,41 @@ export function GradesWidget() {
           asignatura: asig.nombre,
           codigo: asig.codigo,
           nota: null,
+          mediaEC: null,
           tieneGD: false,
           todosRAsAprobados: false,
           examenAprobado: false
         }
       }
 
-      // Calcular nota de cada RA
+      // Calcular nota de cada RA y media EC
       const notasMap = new Map<string, number>()
       let todosRAsAprobados = true
       let examenAprobado = asig.notaExamen !== null && asig.notaExamen >= 5
+      let sumaMediaEC = 0
+      let countMediaEC = 0
       
       asig.ras.forEach(ra => {
         const pacsDelRA = asig.pacs.filter(p => p.raId === ra.id)
         const resultado = calcularNotaRA(pacsDelRA, asig.notaExamen)
+        const { media: mediaECRA } = calcularMediaPACsRA(pacsDelRA)
+        
         if (resultado.notaRA !== null) {
           notasMap.set(ra.id, resultado.notaRA)
           if (resultado.notaRA < 5) todosRAsAprobados = false
         } else {
           todosRAsAprobados = false
         }
+        
+        if (mediaECRA !== null) {
+          sumaMediaEC += mediaECRA
+          countMediaEC++
+        }
       })
 
       // Calcular nota del módulo
       const notaModulo = calcularNotaModulo(asig.ras, notasMap, data.fct.nota)
+      const mediaEC = countMediaEC > 0 ? sumaMediaEC / countMediaEC : null
 
       return {
         asignaturaId: asig.asignaturaId,
@@ -110,6 +122,7 @@ export function GradesWidget() {
         nota: data.fct.nota !== null && notaModulo.notaConFCT !== null 
           ? notaModulo.notaConFCT 
           : notaModulo.notaSinFCT,
+        mediaEC,
         tieneGD: true,
         todosRAsAprobados,
         examenAprobado
@@ -117,14 +130,14 @@ export function GradesWidget() {
     })
   }, [data])
 
-  // Calcular media general
-  const media = useMemo(() => {
-    const notasValidas = grades
-      .filter((g) => g.tieneGD && g.nota !== null)
-      .map((g) => g.nota as number)
+  // Calcular media de Evaluación Continua
+  const mediaEC = useMemo(() => {
+    const mediasValidas = grades
+      .filter((g) => g.tieneGD && g.mediaEC !== null)
+      .map((g) => g.mediaEC as number)
     
-    return notasValidas.length > 0
-      ? notasValidas.reduce((a, b) => a + b, 0) / notasValidas.length
+    return mediasValidas.length > 0
+      ? mediasValidas.reduce((a, b) => a + b, 0) / mediasValidas.length
       : null
   }, [grades])
 
@@ -164,21 +177,19 @@ export function GradesWidget() {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Header: Media general */}
+      {/* Header: Media Eval. Continua */}
       <div className="flex items-center justify-between pb-3 mb-3 border-b shrink-0">
         <div>
-          <span className="text-sm font-medium">Media general</span>
-          {data.fct.nota !== null && (
-            <span className="text-xs text-muted-foreground ml-1">(con FCT)</span>
-          )}
+          <span className="text-sm font-medium">Media Eval. Continua</span>
+          <span className="text-xs text-muted-foreground ml-1">(40% por RA)</span>
         </div>
         <span
           className={cn(
-            'text-2xl font-bold',
-            getGradeColor(media)
+            'text-lg font-bold',
+            getGradeColor(mediaEC)
           )}
         >
-          {media !== null ? media.toFixed(2) : '-'}
+          {mediaEC !== null ? mediaEC.toFixed(2) : '-'}
         </span>
       </div>
 

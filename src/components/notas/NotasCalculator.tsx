@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
-import { ChevronDown, ChevronRight, Calculator, TrendingUp, AlertCircle, Building2, GraduationCap, Loader2, Check, RefreshCw } from 'lucide-react'
+import { ChevronDown, ChevronRight, Calculator, TrendingUp, AlertCircle, Building2, GraduationCap, Loader2, Check, RefreshCw, ChevronsUpDown, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -155,6 +155,7 @@ interface AsignaturaCardProps {
   isExamenPending: boolean
   isPACSuccess: boolean
   isExamenSuccess: boolean
+  forceExpanded?: boolean
 }
 
 function AsignaturaCard({ 
@@ -165,9 +166,15 @@ function AsignaturaCard({
   isPACPending,
   isExamenPending,
   isPACSuccess,
-  isExamenSuccess
+  isExamenSuccess,
+  forceExpanded = false
 }: AsignaturaCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(forceExpanded)
+  
+  // Sincronizar con forceExpanded
+  useEffect(() => {
+    setIsExpanded(forceExpanded)
+  }, [forceExpanded])
 
   // Calcular notas por RA
   const notasRAs = useMemo(() => {
@@ -262,11 +269,13 @@ function AsignaturaCard({
           <div className="text-right flex items-center gap-3">
             <div>
               <p className={cn('text-2xl font-bold', getGradeColor(notaModulo.notaSinFCT))}>
-                {notaModulo.notaSinFCT !== null ? notaModulo.notaSinFCT.toFixed(2) : '-'}
+                {notaModulo.notaSinFCT !== null ? notaModulo.notaSinFCT.toFixed(2) : ''}
               </p>
-              <p className="text-xs text-muted-foreground">
-                {fctNota !== null ? 'Con FCT: ' + notaModulo.notaConFCT?.toFixed(2) : 'Sin FCT'}
-              </p>
+              {fctNota !== null && notaModulo.notaConFCT !== null && (
+                <p className="text-xs text-muted-foreground">
+                  Con FCT: {notaModulo.notaConFCT.toFixed(2)}
+                </p>
+              )}
             </div>
             <Badge variant={badge.variant}>{badge.label}</Badge>
           </div>
@@ -472,6 +481,7 @@ function FCTSection({
   asignaturasAprobadas, 
   totalAsignaturas 
 }: FCTSectionProps) {
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const porcentajeAprobadas = totalAsignaturas > 0 
     ? (asignaturasAprobadas / totalAsignaturas) * 100 
     : 0
@@ -482,72 +492,66 @@ function FCTSection({
       'border-2',
       puedeHacerFCT ? 'border-emerald-500/30' : 'border-muted'
     )}>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+      <CardHeader 
+        className="cursor-pointer hover:bg-muted/50 transition-colors py-4"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Building2 className="h-4 w-4" />
+            <span>FCT - Prácticas</span>
+          </CardTitle>
           <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5" />
-            <span>FCT - Formación en Centros de Trabajo</span>
+            <Badge variant={puedeHacerFCT ? 'default' : 'secondary'} className="text-xs">
+              {fct.nota !== null ? fct.nota.toFixed(1) : puedeHacerFCT ? 'Disponible' : 'No disponible'}
+            </Badge>
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            )}
           </div>
-          <Badge variant={puedeHacerFCT ? 'default' : 'secondary'}>
-            {puedeHacerFCT ? 'Disponible' : 'No disponible'}
-          </Badge>
-        </CardTitle>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="text-sm text-muted-foreground">
-          <p>Las prácticas en empresa (FCT) representan el <strong>10%</strong> de la nota final de cada módulo.</p>
-          <p className="mt-1">
-            Requisito: Tener aprobado al menos el 50% de las asignaturas del grado.
-          </p>
-        </div>
-        
-        {/* Progreso hacia FCT */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>Progreso hacia FCT</span>
-            <span className={porcentajeAprobadas >= 50 ? 'text-emerald-600' : 'text-muted-foreground'}>
-              {asignaturasAprobadas}/{totalAsignaturas} asignaturas ({porcentajeAprobadas.toFixed(0)}%)
-            </span>
+      {!isCollapsed && (
+        <CardContent className="pt-0 space-y-4">
+          <div className="text-sm text-muted-foreground">
+            <p>10% de la nota final de cada módulo.</p>
+            <p className="mt-1">Requisito: ≥50% asignaturas aprobadas.</p>
           </div>
-          <Progress value={porcentajeAprobadas} className="h-2" />
-          {!puedeHacerFCT && totalAsignaturas > 0 && (
-            <p className="text-xs text-muted-foreground">
-              Te faltan {Math.ceil(totalAsignaturas * 0.5) - asignaturasAprobadas} asignaturas para poder realizar las FCT
-            </p>
-          )}
-        </div>
-        
-        {/* Input de nota FCT */}
-        {puedeHacerFCT && (
-          <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-            <div>
-              <p className="font-medium">Nota FCT</p>
-              <p className="text-xs text-muted-foreground">
-                {fct.empresa ? `Empresa: ${fct.empresa}` : 'Prácticas en empresa (400h)'}
-              </p>
+          
+          {/* Progreso hacia FCT */}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Progreso</span>
+              <span className={porcentajeAprobadas >= 50 ? 'text-emerald-600' : 'text-muted-foreground'}>
+                {asignaturasAprobadas}/{totalAsignaturas} ({porcentajeAprobadas.toFixed(0)}%)
+              </span>
             </div>
-            <NotaInput
-              value={fct.nota}
-              onSave={onNotaSave}
-              isPending={isPending}
-              isSuccess={isSuccess}
-              className="w-24"
-              placeholder="Sin nota"
-            />
+            <Progress value={porcentajeAprobadas} className="h-2" />
           </div>
-        )}
-        
-        {fct.nota !== null && (
-          <div className="text-center p-3 bg-emerald-500/10 rounded-lg">
-            <p className="text-sm text-emerald-700 dark:text-emerald-400">
-              ✅ FCT completada con nota: <strong>{fct.nota.toFixed(1)}</strong>
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Esta nota se aplicará al 10% de cada módulo
-            </p>
-          </div>
-        )}
-      </CardContent>
+          
+          {/* Input de nota FCT */}
+          {puedeHacerFCT && (
+            <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+              <div>
+                <p className="font-medium text-sm">Nota FCT</p>
+                <p className="text-xs text-muted-foreground">
+                  {fct.empresa || 'Prácticas (400h)'}
+                </p>
+              </div>
+              <NotaInput
+                value={fct.nota}
+                onSave={onNotaSave}
+                isPending={isPending}
+                isSuccess={isSuccess}
+                className="w-20"
+                placeholder="-"
+              />
+            </div>
+          )}
+        </CardContent>
+      )}
     </Card>
   )
 }
@@ -609,6 +613,10 @@ export function NotasCalculator() {
   // Datos de la BD
   const { data, isLoading, error, refetch } = useNotas()
   
+  // Estados para colapsar secciones
+  const [allExpanded, setAllExpanded] = useState(false)
+  const [infoCollapsed, setInfoCollapsed] = useState(false)
+  
   // Mutaciones
   const savePACNota = useSavePACNota()
   const saveExamenNota = useSaveExamenNota()
@@ -629,17 +637,29 @@ export function NotasCalculator() {
 
   // Calcular estadísticas globales
   const stats = useMemo(() => {
-    if (!data?.asignaturas) return { mediaGlobal: null, asignaturasAprobadas: 0, totalAsignaturas: 0 }
+    if (!data?.asignaturas) return { 
+      mediaGlobal: null, 
+      mediaGlobalSinFCT: null, 
+      mediaEC: null, 
+      asignaturasAprobadas: 0, 
+      totalAsignaturas: 0,
+      asignaturasConNotas: 0 
+    }
     
     let asignaturasAprobadas = 0
     let sumaNotas = 0
+    let sumaNotasSinFCT = 0
+    let sumaMediasEC = 0
     let countNotas = 0
+    let countMediasEC = 0
     
     data.asignaturas.forEach(asig => {
       if (!asig.tieneGD) return
       
       const notasMap = new Map<string, number>()
       let todosRAsAprobados = true
+      let sumaECAsig = 0
+      let countECAsig = 0
       
       asig.ras.forEach(ra => {
         const pacsDelRA = asig.pacs.filter(p => p.raId === ra.id)
@@ -650,16 +670,29 @@ export function NotasCalculator() {
         } else {
           todosRAsAprobados = false
         }
+        // Contar media EC si hay al menos una PAC con nota
+        if (resultado.mediaEC !== null) {
+          sumaECAsig += resultado.mediaEC
+          countECAsig++
+        }
       })
+      
+      // Media EC de esta asignatura (incluye asignaturas con PACs aunque no tengan examen)
+      if (countECAsig > 0) {
+        sumaMediasEC += sumaECAsig / countECAsig
+        countMediasEC++
+      }
       
       const notaModulo = calcularNotaModulo(asig.ras, notasMap, data.fct.nota)
       
       if (notaModulo.notaSinFCT !== null) {
+        sumaNotasSinFCT += notaModulo.notaSinFCT
         sumaNotas += data.fct.nota !== null && notaModulo.notaConFCT !== null 
           ? notaModulo.notaConFCT 
           : notaModulo.notaSinFCT
         countNotas++
         
+        // Solo se considera "aprobada" cuando tiene examen y todos los RAs >= 5
         if (todosRAsAprobados && asig.notaExamen !== null && asig.notaExamen >= 5) {
           asignaturasAprobadas++
         }
@@ -668,8 +701,12 @@ export function NotasCalculator() {
     
     return {
       mediaGlobal: countNotas > 0 ? sumaNotas / countNotas : null,
+      mediaGlobalSinFCT: countNotas > 0 ? sumaNotasSinFCT / countNotas : null,
+      // Media EC: promedio de las medias de PACs de las asignaturas que tengan alguna PAC con nota
+      mediaEC: countMediasEC > 0 ? sumaMediasEC / countMediasEC : null,
       asignaturasAprobadas,
-      totalAsignaturas: data.asignaturas.filter(a => a.tieneGD).length
+      totalAsignaturas: data.asignaturas.filter(a => a.tieneGD).length,
+      asignaturasConNotas: countMediasEC // Cuántas asignaturas tienen al menos una nota de PAC
     }
   }, [data])
 
@@ -733,19 +770,52 @@ export function NotasCalculator() {
       {/* Resumen global */}
       <Card className="bg-gradient-to-r from-primary/5 to-primary/10">
         <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">
-                Media global {data.fct.nota !== null ? '(con FCT)' : '(sin FCT)'}
-              </p>
-              <p className={cn('text-4xl font-bold', getGradeColor(stats.mediaGlobal))}>
-                {stats.mediaGlobal !== null ? stats.mediaGlobal.toFixed(2) : '-'}
-              </p>
+          <div className="flex items-center justify-between gap-4">
+            {/* Columna izquierda: Media principal */}
+            <div className="flex-1">
+              {/* Mostrar Media Global si hay notas de examen, si no mostrar Media EC */}
+              {stats.mediaGlobalSinFCT !== null ? (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    Media global {data.fct.nota !== null ? '(con FCT)' : '(sin FCT)'}
+                  </p>
+                  <p className={cn('text-4xl font-bold', getGradeColor(
+                    data.fct.nota !== null ? stats.mediaGlobal : stats.mediaGlobalSinFCT
+                  ))}>
+                    {(data.fct.nota !== null ? stats.mediaGlobal : stats.mediaGlobalSinFCT)!.toFixed(2)}
+                  </p>
+                </>
+              ) : stats.mediaEC !== null ? (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    Media Eval. Continua
+                  </p>
+                  <p className={cn('text-4xl font-bold', getGradeColor(stats.mediaEC))}>
+                    {stats.mediaEC.toFixed(2)}
+                  </p>
+                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    Pendiente: notas de exámenes
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    Media global
+                  </p>
+                  <p className="text-4xl font-bold text-muted-foreground">-</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Introduce notas de PACs para ver tu progreso
+                  </p>
+                </>
+              )}
               <p className="text-xs text-muted-foreground mt-1">
                 {data.semestreActivo.nombre}
               </p>
             </div>
-            <div className="text-right space-y-1">
+            
+            {/* Columna derecha: Estadísticas */}
+            <div className="text-right space-y-2">
               <div>
                 <p className="text-sm text-muted-foreground">Asignaturas</p>
                 <p className="text-2xl font-bold">{stats.totalAsignaturas}</p>
@@ -755,26 +825,85 @@ export function NotasCalculator() {
                   Aprobadas: {stats.asignaturasAprobadas}/{stats.totalAsignaturas}
                 </p>
               </div>
+              {stats.asignaturasConNotas > 0 && stats.mediaGlobalSinFCT === null && (
+                <div>
+                  <p className="text-xs text-muted-foreground">
+                    Con notas EC: {stats.asignaturasConNotas}/{stats.totalAsignaturas}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Sección FCT */}
-      <FCTSection 
-        fct={data.fct}
-        onNotaSave={handleFCTNotaSave}
-        isPending={saveFCTNota.isPending}
-        isSuccess={saveFCTNota.isSuccess}
-        asignaturasAprobadas={stats.asignaturasAprobadas}
-        totalAsignaturas={stats.totalAsignaturas}
-      />
+      {/* Grid: Sistema de Evaluación + FCT */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Sistema de Evaluación - Colapsable */}
+        <Card>
+          <CardHeader 
+            className="cursor-pointer hover:bg-muted/50 transition-colors py-4"
+            onClick={() => setInfoCollapsed(!infoCollapsed)}
+          >
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Info className="h-4 w-4" />
+                Sistema de evaluación
+              </CardTitle>
+              {infoCollapsed ? (
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              )}
+            </div>
+          </CardHeader>
+          {!infoCollapsed && (
+            <CardContent className="pt-0">
+              <div className="grid gap-2 text-sm text-muted-foreground">
+                <p>📐 <strong>Nota por RA</strong> = (Media PACs × 40%) + (Examen × 60%)</p>
+                <p>📊 <strong>Nota módulo</strong> = Media ponderada RAs por horas (90%) + FCT (10%)</p>
+                <p>⚠️ El examen debe ser ≥5 para que sume la EC</p>
+                <p>⚠️ Cada RA debe tener nota ≥5</p>
+                <div className="flex gap-4 mt-2">
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-blue-500" /> PAC Interactiva
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-purple-500" /> PAC Desarrollo
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          )}
+        </Card>
+
+        {/* FCT - Colapsable */}
+        <FCTSection 
+          fct={data.fct}
+          onNotaSave={handleFCTNotaSave}
+          isPending={saveFCTNota.isPending}
+          isSuccess={saveFCTNota.isSuccess}
+          asignaturasAprobadas={stats.asignaturasAprobadas}
+          totalAsignaturas={stats.totalAsignaturas}
+        />
+      </div>
 
       {/* Lista de asignaturas */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">
-          Asignaturas del semestre ({data.asignaturas.length})
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">
+            Asignaturas del semestre ({data.asignaturas.length})
+          </h3>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setAllExpanded(!allExpanded)}
+            className="gap-2"
+          >
+            <ChevronsUpDown className="h-4 w-4" />
+            {allExpanded ? 'Colapsar todo' : 'Expandir todo'}
+          </Button>
+        </div>
         {data.asignaturas.map((asignatura) => (
           <AsignaturaCard
             key={asignatura.id}
@@ -786,30 +915,10 @@ export function NotasCalculator() {
             isExamenPending={saveExamenNota.isPending}
             isPACSuccess={savePACNota.isSuccess}
             isExamenSuccess={saveExamenNota.isSuccess}
+            forceExpanded={allExpanded}
           />
         ))}
       </div>
-
-      {/* Leyenda */}
-      <Card>
-        <CardContent className="pt-6">
-          <h4 className="font-semibold mb-3">Sistema de evaluación ILERNA</h4>
-          <div className="grid gap-2 text-sm text-muted-foreground">
-            <p>📐 <strong>Nota por RA</strong> = (Media PACs × 40%) + (Examen × 60%)</p>
-            <p>📊 <strong>Nota módulo</strong> = Media ponderada RAs por horas (90%) + FCT (10%)</p>
-            <p>⚠️ El examen debe ser ≥5 para que sume la Evaluación Continua</p>
-            <p>⚠️ Cada RA debe tener nota ≥5 de forma independiente</p>
-            <div className="flex gap-4 mt-2">
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-blue-500" /> PAC Interactiva
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-purple-500" /> PAC Desarrollo
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

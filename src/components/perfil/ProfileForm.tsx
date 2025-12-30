@@ -89,12 +89,10 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
         } else {
           setError('Error al guardar los cambios')
         }
-        console.error('Update error:', updateError)
       } else if (!data || data.length === 0) {
         // El update no afectó ninguna fila - el usuario no existe en la tabla
         // Intentamos crear el registro del perfil
-        console.log('Profile not found, attempting to create...')
-        
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error: insertError } = await (supabase as any)
           .from('users')
@@ -104,9 +102,8 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
             full_name: fullName || null,
             onboarding_completed: true, // Si llega aquí ya pasó onboarding
           })
-        
+
         if (insertError) {
-          console.error('Insert error:', insertError)
           setError('No se pudo crear tu perfil. Cierra sesión y vuelve a entrar.')
         } else {
           setSuccess(true)
@@ -120,7 +117,6 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
       }
     } catch (err) {
       setError('Error inesperado')
-      console.error(err)
     } finally {
       setIsSaving(false)
     }
@@ -179,7 +175,7 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
                 <p className="text-sm">{user?.email}</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <GraduationCap className="h-4 w-4 text-muted-foreground" />
               <div className="flex-1">
@@ -189,7 +185,7 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <div className="flex-1">
@@ -197,10 +193,10 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
                 <p className="text-sm">
                   {profile?.created_at
                     ? new Date(profile.created_at).toLocaleDateString('es-ES', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
                     : '-'}
                 </p>
               </div>

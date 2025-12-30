@@ -2,24 +2,16 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, Home, BookOpen, Newspaper, Bell } from 'lucide-react'
+import { Menu, Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { ThemeToggle } from './ThemeToggle'
 import { UserMenu } from './UserMenu'
+import { UserNav } from './UserNav'
+import { navItems } from './navItems'
 import { cn } from '@/lib/utils'
 
-interface NavItem {
-  href: string
-  label: string
-  icon: React.ReactNode
-}
-
-const navItems: NavItem[] = [
-  { href: '/dashboard', label: 'Dashboard', icon: <Home className="h-4 w-4" /> },
-  { href: '/notas', label: 'Notas', icon: <BookOpen className="h-4 w-4" /> },
-  { href: '/blog', label: 'Blog', icon: <Newspaper className="h-4 w-4" /> },
-]
+// NavItem type and navItems imported from ./navItems
 
 interface NavbarProps {
   user: {
@@ -77,21 +69,7 @@ export function Navbar({ user }: NavbarProps) {
 
         {/* Desktop navigation */}
         <nav className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
-                pathname === item.href
-                  ? 'bg-primary/10 text-primary font-medium'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              )}
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          ))}
+          <UserNav />
         </nav>
 
         {/* Right side */}

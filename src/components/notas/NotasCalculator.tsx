@@ -795,7 +795,7 @@ export function NotasCalculator() {
                   </p>
                   <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
-                    Pendiente: notas de exámenes
+                    Sin notas de exámenes
                   </p>
                 </>
               ) : (

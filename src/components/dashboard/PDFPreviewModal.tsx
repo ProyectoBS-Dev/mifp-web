@@ -115,9 +115,9 @@ export function PDFPreviewModal({ recurso, onClose }: PDFPreviewModalProps) {
               <DialogTitle className="text-base font-medium truncate">
                 📄 {recurso.titulo}
               </DialogTitle>
-              {recurso.asignatura && (
+              {recurso.asignaturas && recurso.asignaturas.length > 0 && (
                 <p className="text-xs text-muted-foreground truncate">
-                  {recurso.asignatura.nombre}
+                  {recurso.asignaturas[0].nombre}
                 </p>
               )}
             </div>

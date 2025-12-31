@@ -9,7 +9,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { QuickAccessCards } from '@/components/admin'
+import { QuickAccessCards, AdminToolsCard } from '@/components/admin'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 
@@ -166,6 +166,9 @@ export default async function AdminPage() {
 
       {/* Accesos rápidos - Client Component */}
       <QuickAccessCards stats={stats} />
+
+      {/* Herramientas de Admin */}
+      <AdminToolsCard />
 
       {/* Nota sobre estadísticas */}
       <Card className="border-dashed">

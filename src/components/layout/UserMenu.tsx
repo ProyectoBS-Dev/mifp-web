@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { User, Settings, LogOut } from 'lucide-react'
+import { User, Settings, LogOut, Shield } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -21,6 +21,7 @@ interface UserMenuProps {
     email: string
     full_name?: string | null
     avatar_url?: string | null
+    role?: 'admin' | 'estudiante' | 'moderador' | 'editor' | null
   }
 }
 
@@ -83,6 +84,14 @@ export function UserMenu({ user }: UserMenuProps) {
             Ajustes
           </Link>
         </DropdownMenuItem>
+        {user.role === 'admin' && (
+          <DropdownMenuItem asChild>
+            <Link href="/admin" className="cursor-pointer">
+              <Shield className="mr-2 h-4 w-4" />
+              Admin
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer text-destructive focus:text-destructive"

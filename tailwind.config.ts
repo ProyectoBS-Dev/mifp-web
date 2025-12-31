@@ -189,6 +189,14 @@ const config: Config = {
   				'50%': {
   					opacity: '0.7'
   				}
+  			},
+  			'wiggle': {
+  				'0%, 100%': {
+  					transform: 'rotate(-3deg)'
+  				},
+  				'50%': {
+  					transform: 'rotate(3deg)'
+  				}
   			}
   		},
   		animation: {
@@ -199,7 +207,8 @@ const config: Config = {
   			'slide-in-right': 'slide-in-right 0.3s ease-out',
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-  			'pulse-soft': 'pulse-soft 2s ease-in-out infinite'
+  			'pulse-soft': 'pulse-soft 2s ease-in-out infinite',
+  			'wiggle': 'wiggle 0.3s ease-in-out infinite'
   		}
   	}
   },

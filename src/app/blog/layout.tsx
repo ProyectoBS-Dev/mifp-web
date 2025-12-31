@@ -3,12 +3,13 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Newspaper, LogIn, UserPlus, Bell, Heart } from 'lucide-react'
+import { Home, Newspaper, LogIn, UserPlus, Heart } from 'lucide-react'
 import { UserNav } from '@/components/layout/UserNav'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { UserMenu } from '@/components/layout/UserMenu'
+import { NotificationBell } from '@/components/notifications'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
@@ -17,6 +18,7 @@ interface UserData {
   email: string
   full_name: string | null
   avatar_url: string | null
+  role: 'admin' | 'estudiante' | 'moderador' | 'editor' | null
 }
 
 // Layout público para el blog (sin autenticación requerida)
@@ -38,7 +40,7 @@ export default function BlogLayout({
         // Obtener perfil del usuario
         const { data: profile } = await supabase
           .from('users')
-          .select('full_name, avatar_url')
+          .select('full_name, avatar_url, role')
           .eq('id', authUser.id)
           .single()
 
@@ -47,6 +49,7 @@ export default function BlogLayout({
           email: authUser.email || '',
           full_name: (profile as { full_name: string | null } | null)?.full_name || null,
           avatar_url: (profile as { avatar_url: string | null } | null)?.avatar_url || null,
+          role: (profile as { role: 'admin' | 'estudiante' | 'moderador' | 'editor' | null } | null)?.role || null,
         })
       }
       setIsLoading(false)
@@ -119,13 +122,7 @@ export default function BlogLayout({
                 {user ? (
                   // Usuario autenticado
                   <>
-                    <Button variant="ghost" size="icon" className="relative">
-                      <Bell className="h-5 w-5" />
-                      <span className="sr-only">Notificaciones</span>
-                      <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground flex items-center justify-center">
-                        3
-                      </span>
-                    </Button>
+                    <NotificationBell />
                     <ThemeToggle />
                     <UserMenu user={user} />
                   </>

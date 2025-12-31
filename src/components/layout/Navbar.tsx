@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, Bell } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { ThemeToggle } from './ThemeToggle'
 import { UserMenu } from './UserMenu'
 import { UserNav } from './UserNav'
+import { NotificationBell } from '@/components/notifications'
 import { navItems } from './navItems'
 import { cn } from '@/lib/utils'
 
@@ -19,6 +20,7 @@ interface NavbarProps {
     email: string
     full_name?: string | null
     avatar_url?: string | null
+    role?: 'admin' | 'estudiante' | 'moderador' | 'editor' | null
   }
 }
 
@@ -75,14 +77,7 @@ export function Navbar({ user }: NavbarProps) {
         {/* Right side */}
         <div className="ml-auto flex items-center gap-2">
           {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="sr-only">Notificaciones</span>
-            {/* Badge for unread notifications */}
-            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground flex items-center justify-center">
-              3
-            </span>
-          </Button>
+          <NotificationBell />
 
           {/* Theme toggle */}
           <ThemeToggle />

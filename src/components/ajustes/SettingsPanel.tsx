@@ -11,9 +11,11 @@ import {
   Moon,
   Sun,
   Monitor,
-  AlertTriangle
+  AlertTriangle,
+  Check
 } from 'lucide-react'
 import { useTheme } from '@/hooks/useTheme'
+import { useNotificationSettings } from '@/hooks/useNotificationSettings'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -35,19 +37,15 @@ import { cn } from '@/lib/utils'
 
 interface SettingsPanelProps {
   userEmail: string
+  userRole?: 'admin' | 'estudiante' | 'moderador' | 'editor'
 }
 
-export function SettingsPanel({ userEmail }: SettingsPanelProps) {
+export function SettingsPanel({ userEmail, userRole = 'estudiante' }: SettingsPanelProps) {
   const router = useRouter()
   const { theme, setTheme, isDark } = useTheme()
   
-  // Notification settings (mock - TODO: persist to Supabase)
-  const [notifications, setNotifications] = useState({
-    pacReminders: true,
-    vtReminders: true,
-    newResources: true,
-    news: false,
-  })
+  // Notification settings - conectado a Supabase
+  const { settings, updateSettings, isUpdating } = useNotificationSettings()
 
   // Delete account state
   const [deleteConfirmation, setDeleteConfirmation] = useState('')
@@ -159,6 +157,7 @@ export function SettingsPanel({ userEmail }: SettingsPanelProps) {
           <CardTitle className="flex items-center gap-2">
             <Bell className="h-5 w-5" />
             Notificaciones
+            {isUpdating && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </CardTitle>
           <CardDescription>
             Gestiona cómo y cuándo recibes notificaciones
@@ -169,13 +168,13 @@ export function SettingsPanel({ userEmail }: SettingsPanelProps) {
             <div className="space-y-0.5">
               <Label>Recordatorios de PACs</Label>
               <p className="text-xs text-muted-foreground">
-                Recibe avisos antes de las fechas de entrega
+                Recibe avisos antes de las fechas de entrega (24h, 48h)
               </p>
             </div>
             <Switch
-              checked={notifications.pacReminders}
+              checked={settings.pac_vencimiento}
               onCheckedChange={(checked) =>
-                setNotifications((prev) => ({ ...prev, pacReminders: checked }))
+                updateSettings({ pac_vencimiento: checked })
               }
             />
           </div>
@@ -184,50 +183,72 @@ export function SettingsPanel({ userEmail }: SettingsPanelProps) {
             <div className="space-y-0.5">
               <Label>Recordatorios de VTs</Label>
               <p className="text-xs text-muted-foreground">
-                Aviso antes de cada videotutoría
+                Aviso 1 hora antes de cada videotutoría
               </p>
             </div>
             <Switch
-              checked={notifications.vtReminders}
+              checked={settings.vt_recordatorio}
               onCheckedChange={(checked) =>
-                setNotifications((prev) => ({ ...prev, vtReminders: checked }))
+                updateSettings({ vt_recordatorio: checked })
               }
             />
           </div>
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Nuevos recursos</Label>
+              <Label>Nuevas noticias</Label>
               <p className="text-xs text-muted-foreground">
-                Cuando se publiquen nuevos materiales
+                Cuando se publiquen nuevos posts en el blog
               </p>
             </div>
             <Switch
-              checked={notifications.newResources}
+              checked={settings.noticia_nueva}
               onCheckedChange={(checked) =>
-                setNotifications((prev) => ({ ...prev, newResources: checked }))
+                updateSettings({ noticia_nueva: checked })
               }
             />
           </div>
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Noticias y comunicados</Label>
+              <Label>Avisos del sistema</Label>
               <p className="text-xs text-muted-foreground">
-                Actualizaciones generales del campus
+                Mantenimiento, actualizaciones y novedades de MiFP
               </p>
             </div>
             <Switch
-              checked={notifications.news}
+              checked={settings.sistema}
               onCheckedChange={(checked) =>
-                setNotifications((prev) => ({ ...prev, news: checked }))
+                updateSettings({ sistema: checked })
               }
             />
           </div>
 
-          <p className="text-xs text-muted-foreground pt-2 border-t">
-            💡 Las preferencias de notificaciones se guardarán próximamente
-          </p>
+          {/* Solo mostrar para admins */}
+          {userRole === 'admin' && (
+            <div className="flex items-center justify-between pt-2 border-t">
+              <div className="space-y-0.5">
+                <Label className="flex items-center gap-2">
+                  📤 Guías Didácticas subidas
+                  <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">Admin</span>
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Cuando un usuario suba una nueva GD pendiente de validación
+                </p>
+              </div>
+              <Switch
+                checked={settings.gd_subida}
+                onCheckedChange={(checked) =>
+                  updateSettings({ gd_subida: checked })
+                }
+              />
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 pt-2 border-t text-xs text-muted-foreground">
+            <Check className="h-3 w-3 text-green-500" />
+            Tus preferencias se guardan automáticamente
+          </div>
         </CardContent>
       </Card>
 

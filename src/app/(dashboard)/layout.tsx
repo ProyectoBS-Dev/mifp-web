@@ -18,7 +18,7 @@ export default async function DashboardLayout({
   // Get user profile
   const { data: profile } = await supabase
     .from('users')
-    .select('full_name, avatar_url')
+    .select('full_name, avatar_url, role')
     .eq('id', user.id)
     .single()
   
@@ -27,6 +27,7 @@ export default async function DashboardLayout({
     email: user.email || '',
     full_name: (profile as { full_name: string | null } | null)?.full_name || null,
     avatar_url: (profile as { avatar_url: string | null } | null)?.avatar_url || null,
+    role: (profile as { role: 'admin' | 'estudiante' | 'moderador' | 'editor' | null } | null)?.role || null,
   }
 
   return (

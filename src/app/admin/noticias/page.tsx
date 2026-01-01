@@ -187,7 +187,7 @@ export default async function NoticiasAdminPage() {
                       </Link>
                     </Button>
                     <Button variant="ghost" size="icon" asChild>
-                      <Link href={`/posts/${noticia.id}`} target="_blank">
+                      <Link href={`/blog/${noticia.id}`} target="_blank">
                         <Eye className="h-4 w-4" />
                       </Link>
                     </Button>

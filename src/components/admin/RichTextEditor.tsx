@@ -22,21 +22,57 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Toggle } from '@/components/ui/toggle'
 import { Separator } from '@/components/ui/separator'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { Input } from '@/components/ui/input'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface RichTextEditorProps {
   value: string
   onChange: (value: string) => void
   placeholder?: string
   className?: string
+}
+
+// Componente para botones del toolbar con tooltip
+interface ToolbarButtonProps {
+  onClick: () => void
+  disabled?: boolean
+  isActive?: boolean
+  tooltip: string
+  children: React.ReactNode
+}
+
+function ToolbarButton({ onClick, disabled, isActive, tooltip, children }: ToolbarButtonProps) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant={isActive ? 'secondary' : 'ghost'}
+          size="icon"
+          className="h-8 w-8"
+          onClick={onClick}
+          disabled={disabled}
+        >
+          {children}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{tooltip}</p>
+      </TooltipContent>
+    </Tooltip>
+  )
 }
 
 export function RichTextEditor({ 
@@ -78,6 +114,14 @@ export function RichTextEditor({
     },
   })
 
+  // Sincronizar el contenido cuando el prop value cambia externamente
+  // Esto es necesario porque useEditor solo lee content en la inicialización
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value)
+    }
+  }, [editor, value])
+
   if (!editor) {
     return null
   }
@@ -99,168 +143,165 @@ export function RichTextEditor({
   }
 
   return (
-    <div className={cn('border rounded-lg overflow-hidden', className)}>
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 p-2 border-b bg-muted/30">
-        {/* Undo/Redo */}
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
-        >
-          <Undo className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
-        >
-          <Redo className="h-4 w-4" />
-        </Button>
-
-        <Separator orientation="vertical" className="h-6 mx-1" />
-
-        {/* Text formatting */}
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('bold')}
-          onPressedChange={() => editor.chain().focus().toggleBold().run()}
-        >
-          <Bold className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('italic')}
-          onPressedChange={() => editor.chain().focus().toggleItalic().run()}
-        >
-          <Italic className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('strike')}
-          onPressedChange={() => editor.chain().focus().toggleStrike().run()}
-        >
-          <Strikethrough className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('code')}
-          onPressedChange={() => editor.chain().focus().toggleCode().run()}
-        >
-          <Code className="h-4 w-4" />
-        </Toggle>
-
-        <Separator orientation="vertical" className="h-6 mx-1" />
-
-        {/* Headings */}
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('heading', { level: 2 })}
-          onPressedChange={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        >
-          <Heading2 className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('heading', { level: 3 })}
-          onPressedChange={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        >
-          <Heading3 className="h-4 w-4" />
-        </Toggle>
-
-        <Separator orientation="vertical" className="h-6 mx-1" />
-
-        {/* Lists */}
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('bulletList')}
-          onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
-        >
-          <List className="h-4 w-4" />
-        </Toggle>
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('orderedList')}
-          onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
-        >
-          <ListOrdered className="h-4 w-4" />
-        </Toggle>
-
-        <Separator orientation="vertical" className="h-6 mx-1" />
-
-        {/* Blockquote & HR */}
-        <Toggle
-          size="sm"
-          pressed={editor.isActive('blockquote')}
-          onPressedChange={() => editor.chain().focus().toggleBlockquote().run()}
-        >
-          <Quote className="h-4 w-4" />
-        </Toggle>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
-        >
-          <Minus className="h-4 w-4" />
-        </Button>
-
-        <Separator orientation="vertical" className="h-6 mx-1" />
-
-        {/* Links */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant={editor.isActive('link') ? 'secondary' : 'ghost'}
-              size="icon"
-              className="h-8 w-8"
-            >
-              <LinkIcon className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80">
-            <div className="flex gap-2">
-              <Input
-                placeholder="https://ejemplo.com"
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    addLink()
-                  }
-                }}
-              />
-              <Button type="button" size="sm" onClick={addLink}>
-                Añadir
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-        {editor.isActive('link') && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={removeLink}
+    <TooltipProvider delayDuration={300}>
+      <div className={cn('border rounded-lg overflow-hidden', className)}>
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-1 p-2 border-b bg-muted/30">
+          {/* Undo/Redo */}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().undo().run()}
+            disabled={!editor.can().undo()}
+            tooltip="Deshacer"
           >
-            <Unlink className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
+            <Undo className="h-4 w-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().redo().run()}
+            disabled={!editor.can().redo()}
+            tooltip="Rehacer"
+          >
+            <Redo className="h-4 w-4" />
+          </ToolbarButton>
 
-      {/* Editor */}
-      <EditorContent editor={editor} />
-    </div>
+          <Separator orientation="vertical" className="h-6 mx-1" />
+
+          {/* Text formatting */}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            isActive={editor.isActive('bold')}
+            tooltip="Negrita"
+          >
+            <Bold className="h-4 w-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            isActive={editor.isActive('italic')}
+            tooltip="Cursiva"
+          >
+            <Italic className="h-4 w-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            isActive={editor.isActive('strike')}
+            tooltip="Tachado"
+          >
+            <Strikethrough className="h-4 w-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            isActive={editor.isActive('code')}
+            tooltip="Código"
+          >
+            <Code className="h-4 w-4" />
+          </ToolbarButton>
+
+          <Separator orientation="vertical" className="h-6 mx-1" />
+
+          {/* Headings */}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            isActive={editor.isActive('heading', { level: 2 })}
+            tooltip="Título 2"
+          >
+            <Heading2 className="h-4 w-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+            isActive={editor.isActive('heading', { level: 3 })}
+            tooltip="Título 3"
+          >
+            <Heading3 className="h-4 w-4" />
+          </ToolbarButton>
+
+          <Separator orientation="vertical" className="h-6 mx-1" />
+
+          {/* Lists */}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            isActive={editor.isActive('bulletList')}
+            tooltip="Lista con viñetas"
+          >
+            <List className="h-4 w-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            isActive={editor.isActive('orderedList')}
+            tooltip="Lista numerada"
+          >
+            <ListOrdered className="h-4 w-4" />
+          </ToolbarButton>
+
+          <Separator orientation="vertical" className="h-6 mx-1" />
+
+          {/* Blockquote & HR */}
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            isActive={editor.isActive('blockquote')}
+            tooltip="Cita"
+          >
+            <Quote className="h-4 w-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setHorizontalRule().run()}
+            tooltip="Línea horizontal"
+          >
+            <Minus className="h-4 w-4" />
+          </ToolbarButton>
+
+          <Separator orientation="vertical" className="h-6 mx-1" />
+
+          {/* Links */}
+          <Popover>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant={editor.isActive('link') ? 'secondary' : 'ghost'}
+                    size="icon"
+                    className="h-8 w-8"
+                  >
+                    <LinkIcon className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Insertar enlace</p>
+              </TooltipContent>
+            </Tooltip>
+            <PopoverContent className="w-80">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="https://ejemplo.com"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      addLink()
+                    }
+                  }}
+                />
+                <Button type="button" size="sm" onClick={addLink}>
+                  Añadir
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+          {editor.isActive('link') && (
+            <ToolbarButton
+              onClick={removeLink}
+              tooltip="Eliminar enlace"
+            >
+              <Unlink className="h-4 w-4" />
+            </ToolbarButton>
+          )}
+        </div>
+
+        {/* Editor */}
+        <EditorContent editor={editor} />
+      </div>
+    </TooltipProvider>
   )
 }
 

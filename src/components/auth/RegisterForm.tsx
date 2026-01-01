@@ -1,31 +1,63 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Label } from '@/components/ui/label'
 import { OAuthButtons } from './OAuthButtons'
 import { Separator } from '@/components/ui/separator'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Turnstile } from '@/components/ui/Turnstile'
+
+function translateAuthError(message: string): string {
+  if (message === 'User already registered') {
+    return 'Este email ya está registrado'
+  }
+  if (message.includes('Password should contain at least one character of each')) {
+    return 'La contraseña debe contener al menos: una minúscula, una mayúscula, un número y un carácter especial (!@#$%...)'
+  }
+  return message
+}
 
 export function RegisterForm() {
   const router = useRouter()
+  const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [acceptTerms, setAcceptTerms] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+
+  const handleCaptchaVerify = useCallback((token: string) => {
+    setCaptchaToken(token)
+  }, [])
+
+  const handleCaptchaError = useCallback(() => {
+    setCaptchaToken(null)
+    setError('Error al verificar CAPTCHA. Por favor, recarga la página.')
+  }, [])
+
+  const handleCaptchaExpire = useCallback(() => {
+    setCaptchaToken(null)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
     // Validaciones
+    if (!nombre.trim()) {
+      setError('Por favor, ingresa tu nombre')
+      return
+    }
+
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden')
       return
@@ -41,6 +73,11 @@ export function RegisterForm() {
       return
     }
 
+    if (!captchaToken) {
+      setError('Por favor, completa la verificación de seguridad')
+      return
+    }
+
     setIsLoading(true)
 
     const supabase = createClient()
@@ -50,15 +87,16 @@ export function RegisterForm() {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/api/auth/callback?next=/onboarding`,
+        captchaToken,
+        data: {
+          name: nombre.trim(),
+          full_name: nombre.trim(),
+        },
       },
     })
 
     if (signUpError) {
-      setError(
-        signUpError.message === 'User already registered'
-          ? 'Este email ya está registrado'
-          : signUpError.message
-      )
+      setError(translateAuthError(signUpError.message))
       setIsLoading(false)
       return
     }
@@ -119,6 +157,20 @@ export function RegisterForm() {
 
       <form onSubmit={handleSubmit} className="grid gap-4">
         <div className="grid gap-2">
+          <Label htmlFor="nombre">Nombre</Label>
+          <Input
+            id="nombre"
+            type="text"
+            placeholder="Tu nombre"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            required
+            autoComplete="given-name"
+            disabled={isLoading}
+          />
+        </div>
+
+        <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
@@ -134,9 +186,8 @@ export function RegisterForm() {
         
         <div className="grid gap-2">
           <Label htmlFor="password">Contraseña</Label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             placeholder="Mínimo 8 caracteres"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -148,9 +199,8 @@ export function RegisterForm() {
 
         <div className="grid gap-2">
           <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
-          <Input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             placeholder="Repite tu contraseña"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -182,13 +232,21 @@ export function RegisterForm() {
           </label>
         </div>
 
+        <div className="flex justify-center">
+          <Turnstile
+            onVerify={handleCaptchaVerify}
+            onError={handleCaptchaError}
+            onExpire={handleCaptchaExpire}
+          />
+        </div>
+
         {error && (
           <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
             {error}
           </div>
         )}
 
-        <Button type="submit" disabled={isLoading} className="w-full">
+        <Button type="submit" disabled={isLoading || !captchaToken} className="w-full">
           {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
         </Button>
       </form>

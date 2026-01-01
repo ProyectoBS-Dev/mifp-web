@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Label } from '@/components/ui/label'
 import { OAuthButtons } from './OAuthButtons'
 import { Separator } from '@/components/ui/separator'
@@ -83,9 +84,8 @@ export function LoginForm() {
               ¿Olvidaste tu contraseña?
             </Link>
           </div>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

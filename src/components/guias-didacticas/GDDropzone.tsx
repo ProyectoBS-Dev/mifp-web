@@ -37,19 +37,29 @@ export function GDDropzone({ file, onFileSelect, onFileRemove }: GDDropzoneProps
 
   if (file) {
     return (
-      <div className="border rounded-lg p-4 flex items-center justify-between bg-muted/50">
-        <div className="flex items-center gap-3">
-          <FileText className="h-8 w-8 text-red-500" />
-          <div>
-            <p className="font-medium text-sm">{file.name}</p>
-            <p className="text-xs text-muted-foreground">
+      <div className="border rounded-lg p-4 bg-muted/50">
+        <div className="flex items-start gap-3">
+          <FileText className="h-8 w-8 text-red-500 flex-shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0 pr-2">
+            <p 
+              className="font-medium text-sm break-all leading-snug"
+              title={file.name}
+            >
+              {file.name}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
               {formatFileSize(file.size)}
             </p>
           </div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onFileRemove}
+            className="flex-shrink-0 -mt-1 -mr-2"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
-        <Button variant="ghost" size="icon" onClick={onFileRemove}>
-          <X className="h-4 w-4" />
-        </Button>
       </div>
     )
   }

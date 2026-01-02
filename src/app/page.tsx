@@ -503,13 +503,13 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t py-12 bg-card">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="flex flex-col md:flex-row md:justify-center gap-8 md:gap-16 lg:gap-24">
             {/* Logo & Description */}
-            <div className="md:col-span-2">
+            <div className="max-w-xs">
               <Link href="/" className="flex items-center gap-2 mb-4">
                 <span className="text-xl font-bold gradient-text">MiFP</span>
               </Link>
-              <p className="text-sm text-muted-foreground max-w-sm">
+              <p className="text-sm text-muted-foreground">
                 Tu compañero de estudios para FP. Gestiona PACs, videotutorías, recursos y notas
                 de forma sencilla.
               </p>
@@ -538,7 +538,7 @@ export default function LandingPage() {
 
           <div className="border-t mt-8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="flex items-center gap-2 text-sm text-muted-foreground">
-              ~/Dev © {new Date().getFullYear()} MiFP. Desarrollado para estudiantes de FP Online.
+              ~/Dev desarrollado por estudiantes de FP - © MiFP.
             </p>
             <TooltipProvider>
               <div className="flex items-center justify-center gap-3">

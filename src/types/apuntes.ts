@@ -6,6 +6,8 @@ export interface Apunte {
   contenido: string
   color: string
   orden: number
+  pinned?: boolean
+  archived?: boolean
   created_at: string
   updated_at: string
 }

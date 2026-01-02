@@ -4,20 +4,29 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import type { Apunte } from '@/types/apuntes'
 
-export function useApuntes() {
+// Hook para obtener notas activas (no archivadas)
+export function useApuntes(includeArchived = false) {
   const supabase = createClient()
 
   return useQuery({
-    queryKey: ['apuntes'],
+    queryKey: ['apuntes', { includeArchived }],
     queryFn: async (): Promise<Apunte[]> => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('No autenticado')
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      let query = (supabase as any)
         .from('apuntes')
         .select('*')
         .eq('user_id', user.id)
+
+      // Filtrar archivadas si no se incluyen
+      if (!includeArchived) {
+        query = query.or('archived.is.null,archived.eq.false')
+      }
+
+      const { data, error } = await query
+        .order('pinned', { ascending: false, nullsFirst: false })
         .order('orden', { ascending: true })
 
       if (error) {
@@ -59,6 +68,8 @@ export function useCreateApunte() {
         contenido: data.contenido || '',
         color: data.color || '#FBBF24',
         orden: nextOrden,
+        pinned: data.pinned || false,
+        archived: false,
       })
 
       if (error) throw error

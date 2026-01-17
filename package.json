@@ -84,7 +84,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.0"
   },
-  "packageManager": "pnpm@10.27.0",
+  "packageManager": "pnpm@10.28.0",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@img/sharp-darwin-arm64",

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { ArrowUpRightIcon } from 'lucide-react'
 import Image from 'next/image'
 import {
   GraduationCap,
@@ -210,7 +211,14 @@ export default function LandingPage() {
                 </p>
                 {/* Preview placeholder */}
                 <div className="mt-4 rounded-lg border bg-muted/30 overflow-hidden flex-1 min-h-[120px] flex items-center justify-center">
-                  <p className="text-xs text-muted-foreground">Preview PACs</p>
+                  {/* PACs preview */}
+                  <Image
+                      src="/images/pacs_preview.png"
+                      alt="PACs del Dashboard de MiFP"
+                      width={300}
+                      height={200}
+                      className="rounded-lg object-cover"
+                    />
                 </div>
               </div>
             </div>
@@ -251,7 +259,14 @@ export default function LandingPage() {
                 </div>
                 {/* Preview placeholder */}
                 <div className="hidden md:flex rounded-lg border bg-muted/30 overflow-hidden w-32 h-20 items-center justify-center shrink-0">
-                  <p className="text-xs text-muted-foreground">Preview</p>
+                  {/* Recursos de Estudio preview */}
+                  <Image
+                      src="/images/recursos_preview.png"
+                      alt="Recursos de Estudio del Dashboard de MiFP"
+                      width={300}
+                      height={200}
+                      className="rounded-lg object-cover"
+                    />
                 </div>
               </div>
             </div>
@@ -281,7 +296,14 @@ export default function LandingPage() {
                 </div>
                 {/* Preview placeholder */}
                 <div className="hidden md:flex rounded-lg border bg-muted/30 overflow-hidden w-32 h-20 items-center justify-center shrink-0">
-                  <p className="text-xs text-muted-foreground">Preview</p>
+                  {/* Asignaturas preview */}
+                  <Image
+                      src="/images/asignaturas_preview.png"
+                      alt="Asignaturas del Dashboard de MiFP"
+                      width={300}
+                      height={200}
+                      className="rounded-lg object-cover"
+                    />
                 </div>
               </div>
             </div>
@@ -519,9 +541,9 @@ export default function LandingPage() {
             <div>
               <h4 className="font-semibold mb-4">Producto</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/blog" className="hover:text-primary">Blog</Link></li>
-                <li><Link href="/registro" className="hover:text-primary">Crear cuenta</Link></li>
-                <li><Link href="/login" className="hover:text-primary">Iniciar sesión</Link></li>
+                <li><Link href="/blog" className="inline-flex items-center gap-1 hover:text-primary">Blog <ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link></li>
+                <li><Link href="/registro" className="inline-flex items-center gap-1 hover:text-primary">Crear cuenta <ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link></li>
+                <li><Link href="/login" className="inline-flex items-center gap-1 hover:text-primary">Iniciar sesión <ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link></li>
               </ul>
             </div>
 
@@ -529,9 +551,9 @@ export default function LandingPage() {
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/privacidad" className="hover:text-primary">Privacidad</Link></li>
-                <li><Link href="/terminos" className="hover:text-primary">Términos</Link></li>
-                <li><Link href="/about-us" className="hover:text-primary">Sobre nosotros</Link></li>
+                <li><Link href="/privacidad" className="inline-flex items-center gap-1 hover:text-primary">Privacidad <ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link></li>
+                <li><Link href="/terminos" className="inline-flex items-center gap-1 hover:text-primary">Términos <ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link></li>
+                <li><Link href="/about-us" className="inline-flex items-center gap-1 hover:text-primary">Sobre nosotros <ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link></li>
               </ul>
             </div>
           </div>
@@ -542,7 +564,6 @@ export default function LandingPage() {
             </p>
             <TooltipProvider>
               <div className="flex items-center justify-center gap-3">
-                <GithubIcon className="h-4 w-4 text-primary" />
                 <span className="text-sm text-muted-foreground font-medium">Hecho con</span>
                 <Heart className="h-4 w-4 text-red-500" />
                 <span className="text-sm text-muted-foreground font-medium">por:</span>
@@ -636,14 +657,5 @@ function StepCard({
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
       <p className="text-sm text-muted-foreground">{description}</p>
     </div>
-  )
-}
-
-// Ícono de GitHub de Simple Icons (https://simpleicons.org)
-function GithubIcon({ className }: { className?: string }) {
-  return (
-    <svg role="img" viewBox="0 0 24 24" className={className} fill="currentColor">
-      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-    </svg>
   )
 }

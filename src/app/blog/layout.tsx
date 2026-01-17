@@ -12,6 +12,7 @@ import { UserMenu } from '@/components/layout/UserMenu'
 import { NotificationBell } from '@/components/notifications'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
+import { ArrowUpRightIcon } from 'lucide-react'
 
 interface UserData {
   id: string
@@ -162,12 +163,14 @@ export default function BlogLayout({
             ~/Dev desarrollado con <Heart className="h-4 w-4 text-red-500" /> por estudiantes de FP - © MiFP.
             </p>
             <div className="flex items-center gap-4">
-              <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
                 Inicio
+                <ArrowUpRightIcon className="h-4 w-4 opacity-50" />
               </Link>
               {!user && (
-                <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
+                <Link href="/login" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
                   Iniciar sesión
+                  <ArrowUpRightIcon className="h-4 w-4 opacity-50" />
                 </Link>
               )}
             </div>

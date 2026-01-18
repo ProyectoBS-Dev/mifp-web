@@ -84,6 +84,7 @@ export type Database = {
         Row: {
           id: string
           nombre: string
+          codigo: string
           fecha_inicio: string
           fecha_fin: string
           año_academico: string
@@ -93,6 +94,7 @@ export type Database = {
         Insert: {
           id?: string
           nombre: string
+          codigo: string
           fecha_inicio: string
           fecha_fin: string
           año_academico: string
@@ -102,6 +104,7 @@ export type Database = {
         Update: {
           id?: string
           nombre?: string
+          codigo?: string
           fecha_inicio?: string
           fecha_fin?: string
           año_academico?: string

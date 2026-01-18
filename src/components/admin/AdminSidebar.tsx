@@ -2,14 +2,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  FileText, 
-  Users, 
+import {
+  LayoutDashboard,
+  FileText,
+  Users,
   BookOpen,
   Video,
   Package,
   Newspaper,
+  Calendar,
   LucideIcon
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -27,6 +28,7 @@ const adminNavItems: NavItem[] = [
   { href: '/admin/noticias', label: 'Noticias', icon: Newspaper },
   { href: '/admin/vts', label: 'Videotutorías', icon: Video },
   { href: '/admin/recursos', label: 'Recursos', icon: Package },
+  { href: '/admin/semestres', label: 'Semestres', icon: Calendar },
   { href: '#', label: 'Asignaturas', icon: BookOpen, disabled: true },
   { href: '#', label: 'Usuarios', icon: Users, disabled: true },
 ]
@@ -38,7 +40,7 @@ export function AdminSidebar() {
     <aside className="hidden md:flex w-64 flex-col border-r bg-muted/30 min-h-[calc(100vh-3.5rem)]">
       <nav className="flex-1 p-4 space-y-1">
         {adminNavItems.map((item) => {
-          const isActive = item.href === '/admin' 
+          const isActive = item.href === '/admin'
             ? pathname === '/admin'
             : pathname.startsWith(item.href) && item.href !== '#'
 
@@ -63,8 +65,8 @@ export function AdminSidebar() {
               href={item.href}
               className={cn(
                 'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
-                isActive 
-                  ? 'bg-primary/10 text-primary font-medium' 
+                isActive
+                  ? 'bg-primary/10 text-primary font-medium'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               )}
             >

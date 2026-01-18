@@ -2,10 +2,10 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { 
-  ArrowLeft, 
-  FileText, 
-  Download, 
+import {
+  ArrowLeft,
+  FileText,
+  Download,
   Clock,
   User,
   Calendar,
@@ -23,7 +23,7 @@ import { GDValidationForm, ExtractedDataForm } from '@/components/admin'
 import type { ExtractedGDData } from '@/types/gd'
 
 export const metadata: Metadata = {
-  title: 'Validar GD | Admin MiFP',
+  title: 'Validar GD - Admin',
   description: 'Validación de guía didáctica',
 }
 
@@ -54,7 +54,7 @@ interface GDDetail {
 
 async function getGD(id: string): Promise<GDDetail | null> {
   const supabase = await createClient()
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data } = await (supabase as any)
     .from('guias_didacticas')
@@ -73,7 +73,7 @@ async function getGD(id: string): Promise<GDDetail | null> {
 
 async function getFileUrl(path: string): Promise<string | null> {
   const supabase = await createClient()
-  
+
   const { data } = await supabase.storage
     .from('guias-didacticas')
     .createSignedUrl(path, 3600) // URL válida por 1 hora
@@ -81,10 +81,10 @@ async function getFileUrl(path: string): Promise<string | null> {
   return data?.signedUrl || null
 }
 
-export default async function ValidarGDPage({ 
-  params 
-}: { 
-  params: Promise<{ id: string }> 
+export default async function ValidarGDPage({
+  params
+}: {
+  params: Promise<{ id: string }>
 }) {
   const { id } = await params
   const gd = await getGD(id)
@@ -122,8 +122,8 @@ export default async function ValidarGDPage({
             {gd.asignatura?.nombre} ({gd.asignatura?.codigo})
           </p>
         </div>
-        <Badge 
-          variant="outline" 
+        <Badge
+          variant="outline"
           className={`${estadoInfo.color} ${estadoInfo.bgColor} border-current`}
         >
           {estadoInfo.label}
@@ -146,7 +146,7 @@ export default async function ValidarGDPage({
               </div>
             </CardContent>
           </Card>
-          
+
           <ExtractedDataForm gdId={gd.id} initialData={gd.datos_extraidos} />
         </div>
       ) : (
@@ -261,9 +261,9 @@ export default async function ValidarGDPage({
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <GDValidationForm 
-                    gdId={gd.id} 
-                    asignaturaId={gd.asignatura?.id || ''} 
+                  <GDValidationForm
+                    gdId={gd.id}
+                    asignaturaId={gd.asignatura?.id || ''}
                     semestreId={gd.semestre?.id || ''}
                   />
                 </CardContent>

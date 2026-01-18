@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { EnlaceForm } from '@/components/admin/EnlaceForm'
 
 export const metadata: Metadata = {
-  title: 'Nuevo Enlace | Admin MiFP',
+  title: 'Nuevo Enlace - Admin',
   description: 'Añadir un nuevo enlace a los recursos de estudio',
 }
 

@@ -4,7 +4,7 @@ import { RegisterForm } from '@/components/auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {
-  title: 'Crear cuenta | MiFP',
+  title: 'Crear cuenta',
   description: 'Crea tu cuenta en MiFP y comienza a organizar tus estudios',
 }
 

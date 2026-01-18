@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { 
-  Video, 
+import {
+  Video,
   ArrowLeft,
   LinkIcon,
   Calendar
@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { VTsAdminList } from '@/components/admin/VTsAdminList'
 
 export const metadata: Metadata = {
-  title: 'Videotutorías | Admin MiFP',
+  title: 'Videotutorías - Admin',
   description: 'Gestión de videotutorías',
 }
 
@@ -54,7 +54,7 @@ async function getVTsData(): Promise<{
   }
 }> {
   const supabase = await createClient()
-  
+
   // Obtener semestre activo
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: semestreActivo } = await (supabase as any)
@@ -64,10 +64,10 @@ async function getVTsData(): Promise<{
     .single()
 
   if (!semestreActivo) {
-    return { 
-      semestre: null, 
-      vtsByAsignatura: [], 
-      stats: { total: 0, conGrabacion: 0, sinGrabacion: 0, asignaturas: 0 } 
+    return {
+      semestre: null,
+      vtsByAsignatura: [],
+      stats: { total: 0, conGrabacion: 0, sinGrabacion: 0, asignaturas: 0 }
     }
   }
 
@@ -93,7 +93,7 @@ async function getVTsData(): Promise<{
 
   for (const vt of vts || []) {
     if (!vt.asignatura) continue
-    
+
     const key = vt.asignatura.id
     if (!vtsByAsignatura.has(key)) {
       vtsByAsignatura.set(key, {
@@ -112,7 +112,7 @@ async function getVTsData(): Promise<{
   // Calcular stats
   const allVts = vts || []
   const conGrabacion = allVts.filter((v: VTData) => v.enlace_grabacion).length
-  
+
   return {
     semestre: semestreActivo,
     vtsByAsignatura: Array.from(vtsByAsignatura.values()),

@@ -1,18 +1,19 @@
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { ProfileForm } from '@/components/perfil'
+import { ProfileCard } from '@/components/perfil/ProfileCard'
+import { AsignaturasCRUD } from '@/components/perfil/AsignaturasCRUD'
 
 export const metadata: Metadata = {
-  title: 'Perfil | MiFP',
+  title: 'Perfil',
   description: 'Tu perfil de usuario',
 }
 
 export default async function PerfilPage() {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect('/login')
   }
@@ -36,39 +37,54 @@ export default async function PerfilPage() {
     grado = gradoData
   }
 
-  // Obtener asignaturas del usuario
+  // Obtener asignaturas del usuario con info de semestre
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: userAsignaturas } = await (supabase as any)
     .from('user_asignaturas')
     .select(`
+      id,
       asignatura_id,
-      asignaturas:asignatura_id (
-        id,
-        nombre,
-        codigo
-      )
+      semestre_id,
+      asignaturas (id, nombre, codigo),
+      semestres (id, nombre, codigo, activo)
     `)
     .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
 
-  const asignaturas = (userAsignaturas || [])
-    .map((ua: { asignaturas: { id: string; nombre: string; codigo: string } }) => ua.asignaturas)
-    .filter(Boolean)
+  // Obtener todas las asignaturas del grado para el selector
+  let availableAsignaturas: { id: string; nombre: string; codigo: string }[] = []
+  if (grado) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: gradoAsignaturas } = await (supabase as any)
+      .from('asignaturas')
+      .select('id, nombre, codigo')
+      .eq('grado_id', (grado as { id: string }).id)
+      .order('nombre')
+
+    availableAsignaturas = (gradoAsignaturas || []) as { id: string; nombre: string; codigo: string }[]
+  }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Perfil</h1>
-        <p className="text-muted-foreground">
-          Información de tu cuenta y asignaturas
-        </p>
-      </div>
-      
-      <ProfileForm 
+    <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Profile Card - Compacto */}
+      <ProfileCard
         user={{ id: user.id, email: user.email }}
-        profile={profile as Parameters<typeof ProfileForm>[0]['profile']}
-        grado={grado}
-        asignaturas={asignaturas}
+        profile={profile}
+        grado={grado as { id: string; nombre: string; codigo: string } | null}
       />
+
+      {/* Gestión de Asignaturas */}
+      {grado ? (
+        <AsignaturasCRUD
+          userAsignaturas={userAsignaturas || []}
+          availableAsignaturas={availableAsignaturas}
+          gradoId={(grado as { id: string }).id}
+        />
+      ) : (
+        <div className="text-center py-12 text-muted-foreground">
+          <p>Completa el onboarding para seleccionar tu grado y asignaturas</p>
+        </div>
+      )}
     </div>
   )
 }

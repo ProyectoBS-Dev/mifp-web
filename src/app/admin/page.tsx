@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { 
-  FileText, 
+import {
+  FileText,
   Clock,
   ArrowRight
 } from 'lucide-react'
@@ -14,7 +14,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 
 export const metadata: Metadata = {
-  title: 'Panel Admin | MiFP',
+  title: 'Panel Admin',
   description: 'Panel de administración',
 }
 
@@ -33,7 +33,7 @@ interface PendingGD {
 
 async function getPendingGDs(): Promise<PendingGD[]> {
   const supabase = await createClient()
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data } = await (supabase as any)
     .from('guias_didacticas')
@@ -52,7 +52,7 @@ async function getPendingGDs(): Promise<PendingGD[]> {
 
 async function getStats() {
   const supabase = await createClient()
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [gdsResult, usersResult, asignaturasResult] = await Promise.all([
     (supabase as any)

@@ -312,59 +312,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
-      {/* <section className="py-24 sm:py-32 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Todo lo que necesitas para aprobar
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Herramientas diseñadas específicamente para estudiantes de Formación Profesional
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <FeatureCard
-              icon={<FileText className="h-6 w-6" />}
-              title="Gestión de PACs"
-              description="Controla tus tareas pendientes, fechas de entrega y progreso. Nunca olvides una entrega."
-              color="green"
-            />
-            <FeatureCard
-              icon={<Calendar className="h-6 w-6" />}
-              title="Calendario Integrado"
-              description="Visualiza videotutorías, entregas y exámenes en un calendario personalizado."
-              color="blue"
-            />
-            <FeatureCard
-              icon={<BarChart3 className="h-6 w-6" />}
-              title="Seguimiento de Notas"
-              description="Calcula tu nota final automáticamente según los criterios de evaluación oficiales."
-              color="yellow"
-            />
-            <FeatureCard
-              icon={<BookOpen className="h-6 w-6" />}
-              title="Recursos de Estudio"
-              description="Accede a materiales organizados por asignatura: PDFs, podcasts, enlaces útiles."
-              color="purple"
-            />
-            <FeatureCard
-              icon={<Bell className="h-6 w-6" />}
-              title="Notificaciones"
-              description="Recibe alertas de entregas próximas, nuevos recursos y comunicados importantes."
-              color="red"
-            />
-            <FeatureCard
-              icon={<GraduationCap className="h-6 w-6" />}
-              title="Dashboard Personal"
-              description="Un panel de control personalizable con los widgets que más necesitas."
-              color="green"
-            />
-          </div>
-        </div>
-      </section> */}
-
       {/* How it works */}
       <section className="py-24 sm:py-32">
         {/* Header */}
@@ -607,36 +554,6 @@ export default function LandingPage() {
         </div>
       </footer>
     </main>
-  )
-}
-
-function FeatureCard({
-  icon,
-  title,
-  description,
-  color,
-}: {
-  icon: React.ReactNode
-  title: string
-  description: string
-  color: 'green' | 'blue' | 'yellow' | 'purple' | 'red'
-}) {
-  const colorClasses = {
-    green: 'bg-vt-green/10 text-vt-green',
-    blue: 'bg-vt-blue/10 text-vt-blue',
-    yellow: 'bg-vt-yellow/10 text-vt-yellow-dark',
-    purple: 'bg-vt-purple/10 text-vt-purple',
-    red: 'bg-vt-red/10 text-vt-red',
-  }
-
-  return (
-    <div className="relative p-6 bg-card rounded-xl border shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
-      <div className={`inline-flex p-3 rounded-lg ${colorClasses[color]} mb-4`}>
-        {icon}
-      </div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
   )
 }
 

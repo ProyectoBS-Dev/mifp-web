@@ -4,15 +4,15 @@ import { createClient } from '@/lib/supabase/server'
 import { SettingsPanel } from '@/components/ajustes'
 
 export const metadata: Metadata = {
-  title: 'Ajustes | MiFP',
+  title: 'Ajustes',
   description: 'Configura tu cuenta y preferencias',
 }
 
 export default async function AjustesPage() {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect('/login')
   }
@@ -25,7 +25,7 @@ export default async function AjustesPage() {
           Configura tu cuenta y preferencias
         </p>
       </div>
-      
+
       <SettingsPanel userEmail={user.email || ''} />
     </div>
   )

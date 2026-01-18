@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { EnlaceForm } from '@/components/admin/EnlaceForm'
 
 export const metadata: Metadata = {
-  title: 'Editar Recurso | Admin MiFP',
+  title: 'Editar Recurso - Admin',
   description: 'Editar un recurso de estudio',
 }
 
@@ -26,7 +26,7 @@ interface RecursoData {
 
 async function getRecurso(id: string): Promise<RecursoData | null> {
   const supabase = await createClient()
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
     .from('recursos')
@@ -89,15 +89,15 @@ export default async function EditarRecursoPage({ params }: PageProps) {
       </div>
 
       {/* Formulario */}
-      <EnlaceForm 
-        mode="edit" 
+      <EnlaceForm
+        mode="edit"
         recurso={{
           id: recurso.id,
           titulo: recurso.titulo,
           descripcion: recurso.descripcion,
           url: recurso.url,
           asignaturas: recurso.asignaturas,
-        }} 
+        }}
       />
     </div>
   )

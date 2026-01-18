@@ -1,11 +1,11 @@
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { 
-  FileText, 
-  Clock, 
-  CheckCircle2, 
-  XCircle, 
+import {
+  FileText,
+  Clock,
+  CheckCircle2,
+  XCircle,
   AlertCircle,
   ArrowLeft
 } from 'lucide-react'
@@ -16,7 +16,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 
 export const metadata: Metadata = {
-  title: 'Guías Didácticas | Admin MiFP',
+  title: 'Guías Didácticas - Admin',
   description: 'Gestión de guías didácticas',
 }
 
@@ -51,7 +51,7 @@ const estadoConfig: Record<GDEstado, { label: string; icon: React.ElementType; v
 
 async function getGDs(): Promise<GD[]> {
   const supabase = await createClient()
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data } = await (supabase as any)
     .from('guias_didacticas')
@@ -69,7 +69,7 @@ async function getGDs(): Promise<GD[]> {
 
 export default async function GuiasDidacticasPage() {
   const gds = await getGDs()
-  
+
   const pendientes = gds.filter(g => g.estado === 'pendiente')
   const procesadas = gds.filter(g => g.estado !== 'pendiente')
 
@@ -215,7 +215,7 @@ function GDCard({ gd }: { gd: GD }) {
           </div>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-4">
         <div className="text-right text-xs text-muted-foreground">
           {formatDistanceToNow(new Date(gd.created_at), {

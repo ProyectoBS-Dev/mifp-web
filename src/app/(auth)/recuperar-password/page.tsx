@@ -4,7 +4,7 @@ import { ForgotPasswordForm } from '@/components/auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {
-  title: 'Recuperar contraseña | MiFP',
+  title: 'Recuperar contraseña',
   description: 'Recupera el acceso a tu cuenta de MiFP',
 }
 

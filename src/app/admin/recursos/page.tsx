@@ -1,9 +1,9 @@
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { 
-  Plus, 
-  FileText, 
+import {
+  Plus,
+  FileText,
   Link as LinkIcon,
   Headphones,
   Pencil,
@@ -20,7 +20,7 @@ import { es } from 'date-fns/locale'
 import { DeleteRecursoButton } from '@/components/admin/DeleteRecursoButton'
 
 export const metadata: Metadata = {
-  title: 'Recursos | Admin MiFP',
+  title: 'Recursos - Admin',
   description: 'Gestión de recursos de estudio (PDFs, enlaces, podcasts)',
 }
 
@@ -59,7 +59,7 @@ const TIPO_LABELS = {
 
 async function getRecursos(): Promise<Recurso[]> {
   const supabase = await createClient()
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data } = await (supabase as any)
     .from('recursos')
@@ -88,7 +88,7 @@ async function getRecursos(): Promise<Recurso[]> {
 
 async function getStats() {
   const supabase = await createClient()
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: recursos } = await (supabase as any)
     .from('recursos')
@@ -219,8 +219,8 @@ export default async function RecursosAdminPage() {
                 const isEditable = recurso.tipo === 'enlace'
 
                 return (
-                  <div 
-                    key={recurso.id} 
+                  <div
+                    key={recurso.id}
                     className="py-4 flex items-center justify-between gap-4"
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -247,8 +247,8 @@ export default async function RecursosAdminPage() {
                         <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                           {recurso.asignaturas && recurso.asignaturas.length > 0 && (
                             <span>
-                              📁 {recurso.asignaturas.length === 1 
-                                ? recurso.asignaturas[0].nombre 
+                              📁 {recurso.asignaturas.length === 1
+                                ? recurso.asignaturas[0].nombre
                                 : `${recurso.asignaturas.length} asignaturas`}
                             </span>
                           )}
@@ -258,15 +258,15 @@ export default async function RecursosAdminPage() {
                             </span>
                           )}
                           <span>
-                            {formatDistanceToNow(new Date(recurso.created_at), { 
-                              addSuffix: true, 
-                              locale: es 
+                            {formatDistanceToNow(new Date(recurso.created_at), {
+                              addSuffix: true,
+                              locale: es
                             })}
                           </span>
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-1 shrink-0">
                       {recurso.url && (
                         <Button variant="ghost" size="icon" asChild>
@@ -282,9 +282,9 @@ export default async function RecursosAdminPage() {
                               <Pencil className="h-4 w-4" />
                             </Link>
                           </Button>
-                          <DeleteRecursoButton 
-                            recursoId={recurso.id} 
-                            recursoTitulo={recurso.titulo} 
+                          <DeleteRecursoButton
+                            recursoId={recurso.id}
+                            recursoTitulo={recurso.titulo}
                           />
                         </>
                       )}

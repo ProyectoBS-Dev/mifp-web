@@ -1,10 +1,10 @@
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { 
-  Plus, 
-  FileText, 
-  Eye, 
+import {
+  Plus,
+  FileText,
+  Eye,
   EyeOff,
   Pencil,
   Trash2,
@@ -17,7 +17,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 
 export const metadata: Metadata = {
-  title: 'Noticias | Admin MiFP',
+  title: 'Noticias - Admin',
   description: 'Gestión de noticias y blog',
 }
 
@@ -36,7 +36,7 @@ interface Noticia {
 
 async function getNoticias(): Promise<Noticia[]> {
   const supabase = await createClient()
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data } = await (supabase as any)
     .from('noticias')
@@ -52,7 +52,7 @@ async function getNoticias(): Promise<Noticia[]> {
 
 async function getStats() {
   const supabase = await createClient()
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { count: total } = await (supabase as any)
     .from('noticias')
@@ -143,14 +143,14 @@ export default async function NoticiasAdminPage() {
           ) : (
             <div className="divide-y">
               {noticias.map((noticia) => (
-                <div 
-                  key={noticia.id} 
+                <div
+                  key={noticia.id}
                   className="py-4 flex items-center justify-between gap-4"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-semibold truncate">{noticia.titulo}</h3>
-                      <Badge 
+                      <Badge
                         variant={noticia.publicada ? 'default' : 'secondary'}
                         className="shrink-0"
                       >
@@ -179,7 +179,7 @@ export default async function NoticiasAdminPage() {
                       Por {noticia.autor?.full_name || noticia.autor?.email} • {formatDistanceToNow(new Date(noticia.created_at), { addSuffix: true, locale: es })}
                     </p>
                   </div>
-                  
+
                   <div className="flex items-center gap-2 shrink-0">
                     <Button variant="ghost" size="icon" asChild>
                       <Link href={`/admin/noticias/${noticia.id}`}>

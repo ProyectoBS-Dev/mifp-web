@@ -4,7 +4,7 @@ import { UpdatePasswordForm } from '@/components/auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {
-  title: 'Actualizar contraseña | MiFP',
+  title: 'Actualizar contraseña',
   description: 'Crea una nueva contraseña para tu cuenta de MiFP',
 }
 

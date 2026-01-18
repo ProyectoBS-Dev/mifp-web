@@ -6,7 +6,7 @@ import { GDMissingBanner } from '@/components/guias-didacticas'
 import type { DashboardLayoutItem } from '@/types/dashboard'
 
 export const metadata: Metadata = {
-  title: 'Dashboard | MiFP',
+  title: 'Dashboard',
   description: 'Tu panel de control personalizado',
 }
 
@@ -15,10 +15,10 @@ export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
-  
+
   // Obtener usuario autenticado
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect('/login')
   }
@@ -31,8 +31,8 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .single()
 
-  const savedLayout = layoutData?.layout_config?.length > 0 
-    ? (layoutData.layout_config as DashboardLayoutItem[]) 
+  const savedLayout = layoutData?.layout_config?.length > 0
+    ? (layoutData.layout_config as DashboardLayoutItem[])
     : undefined
 
   return (
@@ -43,10 +43,10 @@ export default async function DashboardPage() {
           Tu panel de control personalizado. Arrastra y redimensiona los widgets.
         </p>
       </div>
-      
+
       {/* Banner si faltan GDs */}
       <GDMissingBanner />
-      
+
       <DashboardGrid userId={user.id} initialLayout={savedLayout} />
     </div>
   )

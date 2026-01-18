@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { NoticiaForm } from '@/components/admin/NoticiaForm'
 
 export const metadata: Metadata = {
-  title: 'Nueva Noticia | Admin MiFP',
+  title: 'Nueva Noticia - Admin',
   description: 'Crear nueva noticia',
 }
 

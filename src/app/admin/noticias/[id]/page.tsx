@@ -8,13 +8,13 @@ import { NoticiaForm } from '@/components/admin/NoticiaForm'
 import type { Noticia } from '@/hooks/useNoticias'
 
 export const metadata: Metadata = {
-  title: 'Editar Noticia | Admin MiFP',
+  title: 'Editar Noticia - Admin',
   description: 'Editar noticia existente',
 }
 
 async function getNoticia(id: string): Promise<Noticia | null> {
   const supabase = await createClient()
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
     .from('noticias')
@@ -29,10 +29,10 @@ async function getNoticia(id: string): Promise<Noticia | null> {
   return data
 }
 
-export default async function EditarNoticiaPage({ 
-  params 
-}: { 
-  params: Promise<{ id: string }> 
+export default async function EditarNoticiaPage({
+  params
+}: {
+  params: Promise<{ id: string }>
 }) {
   const { id } = await params
   const noticia = await getNoticia(id)

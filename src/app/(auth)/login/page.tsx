@@ -4,7 +4,7 @@ import { LoginForm } from '@/components/auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {
-  title: 'Iniciar sesión | MiFP',
+  title: 'Iniciar sesión',
   description: 'Inicia sesión en tu cuenta de MiFP',
 }
 

@@ -4,26 +4,26 @@ import { createClient } from '@/lib/supabase/server'
 import { OnboardingForm } from '@/components/auth/OnboardingForm'
 
 export const metadata: Metadata = {
-  title: 'Configuración inicial | MiFP',
+  title: 'Configuración inicial',
   description: 'Configura tu perfil y selecciona tus asignaturas',
 }
 
 export default async function OnboardingPage() {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect('/login')
   }
-  
+
   // Verificar si ya completó el onboarding
   const { data: profile } = await supabase
     .from('users')
     .select('onboarding_completed')
     .eq('id', user.id)
     .single()
-  
+
   const onboardingCompleted = (profile as { onboarding_completed: boolean } | null)?.onboarding_completed
   if (onboardingCompleted) {
     redirect('/dashboard')

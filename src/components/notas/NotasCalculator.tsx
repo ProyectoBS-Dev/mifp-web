@@ -30,8 +30,8 @@ import {
 function getGradeColor(nota: number | null) {
   if (nota === null) return 'text-muted-foreground'
   if (nota >= 9) return 'text-emerald-600 dark:text-emerald-400'
-  if (nota >= 7) return 'text-blue-600 dark:text-blue-400'
-  if (nota >= 5) return 'text-amber-600 dark:text-amber-400'
+  if (nota >= 7) return 'text-emerald-600 dark:text-emerald-400'
+  if (nota >= 5) return 'text-blue-600 dark:text-blue-400'
   return 'text-red-600 dark:text-red-400'
 }
 
@@ -230,13 +230,13 @@ function AsignaturaCard({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>📚 {asignatura.nombre}</span>
+            <span>{asignatura.nombre}</span>
             <Badge variant="secondary">Sin datos</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
-            <p className="text-lg mb-2">📄 Sin datos de evaluación disponibles</p>
+            <p className="text-lg mb-2">Sin datos de evaluación disponibles</p>
             <p className="text-sm">
               Los datos de PACs y RAs de esta asignatura aún no están disponibles para este semestre.
             </p>
@@ -363,8 +363,6 @@ function AsignaturaCard({
                       <span className={cn('text-lg font-bold', getGradeColor(resultado.notaRA))}>
                         {resultado.notaRA !== null ? resultado.notaRA.toFixed(2) : '-'}
                       </span>
-                      {resultado.aprobado && <span className="ml-1">✅</span>}
-                      {resultado.notaRA !== null && !resultado.aprobado && <span className="ml-1">❌</span>}
                     </div>
                   </div>
 
@@ -423,7 +421,7 @@ function AsignaturaCard({
                     <div className="flex justify-between font-medium pt-2 border-t">
                       <span>Nota RA{ra.numero}:</span>
                       <span className={resultado.aprobado ? 'text-emerald-600' : 'text-red-600'}>
-                        {resultado.notaRA?.toFixed(2) ?? '-'} {resultado.aprobado ? '✅' : resultado.notaRA !== null ? '❌' : ''}
+                        {resultado.notaRA?.toFixed(2) ?? '-'}
                       </span>
                     </div>
                   </div>
@@ -739,7 +737,7 @@ export function NotasCalculator() {
       <Card>
         <CardContent className="pt-6">
           <div className="text-center py-8 text-muted-foreground">
-            <p className="text-lg mb-2">📅 No hay semestre activo</p>
+            <p className="text-lg mb-2">No hay semestre activo</p>
             <p className="text-sm">
               No se ha configurado un semestre activo en el sistema.
             </p>
@@ -755,7 +753,7 @@ export function NotasCalculator() {
       <Card>
         <CardContent className="pt-6">
           <div className="text-center py-8 text-muted-foreground">
-            <p className="text-lg mb-2">📚 Sin asignaturas matriculadas</p>
+            <p className="text-lg mb-2">Sin asignaturas matriculadas</p>
             <p className="text-sm">
               No tienes asignaturas matriculadas en el semestre {data.semestreActivo.nombre}.
             </p>
@@ -859,10 +857,10 @@ export function NotasCalculator() {
           {!infoCollapsed && (
             <CardContent className="pt-0">
               <div className="grid gap-2 text-sm text-muted-foreground">
-                <p>📐 <strong>Nota por RA</strong> = (Media PACs × 40%) + (Examen × 60%)</p>
-                <p>📊 <strong>Nota módulo</strong> = Media ponderada RAs por horas (90%) + FCT (10%)</p>
-                <p>⚠️ El examen debe ser ≥5 para que sume la EC</p>
-                <p>⚠️ Cada RA debe tener nota ≥5</p>
+                <p><strong>Nota por RA</strong> = (Media PACs × 40%) + (Examen × 60%)</p>
+                <p><strong>Nota módulo</strong> = Media ponderada RAs por horas (90%) + FCT (10%)</p>
+                <p className="text-muted-foreground/70 text-xs mt-2">El examen debe ser ≥5 para que sume la EC</p>
+                <p className="text-muted-foreground/70 text-xs">Cada RA debe tener nota ≥5</p>
                 <div className="flex gap-4 mt-2">
                   <span className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-blue-500" /> PAC Interactiva

@@ -20,8 +20,8 @@ interface GradeItem {
 function getGradeColor(nota: number | null) {
   if (nota === null) return 'text-muted-foreground'
   if (nota >= 9) return 'text-emerald-600 dark:text-emerald-400'
-  if (nota >= 7) return 'text-blue-600 dark:text-blue-400'
-  if (nota >= 5) return 'text-amber-600 dark:text-amber-400'
+  if (nota >= 7) return 'text-emerald-600 dark:text-emerald-400'
+  if (nota >= 5) return 'text-blue-600 dark:text-blue-400'
   return 'text-red-600 dark:text-red-400'
 }
 

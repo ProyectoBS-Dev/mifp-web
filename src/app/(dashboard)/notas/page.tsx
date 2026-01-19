@@ -7,7 +7,6 @@ import { NotasCalculator } from '@/components/notas'
 import { NotasSimplificado } from '@/components/notas/NotasSimplificado'
 import { HistorialView } from '@/components/notas/HistorialView'
 import { SemesterSelector } from '@/components/semester/SemesterSelector'
-import { SemesterGeneratorModal } from '@/components/semester/SemesterGeneratorModal'
 import { useUserSemesters, useSemestreActivo } from '@/hooks/useUserSemesters'
 
 // Set page title (client component can't use metadata export)
@@ -18,7 +17,6 @@ export default function NotasPage() {
   const { data: semestreActivo } = useSemestreActivo()
 
   const [selectedSemestreId, setSelectedSemestreId] = useState<string | null>(null)
-  const [isSemesterModalOpen, setIsSemesterModalOpen] = useState(false)
 
   // Set page title on mount
   useEffect(() => {
@@ -29,10 +27,6 @@ export default function NotasPage() {
   const currentSemestreId = selectedSemestreId || semestreActivo?.id || null
   const currentSemestre = semestres?.find(s => s.id === currentSemestreId)
   const isActiveSemestre = currentSemestre?.activo ?? true
-
-  const handleSemestreCreated = (semestreId: string) => {
-    setSelectedSemestreId(semestreId)
-  }
 
   return (
     <div className="space-y-6">
@@ -61,7 +55,6 @@ export default function NotasPage() {
             <SemesterSelector
               value={currentSemestreId}
               onChange={setSelectedSemestreId}
-              onAddPrevious={() => setIsSemesterModalOpen(true)}
             />
           </div>
 
@@ -84,13 +77,7 @@ export default function NotasPage() {
           <HistorialView />
         </TabsContent>
       </Tabs>
-
-      {/* Modal para añadir semestre anterior */}
-      <SemesterGeneratorModal
-        open={isSemesterModalOpen}
-        onOpenChange={setIsSemesterModalOpen}
-        onSemestreCreated={handleSemestreCreated}
-      />
     </div>
   )
 }
+

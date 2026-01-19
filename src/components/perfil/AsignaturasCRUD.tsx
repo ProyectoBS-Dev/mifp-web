@@ -25,8 +25,7 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { SemesterSelector } from '@/components/semester/SemesterSelector'
-import { SemesterGeneratorModal } from '@/components/semester/SemesterGeneratorModal'
-import { useUserSemesters } from '@/hooks/useUserSemesters'
+import { useSemestres } from '@/hooks/useUserSemesters'
 
 // ============================================
 // TIPOS
@@ -73,14 +72,13 @@ export function AsignaturasCRUD({
     const router = useRouter()
     const supabase = createClient()
     const queryClient = useQueryClient()
-    const { data: semestres } = useUserSemesters()
+    const { data: semestres } = useSemestres()
 
     // Estado
     const [userAsignaturas, setUserAsignaturas] = useState(initialUserAsignaturas)
     const [selectedSemestreId, setSelectedSemestreId] = useState<string | null>(null)
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-    const [isSemesterModalOpen, setIsSemesterModalOpen] = useState(false)
     const [asignaturaToDelete, setAsignaturaToDelete] = useState<UserAsignatura | null>(null)
     const [deleteConfirmName, setDeleteConfirmName] = useState('')
     const [selectedAsignaturaId, setSelectedAsignaturaId] = useState<string | null>(null)
@@ -217,10 +215,7 @@ export function AsignaturasCRUD({
         setIsDeleteModalOpen(true)
     }
 
-    // Callback cuando se crea un nuevo semestre
-    const handleSemestreCreated = (semestreId: string, nombre: string) => {
-        setSelectedSemestreId(semestreId)
-    }
+
 
     return (
         <div className="space-y-6">
@@ -229,7 +224,7 @@ export function AsignaturasCRUD({
                 <SemesterSelector
                     value={selectedSemestreId}
                     onChange={setSelectedSemestreId}
-                    onAddPrevious={() => setIsSemesterModalOpen(true)}
+                    semestres={semestres}
                 />
 
                 {selectedSemestreId && asignaturasDisponibles.length > 0 && (
@@ -416,12 +411,7 @@ export function AsignaturasCRUD({
                 </DialogContent>
             </Dialog>
 
-            {/* Modal: Añadir semestre anterior */}
-            <SemesterGeneratorModal
-                open={isSemesterModalOpen}
-                onOpenChange={setIsSemesterModalOpen}
-                onSemestreCreated={handleSemestreCreated}
-            />
+
         </div>
     )
 }

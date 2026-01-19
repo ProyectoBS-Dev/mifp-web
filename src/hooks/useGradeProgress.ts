@@ -22,6 +22,7 @@ export interface AsignaturaDetalle {
     asignatura_nombre: string
     ultima_nota: number | null
     num_convocatorias: number
+    ultimo_semestre: string | null
     aprobada: boolean
 }
 

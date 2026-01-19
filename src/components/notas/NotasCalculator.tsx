@@ -9,10 +9,10 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { 
-  useNotas, 
-  useSavePACNota, 
-  useSaveExamenNota, 
+import {
+  useNotas,
+  useSavePACNota,
+  useSaveExamenNota,
   useSaveFCTNota,
   calcularMediaPACsRA,
   calcularNotaRA,
@@ -72,19 +72,19 @@ interface NotaInputProps {
   placeholder?: string
 }
 
-function NotaInput({ 
-  value, 
-  onSave, 
-  isPending = false, 
+function NotaInput({
+  value,
+  onSave,
+  isPending = false,
   isSuccess = false,
-  disabled = false, 
+  disabled = false,
   className,
   placeholder = '-'
 }: NotaInputProps) {
   const [localValue, setLocalValue] = useState(value?.toString() ?? '')
   const [showSuccess, setShowSuccess] = useState(false)
   const lastSavedRef = useRef(value)
-  
+
   // Sincronizar con valor externo cuando cambia
   useEffect(() => {
     if (value !== lastSavedRef.current) {
@@ -92,7 +92,7 @@ function NotaInput({
       lastSavedRef.current = value
     }
   }, [value])
-  
+
   // Mostrar checkmark cuando se guarda exitosamente
   useEffect(() => {
     if (isSuccess) {
@@ -101,23 +101,23 @@ function NotaInput({
       return () => clearTimeout(timer)
     }
   }, [isSuccess])
-  
+
   const handleBlur = useCallback(() => {
     const numValue = localValue === '' ? null : parseFloat(localValue)
-    
+
     // Validar rango
     if (numValue !== null && (isNaN(numValue) || numValue < 0 || numValue > 10)) {
       setLocalValue(value?.toString() ?? '')
       return
     }
-    
+
     // Solo guardar si cambió
     if (numValue !== value) {
       lastSavedRef.current = numValue
       onSave(numValue)
     }
   }, [localValue, value, onSave])
-  
+
   return (
     <div className="flex items-center gap-1.5">
       <Input
@@ -158,10 +158,10 @@ interface AsignaturaCardProps {
   forceExpanded?: boolean
 }
 
-function AsignaturaCard({ 
-  asignatura, 
+function AsignaturaCard({
+  asignatura,
   fctNota,
-  onPACNotaSave, 
+  onPACNotaSave,
   onExamenNotaSave,
   isPACPending,
   isExamenPending,
@@ -170,7 +170,7 @@ function AsignaturaCard({
   forceExpanded = false
 }: AsignaturaCardProps) {
   const [isExpanded, setIsExpanded] = useState(forceExpanded)
-  
+
   // Sincronizar con forceExpanded
   useEffect(() => {
     setIsExpanded(forceExpanded)
@@ -179,13 +179,13 @@ function AsignaturaCard({
   // Calcular notas por RA
   const notasRAs = useMemo(() => {
     const map = new Map<string, { resultado: ReturnType<typeof calcularNotaRA>, ra: RA }>()
-    
+
     asignatura.ras.forEach(ra => {
       const pacsDelRA = asignatura.pacs.filter(p => p.raId === ra.id)
       const resultado = calcularNotaRA(pacsDelRA, asignatura.notaExamen)
       map.set(ra.id, { resultado, ra })
     })
-    
+
     return map
   }, [asignatura])
 
@@ -203,10 +203,10 @@ function AsignaturaCard({
   // Calcular nota mínima necesaria en examen para aprobar
   const notaMinimaExamen = useMemo(() => {
     if (asignatura.notaExamen !== null) return null
-    
+
     let sumaEC = 0
     let countRAs = 0
-    
+
     asignatura.ras.forEach(ra => {
       const pacsDelRA = asignatura.pacs.filter(p => p.raId === ra.id)
       const { media } = calcularMediaPACsRA(pacsDelRA)
@@ -215,12 +215,12 @@ function AsignaturaCard({
         countRAs++
       }
     })
-    
+
     if (countRAs === 0) return null
-    
+
     const mediaEC = sumaEC / countRAs
     const necesario = (5 - mediaEC * 0.4) / 0.6
-    
+
     return Math.max(0, Math.min(10, necesario))
   }, [asignatura])
 
@@ -250,7 +250,7 @@ function AsignaturaCard({
 
   return (
     <Card>
-      <CardHeader 
+      <CardHeader
         className="cursor-pointer hover:bg-muted/50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -280,10 +280,10 @@ function AsignaturaCard({
             <Badge variant={badge.variant}>{badge.label}</Badge>
           </div>
         </div>
-        
+
         <div className="mt-3">
-          <Progress 
-            value={notaModulo.notaSinFCT !== null ? notaModulo.notaSinFCT * 10 : 0} 
+          <Progress
+            value={notaModulo.notaSinFCT !== null ? notaModulo.notaSinFCT * 10 : 0}
             className="h-2"
           />
         </div>
@@ -296,14 +296,14 @@ function AsignaturaCard({
             <div className="text-center">
               <p className="text-xs text-muted-foreground mb-1">Media Eval. Continua</p>
               <p className={cn('text-xl font-bold', getGradeColor(
-                Array.from(notasRAs.values()).reduce((acc, v) => 
+                Array.from(notasRAs.values()).reduce((acc, v) =>
                   acc + (v.resultado.mediaEC ?? 0), 0) / notasRAs.size || null
               ))}>
                 {(() => {
                   const medias = Array.from(notasRAs.values())
                     .filter(v => v.resultado.mediaEC !== null)
                     .map(v => v.resultado.mediaEC!)
-                  return medias.length > 0 
+                  return medias.length > 0
                     ? (medias.reduce((a, b) => a + b, 0) / medias.length).toFixed(2)
                     : '-'
                 })()}
@@ -323,8 +323,8 @@ function AsignaturaCard({
           {notaMinimaExamen !== null && notaMinimaExamen > 0 && (
             <div className={cn(
               'flex items-center gap-3 p-3 rounded-lg',
-              notaMinimaExamen > 5 
-                ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400' 
+              notaMinimaExamen > 5
+                ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
                 : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
             )}>
               {notaMinimaExamen > 5 ? (
@@ -345,11 +345,11 @@ function AsignaturaCard({
               <Calculator className="h-4 w-4" />
               Resultados de Aprendizaje (RAs)
             </h4>
-            
+
             {asignatura.ras.map((ra) => {
               const { resultado } = notasRAs.get(ra.id)!
               const pacsDelRA = asignatura.pacs.filter((p) => p.raId === ra.id)
-              
+
               return (
                 <div key={ra.id} className="border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
@@ -367,11 +367,11 @@ function AsignaturaCard({
                       {resultado.notaRA !== null && !resultado.aprobado && <span className="ml-1">❌</span>}
                     </div>
                   </div>
-                  
+
                   {/* Tabla de PACs */}
                   <div className="space-y-2 mb-4">
                     {pacsDelRA.map((pac) => (
-                      <div 
+                      <div
                         key={pac.id}
                         className="flex items-center justify-between gap-4 text-sm"
                       >
@@ -404,16 +404,16 @@ function AsignaturaCard({
                     <div className="flex justify-between">
                       <span>Media EC (40%):</span>
                       <span>
-                        {resultado.mediaEC?.toFixed(2) ?? '-'} → {resultado.mediaEC !== null 
-                          ? (resultado.mediaEC * 0.4).toFixed(2) 
+                        {resultado.mediaEC?.toFixed(2) ?? '-'} → {resultado.mediaEC !== null
+                          ? (resultado.mediaEC * 0.4).toFixed(2)
                           : '-'}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Examen (60%):</span>
                       <span>
-                        {asignatura.notaExamen?.toFixed(2) ?? '-'} → {asignatura.notaExamen !== null 
-                          ? (asignatura.notaExamen * 0.6).toFixed(2) 
+                        {asignatura.notaExamen?.toFixed(2) ?? '-'} → {asignatura.notaExamen !== null
+                          ? (asignatura.notaExamen * 0.6).toFixed(2)
                           : '-'}
                         {asignatura.notaExamen !== null && asignatura.notaExamen < 5 && (
                           <span className="text-red-500 ml-1">(≥5 requerido)</span>
@@ -473,26 +473,26 @@ interface FCTSectionProps {
   totalAsignaturas: number
 }
 
-function FCTSection({ 
-  fct, 
-  onNotaSave, 
+function FCTSection({
+  fct,
+  onNotaSave,
   isPending,
   isSuccess,
-  asignaturasAprobadas, 
-  totalAsignaturas 
+  asignaturasAprobadas,
+  totalAsignaturas
 }: FCTSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const porcentajeAprobadas = totalAsignaturas > 0 
-    ? (asignaturasAprobadas / totalAsignaturas) * 100 
+  const porcentajeAprobadas = totalAsignaturas > 0
+    ? (asignaturasAprobadas / totalAsignaturas) * 100
     : 0
   const puedeHacerFCT = porcentajeAprobadas >= 50
-  
+
   return (
     <Card className={cn(
       'border-2',
       puedeHacerFCT ? 'border-emerald-500/30' : 'border-muted'
     )}>
-      <CardHeader 
+      <CardHeader
         className="cursor-pointer hover:bg-muted/50 transition-colors py-4"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
@@ -519,7 +519,7 @@ function FCTSection({
             <p>10% de la nota final de cada módulo.</p>
             <p className="mt-1">Requisito: ≥50% asignaturas aprobadas.</p>
           </div>
-          
+
           {/* Progreso hacia FCT */}
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
@@ -530,7 +530,7 @@ function FCTSection({
             </div>
             <Progress value={porcentajeAprobadas} className="h-2" />
           </div>
-          
+
           {/* Input de nota FCT */}
           {puedeHacerFCT && (
             <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
@@ -577,7 +577,7 @@ function LoadingSkeleton() {
           </div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader>
           <Skeleton className="h-6 w-64" />
@@ -586,7 +586,7 @@ function LoadingSkeleton() {
           <Skeleton className="h-24 w-full" />
         </CardContent>
       </Card>
-      
+
       {[1, 2].map((i) => (
         <Card key={i}>
           <CardHeader>
@@ -612,11 +612,11 @@ function LoadingSkeleton() {
 export function NotasCalculator() {
   // Datos de la BD
   const { data, isLoading, error, refetch } = useNotas()
-  
+
   // Estados para colapsar secciones
   const [allExpanded, setAllExpanded] = useState(false)
   const [infoCollapsed, setInfoCollapsed] = useState(false)
-  
+
   // Mutaciones
   const savePACNota = useSavePACNota()
   const saveExamenNota = useSaveExamenNota()
@@ -637,30 +637,30 @@ export function NotasCalculator() {
 
   // Calcular estadísticas globales
   const stats = useMemo(() => {
-    if (!data?.asignaturas) return { 
-      mediaGlobal: null, 
-      mediaGlobalSinFCT: null, 
-      mediaEC: null, 
-      asignaturasAprobadas: 0, 
+    if (!data?.asignaturas) return {
+      mediaGlobal: null,
+      mediaGlobalSinFCT: null,
+      mediaEC: null,
+      asignaturasAprobadas: 0,
       totalAsignaturas: 0,
-      asignaturasConNotas: 0 
+      asignaturasConNotas: 0
     }
-    
+
     let asignaturasAprobadas = 0
     let sumaNotas = 0
     let sumaNotasSinFCT = 0
     let sumaMediasEC = 0
     let countNotas = 0
     let countMediasEC = 0
-    
+
     data.asignaturas.forEach(asig => {
       if (!asig.tieneGD) return
-      
+
       const notasMap = new Map<string, number>()
       let todosRAsAprobados = true
       let sumaECAsig = 0
       let countECAsig = 0
-      
+
       asig.ras.forEach(ra => {
         const pacsDelRA = asig.pacs.filter(p => p.raId === ra.id)
         const resultado = calcularNotaRA(pacsDelRA, asig.notaExamen)
@@ -676,29 +676,29 @@ export function NotasCalculator() {
           countECAsig++
         }
       })
-      
+
       // Media EC de esta asignatura (incluye asignaturas con PACs aunque no tengan examen)
       if (countECAsig > 0) {
         sumaMediasEC += sumaECAsig / countECAsig
         countMediasEC++
       }
-      
+
       const notaModulo = calcularNotaModulo(asig.ras, notasMap, data.fct.nota)
-      
+
       if (notaModulo.notaSinFCT !== null) {
         sumaNotasSinFCT += notaModulo.notaSinFCT
-        sumaNotas += data.fct.nota !== null && notaModulo.notaConFCT !== null 
-          ? notaModulo.notaConFCT 
+        sumaNotas += data.fct.nota !== null && notaModulo.notaConFCT !== null
+          ? notaModulo.notaConFCT
           : notaModulo.notaSinFCT
         countNotas++
-        
+
         // Solo se considera "aprobada" cuando tiene examen y todos los RAs >= 5
         if (todosRAsAprobados && asig.notaExamen !== null && asig.notaExamen >= 5) {
           asignaturasAprobadas++
         }
       }
     })
-    
+
     return {
       mediaGlobal: countNotas > 0 ? sumaNotas / countNotas : null,
       mediaGlobalSinFCT: countNotas > 0 ? sumaNotasSinFCT / countNotas : null,
@@ -793,9 +793,8 @@ export function NotasCalculator() {
                   <p className={cn('text-4xl font-bold', getGradeColor(stats.mediaEC))}>
                     {stats.mediaEC.toFixed(2)}
                   </p>
-                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    Sin notas de exámenes
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {data.semestreActivo?.nombre}
                   </p>
                 </>
               ) : (
@@ -813,7 +812,7 @@ export function NotasCalculator() {
                 {data.semestreActivo.nombre}
               </p>
             </div>
-            
+
             {/* Columna derecha: Estadísticas */}
             <div className="text-right space-y-2">
               <div>
@@ -841,7 +840,7 @@ export function NotasCalculator() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Sistema de Evaluación - Colapsable */}
         <Card>
-          <CardHeader 
+          <CardHeader
             className="cursor-pointer hover:bg-muted/50 transition-colors py-4"
             onClick={() => setInfoCollapsed(!infoCollapsed)}
           >
@@ -878,7 +877,7 @@ export function NotasCalculator() {
         </Card>
 
         {/* FCT - Colapsable */}
-        <FCTSection 
+        <FCTSection
           fct={data.fct}
           onNotaSave={handleFCTNotaSave}
           isPending={saveFCTNota.isPending}

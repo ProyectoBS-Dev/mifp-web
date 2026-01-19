@@ -1,14 +1,23 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { RegisterForm } from '@/components/auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
   title: 'Crear cuenta',
   description: 'Crea tu cuenta en MiFP y comienza a organizar tus estudios',
 }
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  // Redirect to dashboard if already logged in
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (user) {
+    redirect('/dashboard')
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-background-soft p-4">
       <div className="w-full max-w-md">

@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { ArrowUpRightIcon } from 'lucide-react'
+import { ArrowUpRightIcon, LayoutDashboard } from 'lucide-react'
 import Image from 'next/image'
 import {
   GraduationCap,
@@ -38,34 +37,44 @@ import {
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { createClient } from '@/lib/supabase/server'
 
-export default async function LandingPage() {
-  // Check if user is logged in - redirect to dashboard if so
+export default async function HomePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  
-  if (user) {
-    redirect('/dashboard')
-  }
+  const isLoggedIn = !!user
+
   return (
     <main className="min-h-screen">
-      {/* Navbar */}
+      {/* Navbar - Conditional based on auth */}
       <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl flex h-14 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={isLoggedIn ? "/dashboard" : "/"} className="flex items-center gap-2">
             <span className="text-xl font-bold gradient-text">MiFP</span>
           </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Button variant="ghost" asChild>
-              <Link href="/login">
-                <LogIn className="h-5 w-5" />
-                Iniciar sesión</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/registro">
-                <UserPlus className="h-5 w-5" />
-                Empezar gratis</Link>
-            </Button>
+            {isLoggedIn ? (
+              <Button asChild>
+                <Link href="/dashboard">
+                  <LayoutDashboard className="h-5 w-5" />
+                  Ir al Dashboard
+                </Link>
+              </Button>
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/login">
+                    <LogIn className="h-5 w-5" />
+                    Iniciar sesión
+                  </Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/registro">
+                    <UserPlus className="h-5 w-5" />
+                    Empezar gratis
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -98,16 +107,28 @@ export default async function LandingPage() {
             </p>
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button asChild size="lg" className="w-full sm:w-auto">
-                <Link href="/registro">
-                  Crear cuenta
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
-                <Link href="/login">
-                  Ya tengo cuenta</Link>
-              </Button>
+              {isLoggedIn ? (
+                <Button asChild size="lg" className="w-full sm:w-auto">
+                  <Link href="/dashboard">
+                    Ir al Dashboard
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              ) : (
+                <>
+                  <Button asChild size="lg" className="w-full sm:w-auto">
+                    <Link href="/registro">
+                      Crear cuenta
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+                    <Link href="/login">
+                      Ya tengo cuenta
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
 
             {/* Stats */}
@@ -468,12 +489,21 @@ export default async function LandingPage() {
             Únete a la comunidad de estudiantes de FP que ya están mejorando su rendimiento académico.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button asChild size="lg">
-              <Link href="/registro">
-                Crear cuenta gratis
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            {isLoggedIn ? (
+              <Button asChild size="lg">
+                <Link href="/dashboard">
+                  Ir al Dashboard
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            ) : (
+              <Button asChild size="lg">
+                <Link href="/registro">
+                  Crear cuenta gratis
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </section>

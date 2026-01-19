@@ -117,8 +117,8 @@ export default async function HomePage() {
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               {isLoggedIn ? (
                 <Button asChild size="lg" className="w-full sm:w-auto">
-                  <Link href="/dashboard">
-                    Ir al Dashboard
+                  <Link href="#faqs">
+                    Ver preguntas frecuentes
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -386,7 +386,7 @@ export default async function HomePage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 sm:py-32 bg-muted/30">
+      <section className="py-24 sm:py-32 bg-muted/30" id="faqs">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue mb-6">

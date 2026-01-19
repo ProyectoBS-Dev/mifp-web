@@ -1,1 +1,6 @@
 export { NotasCalculator } from './NotasCalculator'
+export { NotasSidebar } from './NotasSidebar'
+export { NotasDashboard } from './NotasDashboard'
+export { AsignaturaDetail } from './AsignaturaDetail'
+export { HistorialView } from './HistorialView'
+export { NotasSimplificado } from './NotasSimplificado'

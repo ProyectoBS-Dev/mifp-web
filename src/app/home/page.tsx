@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Metadata } from 'next'
 import { Button } from '@/components/ui/button'
 import { ArrowUpRightIcon, LayoutDashboard } from 'lucide-react'
 import Image from 'next/image'
@@ -36,6 +37,13 @@ import {
 } from '@/components/ui/tooltip'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { createClient } from '@/lib/supabase/server'
+
+// SEO: Canonical URL pointing to root - tells Google /home is a duplicate of /
+export const metadata: Metadata = {
+  alternates: {
+    canonical: 'https://mifp.dev/',
+  },
+}
 
 export default async function HomePage() {
   const supabase = await createClient()

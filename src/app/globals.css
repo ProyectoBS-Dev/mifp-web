@@ -129,6 +129,10 @@
     /* Ring */
     --ring: 160 47% 49%;
     
+    /* Warning (para alertas) - Amarillo Vue */
+    --warning: 45 100% 55%;
+    --warning-foreground: 204 33% 20%;
+    
     /* Charts */
     --chart-1: 160 47% 49%;
     --chart-2: 212 82% 58%;
@@ -193,6 +197,10 @@
     /* Ring */
     --ring: 153 60% 55%;
     
+    /* Warning (para alertas) - Amarillo Vue */
+    --warning: 51 100% 62%;
+    --warning-foreground: 0 0% 10%;
+    
     /* Charts */
     --chart-1: 153 60% 55%;
     --chart-2: 216 77% 63%;
@@ -218,6 +226,15 @@
 }
 
 @layer utilities {
+  /* Ocultar scrollbar pero mantener funcionalidad de scroll */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+
   /* Gradiente para títulos Hero */
   .gradient-text {
     background: linear-gradient(

@@ -103,8 +103,8 @@ export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplific
     const getGradeColor = (nota: number | null) => {
         if (nota === null) return 'text-muted-foreground'
         if (nota >= 9) return 'text-emerald-600 dark:text-emerald-400'
-        if (nota >= 7) return 'text-blue-600 dark:text-blue-400'
-        if (nota >= 5) return 'text-amber-600 dark:text-amber-400'
+        if (nota >= 7) return 'text-emerald-600 dark:text-emerald-400'
+        if (nota >= 5) return 'text-blue-600 dark:text-blue-400'
         return 'text-red-600 dark:text-red-400'
     }
 
@@ -133,7 +133,7 @@ export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplific
             <Card>
                 <CardContent className="py-12">
                     <div className="text-center text-muted-foreground">
-                        <p className="text-lg mb-2">📚 Sin asignaturas</p>
+                        <p className="text-lg mb-2">Sin asignaturas</p>
                         <p className="text-sm">No tienes asignaturas registradas en {semestreNombre}</p>
                     </div>
                 </CardContent>
@@ -209,7 +209,7 @@ export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplific
                 </div>
 
                 <p className="text-xs text-muted-foreground mt-4 text-center">
-                    💡 Las notas se guardan automáticamente al salir del campo
+                    Las notas se guardan automáticamente al salir del campo
                 </p>
             </CardContent>
         </Card>

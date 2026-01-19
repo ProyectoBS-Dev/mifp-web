@@ -76,7 +76,10 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
     const [isNotifyOpen, setIsNotifyOpen] = useState(false)
     const [editingSemestre, setEditingSemestre] = useState<Semestre | null>(null)
 
-    // Estado para formulario
+    // Estado para formulario de creación con auto-relleno
+    const currentYear = new Date().getFullYear()
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear)
+    const [selectedSemester, setSelectedSemester] = useState<1 | 2>(1)
     const [formData, setFormData] = useState({
         nombre: '',
         codigo: '',
@@ -84,6 +87,32 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
         fecha_fin: '',
         año_academico: ''
     })
+
+    // Generar datos del semestre automáticamente
+    const generateSemesterData = (year: number, semester: 1 | 2) => ({
+        nombre: `${semester}S ${year}-${year + 1}`,
+        codigo: `${semester}s${String(year).slice(2)}${String(year + 1).slice(2)}`,
+        año_academico: `${year}-${year + 1}`,
+        fecha_inicio: semester === 1 ? `${year}-09-01` : `${year + 1}-02-01`,
+        fecha_fin: semester === 1 ? `${year + 1}-01-31` : `${year + 1}-06-30`,
+    })
+
+    // Auto-rellenar al cambiar año o semestre
+    const handleYearChange = (year: number) => {
+        setSelectedYear(year)
+        setFormData(generateSemesterData(year, selectedSemester))
+    }
+
+    const handleSemesterChange = (semester: 1 | 2) => {
+        setSelectedSemester(semester)
+        setFormData(generateSemesterData(selectedYear, semester))
+    }
+
+    // Inicializar formulario cuando se abre el modal
+    const openCreateModal = () => {
+        setFormData(generateSemesterData(selectedYear, selectedSemester))
+        setIsCreateOpen(true)
+    }
 
     // Estado para notificación
     const [notifyData, setNotifyData] = useState({
@@ -126,6 +155,8 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
 
             setSuccess('Semestre creado correctamente')
             setIsCreateOpen(false)
+            setSelectedYear(currentYear)
+            setSelectedSemester(1)
             setFormData({ nombre: '', codigo: '', fecha_inicio: '', fecha_fin: '', año_academico: '' })
             await refreshData()
             router.refresh()
@@ -276,7 +307,7 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
             <div className="flex gap-3">
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogTrigger asChild>
-                        <Button>
+                        <Button onClick={openCreateModal}>
                             <Plus className="h-4 w-4 mr-2" />
                             Crear Semestre
                         </Button>
@@ -289,35 +320,52 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
                             </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4 py-4">
+                            {/* Selectores de año y semestre */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="nombre">Nombre</Label>
-                                    <Input
-                                        id="nombre"
-                                        placeholder="1S 2025-2026"
-                                        value={formData.nombre}
-                                        onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                                    />
+                                    <Label htmlFor="select-year">Año Académico</Label>
+                                    <select
+                                        id="select-year"
+                                        value={selectedYear}
+                                        onChange={(e) => handleYearChange(Number(e.target.value))}
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    >
+                                        {Array.from({ length: 6 }, (_, i) => currentYear - 3 + i).map(year => (
+                                            <option key={year} value={year}>
+                                                {year}-{year + 1}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="codigo">Código</Label>
-                                    <Input
-                                        id="codigo"
-                                        placeholder="1s2526"
-                                        value={formData.codigo}
-                                        onChange={(e) => setFormData({ ...formData, codigo: e.target.value })}
-                                    />
+                                    <Label htmlFor="select-semester">Semestre</Label>
+                                    <select
+                                        id="select-semester"
+                                        value={selectedSemester}
+                                        onChange={(e) => handleSemesterChange(Number(e.target.value) as 1 | 2)}
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                    >
+                                        <option value={1}>1º Semestre</option>
+                                        <option value={2}>2º Semestre</option>
+                                    </select>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="año_academico">Año Académico</Label>
-                                <Input
-                                    id="año_academico"
-                                    placeholder="2025-2026"
-                                    value={formData.año_academico}
-                                    onChange={(e) => setFormData({ ...formData, año_academico: e.target.value })}
-                                />
+
+                            {/* Preview de nombre y código */}
+                            <div className="p-3 rounded-lg bg-muted/50 border">
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span className="text-muted-foreground">Nombre: </span>
+                                        <span className="font-medium">{formData.nombre}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-muted-foreground">Código: </span>
+                                        <span className="font-mono font-medium">{formData.codigo}</span>
+                                    </div>
+                                </div>
                             </div>
+
+                            {/* Fechas editables */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="fecha_inicio">Fecha Inicio</Label>

@@ -30,8 +30,10 @@ export interface AsignaturaNotas {
   ras: RA[]
   pacs: PAC[]
   notaExamen: number | null
+  notaFinalCalculada: number | null
   convocatoria: number
   tieneGD: boolean
+  aprobada: boolean
 }
 
 export interface FCTData {
@@ -150,30 +152,38 @@ export function useNotas(semestreId?: string) {
       }
 
       // Transformar respuesta de la RPC a formato esperado
-      const asignaturas: AsignaturaNotas[] = (result.asignaturas || []).map((asig: RpcAsignatura) => ({
-        id: asig.id,
-        asignaturaId: asig.asignatura_id,
-        nombre: asig.nombre,
-        codigo: asig.codigo,
-        tieneGD: asig.tiene_gd,
-        ras: (asig.ras || []).map((ra: RpcRA) => ({
-          id: ra.id,
-          numero: ra.numero,
-          titulo: ra.titulo,
-          pesoHoras: ra.peso_nota || 0
-        })),
-        pacs: (asig.pacs || []).map((pac: RpcPAC) => ({
-          id: pac.id,
-          numero: pac.numero,
-          titulo: pac.titulo,
-          tipo: pac.tipo_pac as 'interactiva' | 'desarrollo',
-          raId: pac.ra_id || '',
-          nota: pac.nota,
-          pesoEnRA: pac.peso_nota || 0
-        })),
-        notaExamen: asig.examen?.nota_examen ?? null,
-        convocatoria: asig.examen?.convocatoria ?? 1
-      }))
+      const asignaturas: AsignaturaNotas[] = (result.asignaturas || []).map((asig: RpcAsignatura) => {
+        // Calcular peso equitativo si peso_nota es null
+        const numRAs = (asig.ras || []).length || 1
+        const pesoEquitativo = Math.round(100 / numRAs)
+
+        return {
+          id: asig.id,
+          asignaturaId: asig.asignatura_id,
+          nombre: asig.nombre,
+          codigo: asig.codigo,
+          tieneGD: asig.tiene_gd,
+          ras: (asig.ras || []).map((ra: RpcRA) => ({
+            id: ra.id,
+            numero: ra.numero,
+            titulo: ra.titulo,
+            pesoHoras: ra.peso_nota ?? pesoEquitativo  // Peso equitativo si es null
+          })),
+          pacs: (asig.pacs || []).map((pac: RpcPAC) => ({
+            id: pac.id,
+            numero: pac.numero,
+            titulo: pac.titulo,
+            tipo: pac.tipo_pac as 'interactiva' | 'desarrollo',
+            raId: pac.ra_id || '',
+            nota: pac.nota,
+            pesoEnRA: pac.peso_nota || 0
+          })),
+          notaExamen: asig.examen?.nota_examen ?? null,
+          notaFinalCalculada: asig.examen?.nota_final_calculada ?? null,
+          convocatoria: asig.examen?.convocatoria ?? 1,
+          aprobada: asig.examen?.aprobada ?? false
+        }
+      })
 
       const fct: FCTData = {
         id: result.fct?.id ?? null,

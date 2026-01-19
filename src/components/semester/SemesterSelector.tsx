@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { ChevronDown, Plus, Calendar } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -18,12 +17,24 @@ import { useUserSemesters, type UserSemestre } from '@/hooks/useUserSemesters'
 // TIPOS
 // ============================================
 
+// Tipo genérico para semestres (compatible con UserSemestre y Semestre de useSemestres)
+interface SemestreBase {
+    id: string
+    nombre: string
+    activo: boolean
+    num_asignaturas?: number
+}
+
 interface SemesterSelectorProps {
     value: string | null
     onChange: (semestreId: string) => void
     onAddPrevious?: () => void
     className?: string
     showAddButton?: boolean
+    /** Si se proporciona, usar esta lista en lugar del hook interno */
+    semestres?: SemestreBase[]
+    /** Indica si los semestres externos están cargando */
+    isLoadingExternal?: boolean
 }
 
 // ============================================
@@ -35,9 +46,16 @@ export function SemesterSelector({
     onChange,
     onAddPrevious,
     className,
-    showAddButton = true
+    showAddButton = false,
+    semestres: externalSemestres,
+    isLoadingExternal = false
 }: SemesterSelectorProps) {
-    const { data: semestres, isLoading } = useUserSemesters()
+    // Usar hook interno solo si no se proporcionan semestres externos
+    const { data: internalSemestres, isLoading: internalLoading } = useUserSemesters()
+
+    // Determinar qué datos usar
+    const semestres = externalSemestres ?? internalSemestres
+    const isLoading = externalSemestres ? isLoadingExternal : internalLoading
 
     // Encontrar semestre seleccionado
     const selectedSemestre = semestres?.find(s => s.id === value) ||

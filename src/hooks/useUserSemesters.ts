@@ -83,22 +83,33 @@ export function useSemestreActivo() {
 
 // ============================================
 // HOOK: useSemestres
-// Obtiene todos los semestres (para admin)
+// Obtiene todos los semestres (para admin y perfil)
 // ============================================
+
+interface Semestre {
+    id: string
+    nombre: string
+    codigo: string
+    fecha_inicio: string
+    fecha_fin: string
+    año_academico: string
+    activo: boolean
+    created_at: string
+}
 
 export function useSemestres() {
     const supabase = createClient()
 
     return useQuery({
         queryKey: ['semestres'],
-        queryFn: async () => {
+        queryFn: async (): Promise<Semestre[]> => {
             const { data, error } = await supabase
                 .from('semestres')
                 .select('*')
                 .order('fecha_inicio', { ascending: false })
 
             if (error) throw error
-            return data || []
+            return (data || []) as Semestre[]
         },
         staleTime: 1000 * 60 * 5,
     })

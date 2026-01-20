@@ -1,0 +1,6 @@
+export { SettingsAppearance } from './SettingsAppearance'
+export { SettingsNotifications } from './SettingsNotifications'
+export { SettingsSecurity } from './SettingsSecurity'
+export { SettingsDanger } from './SettingsDanger'
+export { SettingsSupport } from './SettingsSupport'
+export { SettingsFeedback } from './SettingsFeedback'

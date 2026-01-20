@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
-import { ChevronDown, ChevronRight, Calculator, TrendingUp, AlertCircle, Building2, GraduationCap, Loader2, Check, RefreshCw, ChevronsUpDown, Info } from 'lucide-react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
+import { ChevronDown, ChevronRight, Calculator, TrendingUp, AlertCircle, Building2, GraduationCap, RefreshCw, ChevronsUpDown, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { getGradeColor, getGradeBadge } from '@/lib/grades'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { NotaInput } from '@/components/ui/nota-input'
 import {
   useNotas,
   useSavePACNota,
@@ -23,124 +24,6 @@ import {
   type FCTData
 } from '@/hooks/useNotas'
 
-// ============================================
-// UTILIDADES
-// ============================================
-
-function getGradeColor(nota: number | null) {
-  if (nota === null) return 'text-muted-foreground'
-  if (nota >= 9) return 'text-vt-green dark:text-vt-green-light'
-  if (nota >= 7) return 'text-vt-green dark:text-vt-green-light'
-  if (nota >= 5) return 'text-vt-blue dark:text-vt-blue-light'
-  return 'text-vt-red dark:text-vt-red-light'
-}
-
-function getGradeBadge(nota: number | null) {
-  if (nota === null) return { label: 'Sin evaluar', variant: 'secondary' as const }
-  if (nota >= 9) return { label: 'Sobresaliente', variant: 'default' as const }
-  if (nota >= 7) return { label: 'Notable', variant: 'default' as const }
-  if (nota >= 5) return { label: 'Aprobado', variant: 'secondary' as const }
-  return { label: 'Suspenso', variant: 'destructive' as const }
-}
-
-// ============================================
-// HOOK: useDebounce
-// ============================================
-
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay)
-    return () => clearTimeout(timer)
-  }, [value, delay])
-
-  return debouncedValue
-}
-
-// ============================================
-// COMPONENTE: NotaInput con auto-save
-// ============================================
-
-interface NotaInputProps {
-  value: number | null
-  onSave: (value: number | null) => void
-  isPending?: boolean
-  isSuccess?: boolean
-  disabled?: boolean
-  className?: string
-  placeholder?: string
-}
-
-function NotaInput({
-  value,
-  onSave,
-  isPending = false,
-  isSuccess = false,
-  disabled = false,
-  className,
-  placeholder = '-'
-}: NotaInputProps) {
-  const [localValue, setLocalValue] = useState(value?.toString() ?? '')
-  const [showSuccess, setShowSuccess] = useState(false)
-  const lastSavedRef = useRef(value)
-
-  // Sincronizar con valor externo cuando cambia
-  useEffect(() => {
-    if (value !== lastSavedRef.current) {
-      setLocalValue(value?.toString() ?? '')
-      lastSavedRef.current = value
-    }
-  }, [value])
-
-  // Mostrar checkmark cuando se guarda exitosamente
-  useEffect(() => {
-    if (isSuccess) {
-      setShowSuccess(true)
-      const timer = setTimeout(() => setShowSuccess(false), 2000)
-      return () => clearTimeout(timer)
-    }
-  }, [isSuccess])
-
-  const handleBlur = useCallback(() => {
-    const numValue = localValue === '' ? null : parseFloat(localValue)
-
-    // Validar rango
-    if (numValue !== null && (isNaN(numValue) || numValue < 0 || numValue > 10)) {
-      setLocalValue(value?.toString() ?? '')
-      return
-    }
-
-    // Solo guardar si cambió
-    if (numValue !== value) {
-      lastSavedRef.current = numValue
-      onSave(numValue)
-    }
-  }, [localValue, value, onSave])
-
-  return (
-    <div className="flex items-center gap-1.5">
-      <Input
-        type="number"
-        min={0}
-        max={10}
-        step={0.1}
-        value={localValue}
-        onChange={(e) => setLocalValue(e.target.value)}
-        onBlur={handleBlur}
-        disabled={disabled || isPending}
-        className={cn('text-center', className)}
-        placeholder={placeholder}
-      />
-      {isPending && (
-        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground flex-shrink-0" />
-      )}
-      {showSuccess && !isPending && (
-        <Check className="h-4 w-4 text-vt-green flex-shrink-0" />
-      )}
-    </div>
-  )
-}
 
 // ============================================
 // COMPONENTE: AsignaturaCard

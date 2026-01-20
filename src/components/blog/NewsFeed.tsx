@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { 
+import {
   ArrowRight,
   Filter,
   Loader2
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { formatDate } from '@/lib/format'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -29,15 +30,6 @@ const CATEGORY_CONFIG: Record<NoticiaCategoria, { label: string; color: string; 
   recurso: { label: 'RECURSO', color: 'text-white', bgColor: 'bg-vt-green' },
   evento: { label: 'EVENTO', color: 'text-white', bgColor: 'bg-vt-purple' },
   general: { label: 'GENERAL', color: 'text-white', bgColor: 'bg-vt-gray-dark-2' },
-}
-
-function formatDate(dateString: string) {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('es-ES', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
 }
 
 interface NewsCardProps {
@@ -68,7 +60,7 @@ function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps
             <span className="text-6xl opacity-30">📰</span>
           </div>
         )}
-        
+
         {/* Badge categoría */}
         <span className={cn(
           'absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold tracking-wide',
@@ -112,7 +104,7 @@ function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-3 border-t">
-          <Link 
+          <Link
             href={`/blog/${news.id}`}
             className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1"
           >
@@ -138,11 +130,11 @@ export function NewsFeed() {
   const [filter, setFilter] = useState<NoticiaCategoria | 'all'>('all')
   const [showLoginModal, setShowLoginModal] = useState(false)
   const { noticias, isLoading } = useNoticias(filter === 'all' ? undefined : filter)
-  
+
   // Obtener IDs de noticias para cargar reacciones
   const noticiaIds = noticias.map(n => n.id)
   const { reactionsByNoticia } = useMultipleReactions(noticiaIds)
-  
+
   const supabase = createClient()
   const queryClient = useQueryClient()
 
@@ -256,7 +248,7 @@ export function NewsFeed() {
             counts: { like: 0, love: 0, clap: 0, fire: 0, thinking: 0 },
             userReaction: null,
           }
-          
+
           return (
             <NewsCard
               key={item.id}
@@ -272,16 +264,16 @@ export function NewsFeed() {
       {noticias.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">
-            {filter === 'all' 
-              ? 'No hay publicaciones aún' 
+            {filter === 'all'
+              ? 'No hay publicaciones aún'
               : 'No hay publicaciones en esta categoría'}
           </p>
         </div>
       )}
 
       {/* Modal de login para reacciones */}
-      <LoginPromptModal 
-        open={showLoginModal} 
+      <LoginPromptModal
+        open={showLoginModal}
         onOpenChange={setShowLoginModal}
       />
     </div>

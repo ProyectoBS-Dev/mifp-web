@@ -1,12 +1,13 @@
 'use client'
 
-import { useCallback, useState, useEffect, useRef } from 'react'
-import { Info, Building2, ChevronDown, ChevronRight, AlertTriangle, Loader2, Check } from 'lucide-react'
+import { useState } from 'react'
+import { Info, Building2, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { getGradeColor } from '@/lib/grades'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
-import { Input } from '@/components/ui/input'
+import { NotaInput } from '@/components/ui/nota-input'
 import { type FCTData } from '@/hooks/useNotas'
 
 // ============================================
@@ -30,96 +31,6 @@ interface NotasDashboardProps {
   isFCTSuccess: boolean
 }
 
-// ============================================
-// UTILIDADES
-// ============================================
-
-function getGradeColor(nota: number | null) {
-  if (nota === null) return 'text-muted-foreground'
-  if (nota >= 9) return 'text-vt-green dark:text-vt-green-light'
-  if (nota >= 7) return 'text-vt-green dark:text-vt-green-light'
-  if (nota >= 5) return 'text-vt-blue dark:text-vt-blue-light'
-  return 'text-vt-red dark:text-vt-red-light'
-}
-
-// ============================================
-// COMPONENTE: NotaInput (para FCT)
-// ============================================
-
-interface NotaInputProps {
-  value: number | null
-  onSave: (value: number | null) => void
-  isPending?: boolean
-  isSuccess?: boolean
-  className?: string
-  placeholder?: string
-}
-
-function NotaInput({
-  value,
-  onSave,
-  isPending = false,
-  isSuccess = false,
-  className,
-  placeholder = '-'
-}: NotaInputProps) {
-  const [localValue, setLocalValue] = useState(value?.toString() ?? '')
-  const [showSuccess, setShowSuccess] = useState(false)
-  const lastSavedRef = useRef(value)
-
-  useEffect(() => {
-    if (value !== lastSavedRef.current) {
-      setLocalValue(value?.toString() ?? '')
-      lastSavedRef.current = value
-    }
-  }, [value])
-
-  useEffect(() => {
-    if (isSuccess) {
-      setShowSuccess(true)
-      const timer = setTimeout(() => setShowSuccess(false), 2000)
-      return () => clearTimeout(timer)
-    }
-  }, [isSuccess])
-
-  const handleBlur = useCallback(() => {
-    const numValue = localValue === '' ? null : parseFloat(localValue)
-
-    if (numValue !== null && (isNaN(numValue) || numValue < 0 || numValue > 10)) {
-      setLocalValue(value?.toString() ?? '')
-      return
-    }
-
-    if (numValue !== value) {
-      lastSavedRef.current = numValue
-      onSave(numValue)
-    }
-  }, [localValue, value, onSave])
-
-  return (
-    <div className="flex items-center gap-1.5">
-      <Input
-        type="number"
-        inputMode="decimal"
-        min={0}
-        max={10}
-        step={0.1}
-        value={localValue}
-        onChange={(e) => setLocalValue(e.target.value)}
-        onBlur={handleBlur}
-        disabled={isPending}
-        className={cn('text-center', className)}
-        placeholder={placeholder}
-      />
-      {isPending && (
-        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground flex-shrink-0" />
-      )}
-      {showSuccess && !isPending && (
-        <Check className="h-4 w-4 text-vt-green flex-shrink-0" />
-      )}
-    </div>
-  )
-}
 
 // ============================================
 // COMPONENTE: FCTCard

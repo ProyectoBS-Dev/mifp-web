@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Plus, X, Loader2, StickyNote, Search, Pencil, Trash2, Pin, Copy, Check, Archive, ArchiveRestore, LayoutList, LayoutGrid, Download } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { formatTimeAgo } from '@/lib/format'
 import { useApuntes, useCreateApunte, useDeleteApunte, useUpdateApunte } from '@/hooks'
 import { coloresDisponibles, type Apunte } from '@/types/apuntes'
 import { MiniRichTextEditor, htmlToPlainText, htmlToMarkdown } from './MiniRichTextEditor'
@@ -33,22 +34,6 @@ function getColorClasses(hexColor: string) {
     '#F97316': 'bg-orange-500/20 border-orange-500/30',
   }
   return colorMap[hexColor] || 'bg-muted/50 border-border'
-}
-
-// Formateo de tiempo relativo
-function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffMins = Math.floor(diffMs / 60000)
-  const diffHours = Math.floor(diffMs / 3600000)
-  const diffDays = Math.floor(diffMs / 86400000)
-
-  if (diffMins < 1) return 'Ahora'
-  if (diffMins < 60) return `Hace ${diffMins}m`
-  if (diffHours < 24) return `Hace ${diffHours}h`
-  if (diffDays < 7) return `Hace ${diffDays}d`
-  return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
 }
 
 // Constante para localStorage
@@ -421,7 +406,7 @@ export function NotesWidget() {
                 "text-[10px] text-muted-foreground opacity-60",
                 isCompactMode ? 'mt-0.5' : 'mt-1.5'
               )}>
-                {formatRelativeTime(note.updated_at)}
+                {formatTimeAgo(note.updated_at)}
               </p>
             </div>
           ))}
@@ -565,7 +550,7 @@ export function NotesWidget() {
               {/* Fecha en modal */}
               {!isEditing && selectedNote && (
                 <p className="text-xs text-muted-foreground mt-2">
-                  Última modificación: {formatRelativeTime(selectedNote.updated_at)}
+                  Última modificación: {formatTimeAgo(selectedNote.updated_at)}
                 </p>
               )}
             </div>

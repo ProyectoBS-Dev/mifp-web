@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { Video, Clock, ExternalLink, Loader2, CheckCircle2, ChevronDown, Filter } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { formatMinutes } from '@/lib/format'
 import { useDashboardVTs, useToggleVTVista } from '@/hooks'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
@@ -21,13 +22,12 @@ import {
 } from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
 import type { VTItem } from '@/types/vts'
-import { formatDuration } from '@/types/vts'
 
-function VtCard({ vt, asignatura, onToggle, isPending }: { 
+function VtCard({ vt, asignatura, onToggle, isPending }: {
   vt: VTItem
   asignatura: string
   onToggle: () => void
-  isPending: boolean 
+  isPending: boolean
 }) {
   const fechaProgramada = new Date(vt.fecha_programada)
   const hoy = new Date()
@@ -45,9 +45,9 @@ function VtCard({ vt, asignatura, onToggle, isPending }: {
     <div
       className={cn(
         'p-3 rounded-lg border transition-colors',
-        vt.vista 
-          ? 'opacity-60 border-border bg-muted/20' 
-          : esHoy 
+        vt.vista
+          ? 'opacity-60 border-border bg-muted/20'
+          : esHoy
             ? 'border-vt-green/50 bg-vt-green/5'
             : 'border-border'
       )}
@@ -69,7 +69,7 @@ function VtCard({ vt, asignatura, onToggle, isPending }: {
           <p className="text-xs text-muted-foreground mt-0.5 truncate">
             {asignatura}
           </p>
-          
+
           {/* Fecha y hora (solo si no vista) */}
           {!vt.vista && (
             <div className="flex items-center gap-2 mt-1.5 text-xs">
@@ -85,26 +85,26 @@ function VtCard({ vt, asignatura, onToggle, isPending }: {
               )}
             </div>
           )}
-          
+
           {/* Info de vista */}
           {vt.vista && (
             <div className="flex items-center gap-2 mt-1.5 text-xs">
               <CheckCircle2 className="h-3 w-3 text-vt-green" />
               <span className="text-vt-green font-medium">Vista</span>
               <span className="text-muted-foreground/50">•</span>
-              <span className="text-muted-foreground">{formatDuration(vt.duracion_minutos)}</span>
+              <span className="text-muted-foreground">{formatMinutes(vt.duracion_minutos)}</span>
             </div>
           )}
-          
+
           {/* Duración (solo si no vista) */}
           {!vt.vista && (
             <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
               <Video className="h-3 w-3" />
-              <span>{formatDuration(vt.duracion_minutos)}</span>
+              <span>{formatMinutes(vt.duracion_minutos)}</span>
             </div>
           )}
         </div>
-        
+
         {/* Link a grabación */}
         {vt.enlace_grabacion && (
           <a
@@ -130,7 +130,7 @@ export function VtsWidget() {
 
   // Aplanar todas las VTs con info de asignatura
   const allVTs = useMemo(() => {
-    return vtsByAsignatura?.flatMap(grupo => 
+    return vtsByAsignatura?.flatMap(grupo =>
       grupo.vts.map(vt => ({ ...vt, asignaturaNombre: grupo.asignatura.nombre, asignaturaCodigo: grupo.asignatura.codigo }))
     ) || []
   }, [vtsByAsignatura])
@@ -151,14 +151,14 @@ export function VtsWidget() {
   }, [allVTs, filtroAsignatura])
 
   // Separar pendientes y vistas
-  const pendientes = useMemo(() => 
-    vtsFiltradas.filter(vt => !vt.vista).sort((a, b) => 
+  const pendientes = useMemo(() =>
+    vtsFiltradas.filter(vt => !vt.vista).sort((a, b) =>
       new Date(a.fecha_programada).getTime() - new Date(b.fecha_programada).getTime()
-    ), 
+    ),
     [vtsFiltradas]
   )
-  const vistas = useMemo(() => 
-    vtsFiltradas.filter(vt => vt.vista).sort((a, b) => b.numero - a.numero), 
+  const vistas = useMemo(() =>
+    vtsFiltradas.filter(vt => vt.vista).sort((a, b) => b.numero - a.numero),
     [vtsFiltradas]
   )
 
@@ -199,13 +199,13 @@ export function VtsWidget() {
           <Progress value={porcentaje} className="h-1.5 flex-1" />
           <span className={cn(porcentaje === 100 && 'text-vt-green font-medium')}>{porcentaje}%</span>
         </div>
-        
+
         {/* Filtros */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <Badge variant="secondary" className="flex-shrink-0">
             {pendientes.length} pendiente{pendientes.length !== 1 ? 's' : ''}
           </Badge>
-          
+
           {/* Filtro por asignatura */}
           {asignaturas.length > 1 && (
             <Select value={filtroAsignatura} onValueChange={setFiltroAsignatura}>
@@ -233,8 +233,8 @@ export function VtsWidget() {
           <div className="flex flex-col items-center justify-center py-6 text-center">
             <CheckCircle2 className="h-8 w-8 text-vt-green mb-2" />
             <p className="text-sm font-medium text-vt-green">
-              {filtroAsignatura !== 'todas' 
-                ? '¡Todas las VTs de esta asignatura vistas!' 
+              {filtroAsignatura !== 'todas'
+                ? '¡Todas las VTs de esta asignatura vistas!'
                 : '¡Todas las VTs vistas! 🎉'}
             </p>
             {vistas.length > 0 && (
@@ -245,8 +245,8 @@ export function VtsWidget() {
           </div>
         ) : (
           pendientes.map((vt) => (
-            <VtCard 
-              key={vt.userVtId} 
+            <VtCard
+              key={vt.userVtId}
               vt={vt}
               asignatura={vt.asignaturaNombre}
               onToggle={() => toggleVista.mutate({
@@ -270,18 +270,18 @@ export function VtsWidget() {
                 <span>
                   {showCompleted ? 'Ocultar' : 'Ver'} vistas ({vistas.length})
                 </span>
-                <ChevronDown 
+                <ChevronDown
                   className={cn(
                     'h-4 w-4 transition-transform duration-200',
                     showCompleted && 'rotate-180'
-                  )} 
+                  )}
                 />
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="space-y-2 mt-2">
               {vistas.map((vt) => (
-                <VtCard 
-                  key={vt.userVtId} 
+                <VtCard
+                  key={vt.userVtId}
                   vt={vt}
                   asignatura={vt.asignaturaNombre}
                   onToggle={() => toggleVista.mutate({

@@ -22,27 +22,14 @@ import {
 import type { PACItem } from '@/types/pacs'
 
 // Configuración de prioridad según documentación
-const PRIORIDAD_CONFIG = {
-  alta: { label: 'Alta', color: 'text-vt-red', bgColor: 'bg-vt-red/10', borderColor: 'border-vt-red/50', badge: '🔴' },
-  media: { label: 'Media', color: 'text-vt-yellow-dark', bgColor: 'bg-vt-yellow/10', borderColor: 'border-vt-yellow/50', badge: '🟡' },
-  normal: { label: 'Normal', color: 'text-vt-green', bgColor: 'bg-vt-green/10', borderColor: 'border-vt-green/50', badge: '🟢' },
-} as const
+import { getPrioridad, prioridadConfig, type PrioridadPAC } from '@/types/pacs'
 
-type Prioridad = keyof typeof PRIORIDAD_CONFIG
+const PRIORIDAD_CONFIG = prioridadConfig
 
-function getPrioridad(fechaLimite: string): Prioridad {
-  const diasRestantes = Math.ceil(
-    (new Date(fechaLimite).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  )
-  if (diasRestantes <= 7) return 'alta'
-  if (diasRestantes <= 14) return 'media'
-  return 'normal'
-}
-
-function PacCard({ pac, onToggle, isPending }: { 
+function PacCard({ pac, onToggle, isPending }: {
   pac: PACItem
   onToggle: () => void
-  isPending: boolean 
+  isPending: boolean
 }) {
   const diasRestantes = Math.ceil(
     (new Date(pac.fecha_limite).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
@@ -60,8 +47,8 @@ function PacCard({ pac, onToggle, isPending }: {
     <div
       className={cn(
         'p-3 rounded-lg border transition-colors',
-        pac.completada 
-          ? 'opacity-60 border-border bg-muted/20' 
+        pac.completada
+          ? 'opacity-60 border-border bg-muted/20'
           : cn(config.borderColor, config.bgColor)
       )}
     >
@@ -80,7 +67,7 @@ function PacCard({ pac, onToggle, isPending }: {
           )}>
             {pac.titulo}
           </p>
-          
+
           {/* Solo nombre de asignatura */}
           <p className="text-xs text-muted-foreground mt-0.5">
             {pac.asignatura.nombre}
@@ -90,7 +77,7 @@ function PacCard({ pac, onToggle, isPending }: {
               </span>
             )} */}
           </p>
-          
+
           {/* Fecha y prioridad (solo si no completada) */}
           {!pac.completada && (
             <div className="flex items-center gap-2 mt-1.5 text-xs">
@@ -103,12 +90,12 @@ function PacCard({ pac, onToggle, isPending }: {
                 {diasRestantes <= 0
                   ? 'Vencida'
                   : diasRestantes === 1
-                  ? 'Mañana'
-                  : `${diasRestantes} días`}
+                    ? 'Mañana'
+                    : `${diasRestantes} días`}
               </span>
             </div>
           )}
-          
+
           {/* Info de completada */}
           {pac.completada && (
             <div className="flex items-center gap-2 mt-1.5 text-xs">
@@ -123,7 +110,7 @@ function PacCard({ pac, onToggle, isPending }: {
             </div>
           )}
         </div>
-        
+
         {/* Icono de alerta para urgentes */}
         {prioridad === 'alta' && !pac.completada && (
           <AlertCircle className="h-4 w-4 text-vt-red flex-shrink-0" />
@@ -159,12 +146,12 @@ export function PacsWidget() {
   }, [pacs, filtroAsignatura])
 
   // Separar pendientes y completadas
-  const pendientes = useMemo(() => 
-    pacsFiltradas.filter(p => !p.completada), 
+  const pendientes = useMemo(() =>
+    pacsFiltradas.filter(p => !p.completada),
     [pacsFiltradas]
   )
-  const completadas = useMemo(() => 
-    pacsFiltradas.filter(p => p.completada), 
+  const completadas = useMemo(() =>
+    pacsFiltradas.filter(p => p.completada),
     [pacsFiltradas]
   )
 
@@ -197,7 +184,7 @@ export function PacsWidget() {
         <Badge variant="secondary" className="flex-shrink-0">
           {pendientes.length} pendiente{pendientes.length !== 1 ? 's' : ''}
         </Badge>
-        
+
         {/* Filtro por asignatura */}
         {asignaturas.length > 1 && (
           <Select value={filtroAsignatura} onValueChange={setFiltroAsignatura}>
@@ -224,8 +211,8 @@ export function PacsWidget() {
           <div className="flex flex-col items-center justify-center py-6 text-center">
             <CheckCircle2 className="h-8 w-8 text-vt-green mb-2" />
             <p className="text-sm font-medium text-vt-green">
-              {filtroAsignatura !== 'todas' 
-                ? '¡Todas las PACs de esta asignatura completadas!' 
+              {filtroAsignatura !== 'todas'
+                ? '¡Todas las PACs de esta asignatura completadas!'
                 : '¡Todas las PACs completadas! 🎉'}
             </p>
             {completadas.length > 0 && (
@@ -236,8 +223,8 @@ export function PacsWidget() {
           </div>
         ) : (
           pendientes.map((pac) => (
-            <PacCard 
-              key={pac.userPacId} 
+            <PacCard
+              key={pac.userPacId}
               pac={pac}
               onToggle={() => toggleCompletada.mutate({
                 userPacId: pac.userPacId,
@@ -260,18 +247,18 @@ export function PacsWidget() {
                 <span>
                   {showCompleted ? 'Ocultar' : 'Ver'} completadas ({completadas.length})
                 </span>
-                <ChevronDown 
+                <ChevronDown
                   className={cn(
                     'h-4 w-4 transition-transform duration-200',
                     showCompleted && 'rotate-180'
-                  )} 
+                  )}
                 />
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="space-y-2 mt-2">
               {completadas.map((pac) => (
-                <PacCard 
-                  key={pac.userPacId} 
+                <PacCard
+                  key={pac.userPacId}
                   pac={pac}
                   onToggle={() => toggleCompletada.mutate({
                     userPacId: pac.userPacId,

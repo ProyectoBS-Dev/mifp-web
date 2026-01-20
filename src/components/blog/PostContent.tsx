@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, ArrowRight, Share2, Sparkles, UserPlus } from 'lucide-react'
+import { formatDate } from '@/lib/format'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ReactionBar, type ReactionType } from './ReactionBar'
@@ -13,34 +14,25 @@ import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import type { NoticiaConMeta } from '@/hooks/useNoticias'
 
-function formatDate(dateString: string) {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('es-ES', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
-}
-
 // Renderizar contenido (HTML del editor o markdown legacy)
 function RenderContent({ content }: { content: string }) {
   // Quitar tag de categoría si existe
   const cleanContent = content.replace(/^\[(\w+)\]\s*/i, '').trim()
-  
+
   // Si contiene tags HTML, renderizar directamente
   if (cleanContent.includes('<p>') || cleanContent.includes('<h2>') || cleanContent.includes('<ul>')) {
     return (
-      <div 
+      <div
         className="prose prose-lg dark:prose-invert max-w-none
           prose-headings:border-b prose-headings:pb-2 prose-headings:mt-8 prose-headings:mb-4
           prose-p:text-foreground/90 prose-p:leading-relaxed
           prose-li:text-foreground/90
           prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
-        dangerouslySetInnerHTML={{ __html: cleanContent }} 
+        dangerouslySetInnerHTML={{ __html: cleanContent }}
       />
     )
   }
-  
+
   // Fallback: procesar como markdown
   return (
     <>
@@ -60,8 +52,8 @@ function RenderContent({ content }: { content: string }) {
               <ul key={i} className="list-disc list-inside space-y-1 my-4">
                 {items.map((item, j) => (
                   <li key={j} className="text-foreground/90">
-                    <span dangerouslySetInnerHTML={{ 
-                      __html: item.replace('- ', '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+                    <span dangerouslySetInnerHTML={{
+                      __html: item.replace('- ', '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                     }} />
                   </li>
                 ))}
@@ -74,8 +66,8 @@ function RenderContent({ content }: { content: string }) {
               <ol key={i} className="list-decimal list-inside space-y-1 my-4">
                 {items.map((item, j) => (
                   <li key={j} className="text-foreground/90">
-                    <span dangerouslySetInnerHTML={{ 
-                      __html: item.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+                    <span dangerouslySetInnerHTML={{
+                      __html: item.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                     }} />
                   </li>
                 ))}
@@ -103,7 +95,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
   const { counts, userReaction, react } = useReactions(post.id)
   const autorNombre = post.autor?.full_name || post.autor?.email?.split('@')[0] || 'Equipo MiFP'
   const autorInicial = post.autor?.full_name?.charAt(0) || 'M'
-  
+
   const supabase = createClient()
 
   // Verificar si hay usuario autenticado
@@ -190,7 +182,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
                 <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
                   Siguiente artículo
                 </p>
-                <Link 
+                <Link
                   href={`/blog/${nextPost.id}`}
                   className="text-sm text-primary hover:underline line-clamp-2"
                 >
@@ -205,7 +197,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
                 <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
                   Artículo anterior
                 </p>
-                <Link 
+                <Link
                   href={`/blog/${prevPost.id}`}
                   className="text-sm text-primary hover:underline line-clamp-2"
                 >
@@ -216,7 +208,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
           </div>
 
           <div className="border-t pt-4">
-            <Link 
+            <Link
               href="/blog"
               className="text-sm text-primary hover:underline inline-flex items-center gap-1"
             >
@@ -282,7 +274,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
             <div className="flex-1 text-center md:text-left">
               <h3 className="text-xl font-bold mb-2">¿Te ha gustado este artículo?</h3>
               <p className="text-muted-foreground">
-                Regístrate gratis para acceder a todas las herramientas de MiFP: 
+                Regístrate gratis para acceder a todas las herramientas de MiFP:
                 gestión de PACs, videotutorías, notas y mucho más.
               </p>
             </div>
@@ -299,8 +291,8 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
       )}
 
       {/* Modal de login para reacciones */}
-      <LoginPromptModal 
-        open={showLoginModal} 
+      <LoginPromptModal
+        open={showLoginModal}
         onOpenChange={setShowLoginModal}
       />
     </div>

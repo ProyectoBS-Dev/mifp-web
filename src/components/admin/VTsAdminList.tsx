@@ -16,6 +16,7 @@ import {
   Plus
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { formatMinutes } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -370,14 +371,6 @@ function VTCard({ vt }: { vt: VTData }) {
     })
     : null
 
-  const formatDuration = (minutes: number | null): string => {
-    if (!minutes) return '--'
-    if (minutes < 60) return `${minutes} min`
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`
-  }
-
   const handleSave = async () => {
     setIsSaving(true)
     setError(null)
@@ -489,7 +482,7 @@ function VTCard({ vt }: { vt: VTData }) {
                   )}
                   <span className="flex items-center gap-1">
                     <Video className="h-3 w-3" />
-                    {formatDuration(vt.duracion_minutos)}
+                    {formatMinutes(vt.duracion_minutos)}
                   </span>
                 </div>
 

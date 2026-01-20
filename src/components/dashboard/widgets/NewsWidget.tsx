@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { MessageSquare, ThumbsUp, Heart, Sparkles, Flame, Lightbulb } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { formatTimeAgo } from '@/lib/format'
 import { useNoticias, type NoticiaConMeta, type NoticiaCategoria } from '@/hooks/useNoticias'
 import { useMultipleReactions } from '@/hooks/useReactions'
 import type { ReactionCounts } from '@/components/blog/ReactionBar'
@@ -13,20 +14,6 @@ const CATEGORIA_STYLES: Record<NoticiaCategoria, { bgColor: string; color: strin
   recurso: { bgColor: 'bg-vt-green', color: 'text-white', label: 'RECURSO' },
   evento: { bgColor: 'bg-vt-purple', color: 'text-white', label: 'EVENTO' },
   general: { bgColor: 'bg-vt-gray-dark-2', color: 'text-white', label: 'GENERAL' },
-}
-
-// Formatear fecha relativa
-function formatFecha(dateString: string): string {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) return 'Hoy'
-  if (diffDays === 1) return 'Ayer'
-  if (diffDays < 7) return `Hace ${diffDays} días`
-
-  return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
 }
 
 // Componente para mostrar conteo de reacciones (solo lectura)
@@ -84,7 +71,7 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
         </span>
         <span className="text-xs text-muted-foreground">·</span>
         <span className="text-xs text-muted-foreground">
-          {formatFecha(noticia.created_at)}
+          {formatTimeAgo(noticia.created_at)}
         </span>
       </div>
 

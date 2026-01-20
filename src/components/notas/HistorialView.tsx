@@ -23,10 +23,10 @@ interface SemestreGroup {
 
 function getGradeColor(nota: number | null) {
     if (nota === null) return 'text-muted-foreground'
-    if (nota >= 9) return 'text-emerald-600 dark:text-emerald-400'
-    if (nota >= 7) return 'text-emerald-600 dark:text-emerald-400'
-    if (nota >= 5) return 'text-blue-600 dark:text-blue-400'
-    return 'text-red-600 dark:text-red-400'
+    if (nota >= 9) return 'text-vt-green dark:text-vt-green-light'
+    if (nota >= 7) return 'text-vt-green dark:text-vt-green-light'
+    if (nota >= 5) return 'text-vt-blue dark:text-vt-blue-light'
+    return 'text-vt-red dark:text-vt-red-light'
 }
 
 // Componente de indicador de estado
@@ -38,12 +38,12 @@ function EstadoIndicador({ aprobada, pendiente }: { aprobada: boolean; pendiente
             </span>
         )
     }
-    
+
     return (
         <span className="relative flex h-3 w-3 flex-shrink-0">
             <span className={cn(
                 'relative inline-flex rounded-full h-3 w-3',
-                aprobada ? 'bg-emerald-500' : 'bg-red-500'
+                aprobada ? 'bg-vt-green' : 'bg-vt-red'
             )} />
         </span>
     )
@@ -63,9 +63,9 @@ export function HistorialView() {
     // Agrupar asignaturas por semestre
     const semestreGroups = useMemo((): SemestreGroup[] => {
         if (!data?.detalle) return []
-        
+
         const groups = new Map<string, AsignaturaDetalle[]>()
-        
+
         data.detalle.forEach(asig => {
             const semestre = asig.ultimo_semestre || 'Sin semestre'
             if (!groups.has(semestre)) {
@@ -73,7 +73,7 @@ export function HistorialView() {
             }
             groups.get(semestre)!.push(asig)
         })
-        
+
         // Convertir a array y ordenar por semestre (más reciente primero)
         return Array.from(groups.entries())
             .map(([semestre, asignaturas]) => ({ semestre, asignaturas }))
@@ -138,13 +138,13 @@ export function HistorialView() {
                         </div>
                         <div className="text-center p-4 rounded-lg bg-card border">
                             <p className="text-sm text-muted-foreground">Aprobadas</p>
-                            <p className="text-3xl font-bold text-emerald-600">
+                            <p className="text-3xl font-bold text-vt-green">
                                 {data.asignaturas_aprobadas}
                             </p>
                         </div>
                         <div className="text-center p-4 rounded-lg bg-card border">
                             <p className="text-sm text-muted-foreground">Suspensas</p>
-                            <p className="text-3xl font-bold text-red-600">
+                            <p className="text-3xl font-bold text-vt-red">
                                 {data.asignaturas_suspensas}
                             </p>
                         </div>
@@ -182,7 +182,7 @@ export function HistorialView() {
                                 </span>
                                 <div className="h-px flex-1 bg-border" />
                             </div>
-                            
+
                             {/* Lista de asignaturas del semestre */}
                             <Card>
                                 <CardContent className="pt-4 pb-4">
@@ -192,8 +192,8 @@ export function HistorialView() {
                                                 key={asig.asignatura_id}
                                                 className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors"
                                             >
-                                                <EstadoIndicador 
-                                                    aprobada={asig.aprobada} 
+                                                <EstadoIndicador
+                                                    aprobada={asig.aprobada}
                                                     pendiente={asig.ultima_nota === null}
                                                 />
                                                 <span className="font-medium flex-1 truncate">

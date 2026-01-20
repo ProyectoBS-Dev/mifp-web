@@ -36,11 +36,11 @@ function ReactionCountsDisplay({ counts }: { counts: ReactionCounts }) {
   if (totalReactions === 0) return null
 
   const reactions = [
-    { type: 'like', count: counts.like, icon: ThumbsUp, color: 'text-blue-500' },
-    { type: 'love', count: counts.love, icon: Heart, color: 'text-red-500' },
-    { type: 'clap', count: counts.clap, icon: Sparkles, color: 'text-yellow-500' },
+    { type: 'like', count: counts.like, icon: ThumbsUp, color: 'text-vt-blue' },
+    { type: 'love', count: counts.love, icon: Heart, color: 'text-vt-red' },
+    { type: 'clap', count: counts.clap, icon: Sparkles, color: 'text-vt-yellow' },
     { type: 'fire', count: counts.fire, icon: Flame, color: 'text-orange-500' },
-    { type: 'thinking', count: counts.thinking, icon: Lightbulb, color: 'text-purple-500' },
+    { type: 'thinking', count: counts.thinking, icon: Lightbulb, color: 'text-vt-purple' },
   ].filter(r => r.count > 0)
 
   return (
@@ -70,9 +70,9 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
         <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium overflow-hidden">
           {noticia.autor?.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img 
-              src={noticia.autor.avatar_url} 
-              alt={noticia.autor.full_name || 'Avatar'} 
+            <img
+              src={noticia.autor.avatar_url}
+              alt={noticia.autor.full_name || 'Avatar'}
               className="h-full w-full object-cover"
             />
           ) : (
@@ -107,7 +107,7 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
 
       {/* Footer: Leer más + Reacciones */}
       <div className="flex items-center justify-between">
-        <Link 
+        <Link
           href={`/blog/${noticia.id}`}
           className="text-xs text-primary hover:underline font-medium"
         >
@@ -121,11 +121,11 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
 
 export function NewsWidget() {
   const { noticias, isLoading } = useNoticias()
-  
+
   // Tomar solo las primeras 3 noticias para el widget
   const displayNoticias = noticias.slice(0, 3)
   const noticiaIds = displayNoticias.map(n => n.id)
-  
+
   const { reactionsByNoticia } = useMultipleReactions(noticiaIds)
 
   if (isLoading) {
@@ -164,8 +164,8 @@ export function NewsWidget() {
     <div className="flex flex-col h-full">
       {/* Link Ver todo */}
       <div className="flex justify-end mb-2">
-        <Link 
-          href="/blog" 
+        <Link
+          href="/blog"
           className="text-xs text-primary hover:underline font-medium"
         >
           Ver todo →
@@ -175,8 +175,8 @@ export function NewsWidget() {
       {/* Lista de noticias */}
       <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1">
         {displayNoticias.map((noticia) => (
-          <NewsCard 
-            key={noticia.id} 
+          <NewsCard
+            key={noticia.id}
             noticia={noticia}
             reactionCounts={reactionsByNoticia[noticia.id]?.counts || { like: 0, love: 0, clap: 0, fire: 0, thinking: 0 }}
           />

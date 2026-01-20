@@ -160,7 +160,7 @@ export default function BlogLayout({
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="flex items-center gap-2 text-sm text-muted-foreground">
-            ~/Dev desarrollado con <Heart className="h-4 w-4 text-red-500" /> por estudiantes de FP - © MiFP.
+              ~/Dev desarrollado con <Heart className="h-4 w-4 text-vt-red" /> por estudiantes de FP - © MiFP.
             </p>
             <div className="flex items-center gap-4">
               <Link href="/home" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">

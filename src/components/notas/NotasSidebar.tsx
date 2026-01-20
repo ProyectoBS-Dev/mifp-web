@@ -45,8 +45,8 @@ const EstadoIndicador = memo(function EstadoIndicador({ estado }: { estado: Esta
   const colorClasses = {
     sin_notas: 'bg-gray-400',
     en_progreso: 'bg-amber-500',
-    aprobada: 'bg-emerald-500',
-    suspensa: 'bg-red-500'
+    aprobada: 'bg-vt-green',
+    suspensa: 'bg-vt-red'
   }
 
   return (
@@ -69,13 +69,13 @@ interface AsignaturaItemProps {
   onClick: () => void
 }
 
-const AsignaturaItem = memo(function AsignaturaItem({ 
-  asignatura, 
-  isSelected, 
-  onClick 
+const AsignaturaItem = memo(function AsignaturaItem({
+  asignatura,
+  isSelected,
+  onClick
 }: AsignaturaItemProps) {
   const { estado, notaModulo, rasCompletados, rasTotal } = asignatura
-  
+
   return (
     <button
       onClick={onClick}
@@ -98,9 +98,9 @@ const AsignaturaItem = memo(function AsignaturaItem({
         </div>
         <span className={cn(
           'font-semibold text-sm flex-shrink-0',
-          notaModulo !== null && notaModulo >= 5 ? 'text-emerald-600 dark:text-emerald-400' : 
-          notaModulo !== null && notaModulo < 5 ? 'text-red-600 dark:text-red-400' : 
-          'text-muted-foreground'
+          notaModulo !== null && notaModulo >= 5 ? 'text-vt-green dark:text-vt-green-light' :
+            notaModulo !== null && notaModulo < 5 ? 'text-vt-red dark:text-vt-red-light' :
+              'text-muted-foreground'
         )}>
           {notaModulo !== null ? notaModulo.toFixed(2) : '—'}
         </span>
@@ -119,23 +119,23 @@ interface FCTCompactoProps {
   totalAsignaturas: number
 }
 
-const FCTCompacto = memo(function FCTCompacto({ 
-  fct, 
-  asignaturasAprobadas, 
-  totalAsignaturas 
+const FCTCompacto = memo(function FCTCompacto({
+  fct,
+  asignaturasAprobadas,
+  totalAsignaturas
 }: FCTCompactoProps) {
   const porcentaje = totalAsignaturas > 0
     ? Math.round((asignaturasAprobadas / totalAsignaturas) * 100)
     : 0
   const puedeHacerFCT = porcentaje >= 50
-  
+
   return (
     <div className="px-3 py-3">
       <div className="flex items-center gap-2 mb-2">
         <Building2 className="h-4 w-4 text-muted-foreground" />
         <span className="font-medium text-sm">FCT</span>
         {fct.nota !== null && (
-          <span className="ml-auto font-semibold text-sm text-emerald-600 dark:text-emerald-400">
+          <span className="ml-auto font-semibold text-sm text-vt-green dark:text-vt-green-light">
             {fct.nota.toFixed(1)}
           </span>
         )}
@@ -143,7 +143,7 @@ const FCTCompacto = memo(function FCTCompacto({
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>Progreso: {asignaturasAprobadas}/{totalAsignaturas} ({porcentaje}%)</span>
-          {puedeHacerFCT && <span className="text-emerald-600">✓</span>}
+          {puedeHacerFCT && <span className="text-vt-green">✓</span>}
         </div>
         <Progress value={porcentaje} className="h-1.5" />
       </div>
@@ -179,7 +179,7 @@ export const NotasSidebar = memo(function NotasSidebar({
           Gestiona tus calificaciones
         </p>
       </div>
-      
+
       {/* Tabs */}
       <div className="p-4 pb-3">
         <Tabs value={activeTab} onValueChange={(v) => onTabChange(v as 'semestre' | 'historial')}>
@@ -195,7 +195,7 @@ export const NotasSidebar = memo(function NotasSidebar({
           </TabsList>
         </Tabs>
       </div>
-      
+
       {/* Selector de Semestre (solo en tab semestre) */}
       {activeTab === 'semestre' && (
         <div className="px-4 pb-3">
@@ -206,10 +206,10 @@ export const NotasSidebar = memo(function NotasSidebar({
           />
         </div>
       )}
-      
+
       {/* Separador */}
       <div className="mx-4 border-t" />
-      
+
       {/* Contenido según tab */}
       {activeTab === 'semestre' && (
         <>
@@ -236,7 +236,7 @@ export const NotasSidebar = memo(function NotasSidebar({
               )}
             </div>
           </div>
-          
+
           {/* FCT Status */}
           {totalAsignaturas > 0 && (
             <>
@@ -250,7 +250,7 @@ export const NotasSidebar = memo(function NotasSidebar({
           )}
         </>
       )}
-      
+
       {/* Tab Historial: mensaje informativo */}
       {activeTab === 'historial' && (
         <div className="flex-1 overflow-y-auto p-4">

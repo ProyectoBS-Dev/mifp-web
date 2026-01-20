@@ -52,12 +52,12 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
   // Determinar el layout inicial (custom o default)
   const baseLayout = initialLayout?.length ? initialLayout : DEFAULT_LAYOUT_LG
   const initialLayouts = generateResponsiveLayouts(baseLayout)
-  
+
   const [layouts, setLayouts] = useState<Layouts>(initialLayouts)
   const [isEditing, setIsEditing] = useState(false)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const [hasChanges, setHasChanges] = useState(false)
-  
+
   // Ref para el layout actual durante edición (evita problemas de closure)
   const currentLayoutRef = useRef<DashboardLayoutItem[]>(baseLayout)
   // Ref para debounce del auto-guardado
@@ -66,10 +66,10 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
   // Guardar layout via API route (bypass RLS)
   const saveLayout = useCallback(async (layoutToSave: DashboardLayoutItem[]) => {
     setSaveStatus('saving')
-    
+
     try {
       const cleanedLayout = cleanLayoutForSave(layoutToSave)
-      
+
       const response = await fetch('/api/user/grid-layout', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -80,7 +80,7 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
         setSaveStatus('error')
         return false
       }
-      
+
       setSaveStatus('saved')
       setHasChanges(false)
       setTimeout(() => setSaveStatus('idle'), 2000)
@@ -95,13 +95,13 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
   const handleLayoutChange = useCallback(
     (currentLayout: Layout[], allLayouts: Layouts) => {
       setLayouts(allLayouts)
-      
+
       // Usar currentLayout directamente (layout del breakpoint activo con cambios)
       currentLayoutRef.current = currentLayout as DashboardLayoutItem[]
-      
+
       if (isEditing) {
         setHasChanges(true)
-        
+
         // Debounce: auto-guardar después de 1.5 segundos
         if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
         saveTimeoutRef.current = setTimeout(() => {
@@ -120,7 +120,7 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
         clearTimeout(saveTimeoutRef.current)
         saveTimeoutRef.current = null
       }
-      
+
       if (hasChanges) {
         await saveLayout(currentLayoutRef.current)
       }
@@ -161,22 +161,22 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
         {/* Status indicator */}
         {saveStatus === 'saving' && (
           <span className="text-xs text-muted-foreground animate-pulse flex items-center gap-1">
-            <span className="h-2 w-2 bg-yellow-500 rounded-full animate-pulse" />
+            <span className="h-2 w-2 bg-vt-yellow rounded-full animate-pulse" />
             Guardando...
           </span>
         )}
         {saveStatus === 'saved' && (
-          <span className="text-xs text-green-600 flex items-center gap-1">
+          <span className="text-xs text-vt-green flex items-center gap-1">
             <Check className="h-3 w-3" />
             Guardado
           </span>
         )}
         {saveStatus === 'error' && (
-          <span className="text-xs text-red-500">
+          <span className="text-xs text-vt-red">
             Error al guardar
           </span>
         )}
-        
+
         {/* Reset button (solo en modo edición) */}
         {isEditing && (
           <button
@@ -188,7 +188,7 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
             Resetear
           </button>
         )}
-        
+
         {/* Main toggle button */}
         <button
           onClick={handleToggleEdit}
@@ -233,7 +233,7 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
       >
         {DEFAULT_WIDGETS.map((widget) => {
           const WidgetComponent = WIDGET_COMPONENTS[widget.type]
-          
+
           return (
             <div
               key={widget.id}
@@ -249,13 +249,13 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
                   <GripVertical className="h-4 w-4 text-muted-foreground" />
                 </div>
               )}
-              
+
               {/* Widget Header */}
               <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
                 <span className="text-lg">{widget.icon}</span>
                 <h3 className="font-semibold text-sm">{widget.title}</h3>
               </div>
-              
+
               {/* Widget Content */}
               <div className="p-4 h-[calc(100%-52px)] overflow-hidden flex flex-col">
                 <WidgetComponent />

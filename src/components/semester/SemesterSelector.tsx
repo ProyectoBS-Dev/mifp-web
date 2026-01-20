@@ -117,7 +117,7 @@ export function SemesterSelector({
                             </span>
                         </div>
                         {semestre.activo && (
-                            <Badge className="bg-green-500/10 text-green-600 border-green-500/20 text-xs">
+                            <Badge className="bg-vt-green/10 text-vt-green border-vt-green/20 text-xs">
                                 Activo
                             </Badge>
                         )}

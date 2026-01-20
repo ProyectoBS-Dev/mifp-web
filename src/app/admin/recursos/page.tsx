@@ -46,9 +46,9 @@ const TIPO_ICONS = {
 }
 
 const TIPO_COLORS = {
-  pdf: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  enlace: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  podcast: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+  pdf: 'bg-vt-red/10 text-vt-red dark:bg-vt-red/20 dark:text-vt-red-light',
+  enlace: 'bg-vt-blue/10 text-vt-blue dark:bg-vt-blue/20 dark:text-vt-blue-light',
+  podcast: 'bg-vt-purple/10 text-vt-purple dark:bg-vt-purple/20 dark:text-vt-purple-light',
 }
 
 const TIPO_LABELS = {
@@ -152,7 +152,7 @@ export default async function RecursosAdminPage() {
             <CardDescription className="flex items-center gap-1">
               <FileText className="h-3 w-3" /> PDFs
             </CardDescription>
-            <CardTitle className="text-3xl text-red-600">{stats.pdf}</CardTitle>
+            <CardTitle className="text-3xl text-vt-red">{stats.pdf}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
@@ -160,7 +160,7 @@ export default async function RecursosAdminPage() {
             <CardDescription className="flex items-center gap-1">
               <LinkIcon className="h-3 w-3" /> Enlaces
             </CardDescription>
-            <CardTitle className="text-3xl text-blue-600">{stats.enlace}</CardTitle>
+            <CardTitle className="text-3xl text-vt-blue">{stats.enlace}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
@@ -168,7 +168,7 @@ export default async function RecursosAdminPage() {
             <CardDescription className="flex items-center gap-1">
               <Headphones className="h-3 w-3" /> Podcasts
             </CardDescription>
-            <CardTitle className="text-3xl text-purple-600">{stats.podcast}</CardTitle>
+            <CardTitle className="text-3xl text-vt-purple">{stats.podcast}</CardTitle>
           </CardHeader>
         </Card>
       </div>

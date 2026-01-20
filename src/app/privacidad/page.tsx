@@ -159,7 +159,7 @@ export default function PrivacidadPage() {
             <p className="text-muted-foreground leading-relaxed">
               Conservamos tus datos mientras tu cuenta esté activa. Si decides eliminar tu cuenta, 
               todos tus datos personales serán eliminados permanentemente de nuestros sistemas 
-              en un plazo máximo de 30 días.
+              de forma inmediata.
             </p>
           </section>
 
@@ -172,7 +172,7 @@ export default function PrivacidadPage() {
               <li><strong className="text-foreground">Acceso:</strong> Consultar qué datos tenemos sobre ti</li>
               <li><strong className="text-foreground">Rectificación:</strong> Corregir datos inexactos desde tu perfil</li>
               <li><strong className="text-foreground">Supresión:</strong> Eliminar tu cuenta y todos tus datos</li>
-              <li><strong className="text-foreground">Portabilidad:</strong> Solicitar una copia de tus datos en formato estructurado</li>
+              <li><strong className="text-foreground">Portabilidad:</strong> Solicitar una copia de tus datos contactándonos por email</li>
               <li><strong className="text-foreground">Oposición:</strong> Oponerte a determinados tratamientos</li>
               <li><strong className="text-foreground">Limitación:</strong> Solicitar la limitación del tratamiento en ciertos casos</li>
             </ul>
@@ -224,13 +224,15 @@ export default function PrivacidadPage() {
           </section>
 
           {/* Footer de la política */}
-          <div className="mt-12 pt-8 border-t border-border text-center">
-            <p className="text-sm text-muted-foreground mb-3">© 2026 MiFP</p>
-            <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
-              <Link href="/privacidad" className="hover:text-primary hover:underline">Privacidad</Link>
-              <Link href="/terminos" className="hover:text-primary hover:underline">Términos</Link>
-              <Link href="/blog" className="hover:text-primary hover:underline">Blog</Link>
-              <a href="mailto:contacto@mifp.dev" className="hover:text-primary hover:underline">Contacto</a>
+          <div className="mt-12 pt-8 border-t border-border not-prose">
+            <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-2 text-sm text-muted-foreground font-normal">
+              <span>© 2026 MiFP</span>
+              <span>·</span>
+              <Link href="/terminos" className="hover:text-primary transition-colors">Términos</Link>
+              <span>·</span>
+              <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
+              <span>·</span>
+              <a href="mailto:contacto@mifp.dev" className="hover:text-primary transition-colors">Contacto</a>
             </div>
           </div>
 

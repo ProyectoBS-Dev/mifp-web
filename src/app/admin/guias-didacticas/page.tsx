@@ -98,7 +98,7 @@ export default async function GuiasDidacticasPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-yellow-500">{pendientes.length}</p>
+              <p className="text-3xl font-bold text-vt-yellow">{pendientes.length}</p>
               <p className="text-xs text-muted-foreground">Pendientes</p>
             </div>
           </CardContent>
@@ -106,7 +106,7 @@ export default async function GuiasDidacticasPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-green-500">
+              <p className="text-3xl font-bold text-vt-green">
                 {gds.filter(g => g.estado === 'validada').length}
               </p>
               <p className="text-xs text-muted-foreground">Validadas</p>
@@ -116,7 +116,7 @@ export default async function GuiasDidacticasPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-red-500">
+              <p className="text-3xl font-bold text-vt-red">
                 {gds.filter(g => g.estado === 'rechazada').length}
               </p>
               <p className="text-xs text-muted-foreground">Rechazadas</p>
@@ -138,7 +138,7 @@ export default async function GuiasDidacticasPage() {
         <Card className="border-yellow-500/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-yellow-500" />
+              <Clock className="h-5 w-5 text-vt-yellow" />
               Pendientes de Validación
               <Badge variant="secondary">{pendientes.length}</Badge>
             </CardTitle>

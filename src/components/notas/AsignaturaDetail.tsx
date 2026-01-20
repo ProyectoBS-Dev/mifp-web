@@ -22,10 +22,10 @@ import {
 
 function getGradeColor(nota: number | null) {
   if (nota === null) return 'text-muted-foreground'
-  if (nota >= 9) return 'text-emerald-600 dark:text-emerald-400'
-  if (nota >= 7) return 'text-emerald-600 dark:text-emerald-400'
-  if (nota >= 5) return 'text-blue-600 dark:text-blue-400'
-  return 'text-red-600 dark:text-red-400'
+  if (nota >= 9) return 'text-vt-green dark:text-vt-green-light'
+  if (nota >= 7) return 'text-vt-green dark:text-vt-green-light'
+  if (nota >= 5) return 'text-vt-blue dark:text-vt-blue-light'
+  return 'text-vt-red dark:text-vt-red-light'
 }
 
 function getGradeBadge(nota: number | null) {
@@ -127,7 +127,7 @@ function NotaInput({
         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground flex-shrink-0" />
       )}
       {showSuccess && !isPending && (
-        <Check className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+        <Check className="h-4 w-4 text-vt-green flex-shrink-0" />
       )}
     </div>
   )
@@ -149,11 +149,11 @@ export function AsignaturaDetail({
   isExamenSuccess
 }: AsignaturaDetailProps) {
   // TODOS LOS HOOKS DEBEN IR PRIMERO (antes de cualquier return condicional)
-  
+
   // Calcular notas por RA
   const notasRAs = useMemo(() => {
     if (!asignatura.tieneGD) return new Map()
-    
+
     const map = new Map<string, { resultado: ReturnType<typeof calcularNotaRA>, ra: RA }>()
 
     asignatura.ras.forEach(ra => {
@@ -168,7 +168,7 @@ export function AsignaturaDetail({
   // Calcular nota del módulo
   const notaModulo = useMemo(() => {
     if (!asignatura.tieneGD) return { notaSinFCT: null, notaConFCT: null, todosRAsAprobados: false }
-    
+
     const notasMap = new Map<string, number>()
     notasRAs.forEach((value, key) => {
       if (value.resultado.notaRA !== null) {
@@ -206,7 +206,7 @@ export function AsignaturaDetail({
   // Calcular media EC global
   const mediaECGlobal = useMemo(() => {
     if (!asignatura.tieneGD) return null
-    
+
     const medias = Array.from(notasRAs.values())
       .filter(v => v.resultado.mediaEC !== null)
       .map(v => v.resultado.mediaEC!)
@@ -300,8 +300,8 @@ export function AsignaturaDetail({
             <div className={cn(
               'flex items-center gap-3 p-3 rounded-lg mt-4',
               notaMinimaExamen > 5
-                ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
-                : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                ? 'bg-vt-yellow/10 text-vt-yellow-dark dark:text-vt-yellow-light'
+                : 'bg-vt-green/10 text-vt-green-dark dark:text-vt-green-light'
             )}>
               {notaMinimaExamen > 5 ? (
                 <AlertCircle className="h-5 w-5 flex-shrink-0" />
@@ -354,7 +354,7 @@ export function AsignaturaDetail({
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         <span className={cn(
                           'w-2 h-2 rounded-full flex-shrink-0',
-                          pac.tipo === 'interactiva' ? 'bg-blue-500' : 'bg-purple-500'
+                          pac.tipo === 'interactiva' ? 'bg-vt-blue' : 'bg-vt-purple'
                         )} />
                         <span className="truncate">{pac.titulo}</span>
                         <Badge variant="outline" className="text-xs flex-shrink-0">
@@ -392,13 +392,13 @@ export function AsignaturaDetail({
                         ? (asignatura.notaExamen * 0.6).toFixed(2)
                         : '—'}
                       {asignatura.notaExamen !== null && asignatura.notaExamen < 5 && (
-                        <span className="text-red-500 ml-1">(≥5 requerido)</span>
+                        <span className="text-vt-red ml-1">(≥5 requerido)</span>
                       )}
                     </span>
                   </div>
                   <div className="flex justify-between font-medium pt-2 border-t">
                     <span>Nota RA{ra.numero}:</span>
-                    <span className={resultado.aprobado ? 'text-emerald-600' : resultado.notaRA !== null ? 'text-red-600' : ''}>
+                    <span className={resultado.aprobado ? 'text-vt-green' : resultado.notaRA !== null ? 'text-vt-red' : ''}>
                       {resultado.notaRA?.toFixed(2) ?? '—'}
                     </span>
                   </div>

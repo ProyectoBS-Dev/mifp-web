@@ -307,7 +307,7 @@ export function AsignaturasCRUD({
                                     <div className="flex items-center gap-3">
                                         <span className="font-medium">{semestre.nombre}</span>
                                         {semestre.activo && (
-                                            <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
+                                            <Badge className="bg-vt-green/10 text-vt-green border-vt-green/20">
                                                 Activo
                                             </Badge>
                                         )}

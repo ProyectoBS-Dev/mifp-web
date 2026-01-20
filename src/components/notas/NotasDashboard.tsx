@@ -36,10 +36,10 @@ interface NotasDashboardProps {
 
 function getGradeColor(nota: number | null) {
   if (nota === null) return 'text-muted-foreground'
-  if (nota >= 9) return 'text-emerald-600 dark:text-emerald-400'
-  if (nota >= 7) return 'text-emerald-600 dark:text-emerald-400'
-  if (nota >= 5) return 'text-blue-600 dark:text-blue-400'
-  return 'text-red-600 dark:text-red-400'
+  if (nota >= 9) return 'text-vt-green dark:text-vt-green-light'
+  if (nota >= 7) return 'text-vt-green dark:text-vt-green-light'
+  if (nota >= 5) return 'text-vt-blue dark:text-vt-blue-light'
+  return 'text-vt-red dark:text-vt-red-light'
 }
 
 // ============================================
@@ -115,7 +115,7 @@ function NotaInput({
         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground flex-shrink-0" />
       )}
       {showSuccess && !isPending && (
-        <Check className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+        <Check className="h-4 w-4 text-vt-green flex-shrink-0" />
       )}
     </div>
   )
@@ -164,7 +164,7 @@ function FCTCard({
           </CardTitle>
           <div className="flex items-center gap-2">
             {fct.nota !== null && (
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+              <span className="font-semibold text-vt-green dark:text-vt-green-light">
                 {fct.nota.toFixed(1)}
               </span>
             )}
@@ -186,7 +186,7 @@ function FCTCard({
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Progreso</span>
-              <span className={porcentaje >= 50 ? 'text-emerald-600' : 'text-muted-foreground'}>
+              <span className={porcentaje >= 50 ? 'text-vt-green' : 'text-muted-foreground'}>
                 {asignaturasAprobadas}/{totalAsignaturas} ({porcentaje.toFixed(0)}%)
               </span>
             </div>
@@ -251,10 +251,10 @@ function SistemaEvaluacionCard() {
             <p className="text-muted-foreground/70 text-xs">Cada RA debe tener nota ≥5</p>
             <div className="flex gap-4 mt-2">
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-500" /> PAC Interactiva
+                <span className="w-2 h-2 rounded-full bg-vt-blue" /> PAC Interactiva
               </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500" /> PAC Desarrollo
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-vt-purple" /> PAC Desarrollo
               </span>
             </div>
           </div>
@@ -328,13 +328,13 @@ export function NotasDashboard({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-4 pb-4 text-center">
-            <p className="text-2xl font-bold text-emerald-600">{stats.aprobadas}</p>
+            <p className="text-2xl font-bold text-vt-green">{stats.aprobadas}</p>
             <p className="text-xs text-muted-foreground">Aprobadas</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4 pb-4 text-center">
-            <p className="text-2xl font-bold text-red-600">{stats.suspensas}</p>
+            <p className="text-2xl font-bold text-vt-red">{stats.suspensas}</p>
             <p className="text-xs text-muted-foreground">Suspensas</p>
           </CardContent>
         </Card>

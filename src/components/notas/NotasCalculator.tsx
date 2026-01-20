@@ -29,10 +29,10 @@ import {
 
 function getGradeColor(nota: number | null) {
   if (nota === null) return 'text-muted-foreground'
-  if (nota >= 9) return 'text-emerald-600 dark:text-emerald-400'
-  if (nota >= 7) return 'text-emerald-600 dark:text-emerald-400'
-  if (nota >= 5) return 'text-blue-600 dark:text-blue-400'
-  return 'text-red-600 dark:text-red-400'
+  if (nota >= 9) return 'text-vt-green dark:text-vt-green-light'
+  if (nota >= 7) return 'text-vt-green dark:text-vt-green-light'
+  if (nota >= 5) return 'text-vt-blue dark:text-vt-blue-light'
+  return 'text-vt-red dark:text-vt-red-light'
 }
 
 function getGradeBadge(nota: number | null) {
@@ -136,7 +136,7 @@ function NotaInput({
         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground flex-shrink-0" />
       )}
       {showSuccess && !isPending && (
-        <Check className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+        <Check className="h-4 w-4 text-vt-green flex-shrink-0" />
       )}
     </div>
   )
@@ -324,8 +324,8 @@ function AsignaturaCard({
             <div className={cn(
               'flex items-center gap-3 p-3 rounded-lg',
               notaMinimaExamen > 5
-                ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
-                : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                ? 'bg-vt-yellow/10 text-vt-yellow-dark dark:text-vt-yellow-light'
+                : 'bg-vt-green/10 text-vt-green-dark dark:text-vt-green-light'
             )}>
               {notaMinimaExamen > 5 ? (
                 <AlertCircle className="h-5 w-5 flex-shrink-0" />
@@ -376,7 +376,7 @@ function AsignaturaCard({
                         <div className="flex items-center gap-2 flex-1">
                           <span className={cn(
                             'w-2 h-2 rounded-full',
-                            pac.tipo === 'interactiva' ? 'bg-blue-500' : 'bg-purple-500'
+                            pac.tipo === 'interactiva' ? 'bg-vt-blue' : 'bg-vt-purple'
                           )} />
                           <span>{pac.titulo}</span>
                           <Badge variant="outline" className="text-xs">
@@ -414,13 +414,13 @@ function AsignaturaCard({
                           ? (asignatura.notaExamen * 0.6).toFixed(2)
                           : '-'}
                         {asignatura.notaExamen !== null && asignatura.notaExamen < 5 && (
-                          <span className="text-red-500 ml-1">(≥5 requerido)</span>
+                          <span className="text-vt-red ml-1">(≥5 requerido)</span>
                         )}
                       </span>
                     </div>
                     <div className="flex justify-between font-medium pt-2 border-t">
                       <span>Nota RA{ra.numero}:</span>
-                      <span className={resultado.aprobado ? 'text-emerald-600' : 'text-red-600'}>
+                      <span className={resultado.aprobado ? 'text-vt-green' : 'text-vt-red'}>
                         {resultado.notaRA?.toFixed(2) ?? '-'}
                       </span>
                     </div>
@@ -522,7 +522,7 @@ function FCTSection({
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Progreso</span>
-              <span className={porcentajeAprobadas >= 50 ? 'text-emerald-600' : 'text-muted-foreground'}>
+              <span className={porcentajeAprobadas >= 50 ? 'text-vt-green' : 'text-muted-foreground'}>
                 {asignaturasAprobadas}/{totalAsignaturas} ({porcentajeAprobadas.toFixed(0)}%)
               </span>
             </div>
@@ -863,10 +863,10 @@ export function NotasCalculator() {
                 <p className="text-muted-foreground/70 text-xs">Cada RA debe tener nota ≥5</p>
                 <div className="flex gap-4 mt-2">
                   <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-blue-500" /> PAC Interactiva
+                    <span className="w-2 h-2 rounded-full bg-vt-blue" /> PAC Interactiva
                   </span>
-                  <span className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-purple-500" /> PAC Desarrollo
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span className="w-2 h-2 rounded-full bg-vt-purple" /> PAC Desarrollo
                   </span>
                 </div>
               </div>

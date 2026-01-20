@@ -25,11 +25,11 @@ import {
 // Mapeo de colores hex a clases de Tailwind
 function getColorClasses(hexColor: string) {
   const colorMap: Record<string, string> = {
-    '#FBBF24': 'bg-yellow-400/20 border-yellow-400/30',
-    '#3B82F6': 'bg-blue-500/20 border-blue-500/30',
-    '#22C55E': 'bg-green-500/20 border-green-500/30',
-    '#A855F7': 'bg-purple-500/20 border-purple-500/30',
-    '#EF4444': 'bg-red-500/20 border-red-500/30',
+    '#FBBF24': 'bg-vt-yellow/20 border-vt-yellow/30',
+    '#3B82F6': 'bg-vt-blue/20 border-vt-blue/30',
+    '#22C55E': 'bg-vt-green/20 border-vt-green/30',
+    '#A855F7': 'bg-vt-purple/20 border-vt-purple/30',
+    '#EF4444': 'bg-vt-red/20 border-vt-red/30',
     '#F97316': 'bg-orange-500/20 border-orange-500/30',
   }
   return colorMap[hexColor] || 'bg-muted/50 border-border'
@@ -193,10 +193,10 @@ export function NotesWidget() {
 
   const copyToClipboard = async (note: Apunte, e?: React.MouseEvent) => {
     e?.stopPropagation()
-    const plainText = note.titulo 
+    const plainText = note.titulo
       ? `${note.titulo}\n\n${htmlToPlainText(note.contenido)}`
       : htmlToPlainText(note.contenido)
-    
+
     await navigator.clipboard.writeText(plainText)
     setCopiedNoteId(note.id)
     setTimeout(() => setCopiedNoteId(null), 2000)
@@ -204,7 +204,7 @@ export function NotesWidget() {
 
   const exportToMarkdown = (note: Apunte) => {
     const markdown = `# ${note.titulo || 'Sin título'}\n\n${htmlToMarkdown(note.contenido)}\n\n---\n*Exportado desde MiFP - ${new Date().toLocaleDateString('es-ES')}*`
-    
+
     const blob = new Blob([markdown], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -241,7 +241,7 @@ export function NotesWidget() {
                 className="w-full pl-7 pr-2 py-1.5 text-xs rounded-md border bg-background focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
-            
+
             {/* Botones de control */}
             <div className="flex items-center gap-0.5">
               <Tooltip>
@@ -260,7 +260,7 @@ export function NotesWidget() {
                   <p>{isCompactMode ? 'Vista normal' : 'Vista compacta'}</p>
                 </TooltipContent>
               </Tooltip>
-              
+
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
@@ -333,7 +333,7 @@ export function NotesWidget() {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Botones de acción */}
                 <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                   {!note.archived && (
@@ -351,7 +351,7 @@ export function NotesWidget() {
                       </TooltipContent>
                     </Tooltip>
                   )}
-                  
+
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
@@ -369,7 +369,7 @@ export function NotesWidget() {
                       <p>{note.archived ? 'Desarchivar' : 'Archivar'}</p>
                     </TooltipContent>
                   </Tooltip>
-                  
+
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
@@ -377,7 +377,7 @@ export function NotesWidget() {
                         className="p-1 rounded hover:bg-black/10"
                       >
                         {copiedNoteId === note.id ? (
-                          <Check className="h-3 w-3 text-green-600" />
+                          <Check className="h-3 w-3 text-vt-green" />
                         ) : (
                           <Copy className="h-3 w-3" />
                         )}
@@ -387,7 +387,7 @@ export function NotesWidget() {
                       <p>{copiedNoteId === note.id ? '¡Copiado!' : 'Copiar'}</p>
                     </TooltipContent>
                   </Tooltip>
-                  
+
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
@@ -407,15 +407,15 @@ export function NotesWidget() {
                   </Tooltip>
                 </div>
               </div>
-              
+
               {/* Contenido (oculto en modo compacto) */}
               {!isCompactMode && (
-                <div 
+                <div
                   className="text-sm line-clamp-3 prose prose-sm dark:prose-invert max-w-none prose-p:my-0.5 prose-ul:my-0.5 prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-primary prose-code:font-mono prose-code:text-xs prose-code:before:content-none prose-code:after:content-none"
                   dangerouslySetInnerHTML={{ __html: note.contenido }}
                 />
               )}
-              
+
               {/* Fecha de modificación */}
               <p className={cn(
                 "text-[10px] text-muted-foreground opacity-60",
@@ -437,7 +437,7 @@ export function NotesWidget() {
                 placeholder="Título (opcional)"
                 className="w-full px-2 py-1.5 text-sm rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
               />
-              
+
               {/* Editor de contenido enriquecido */}
               <MiniRichTextEditor
                 value={newContent}
@@ -445,7 +445,7 @@ export function NotesWidget() {
                 placeholder="Escribe tu nota..."
                 minHeight="60px"
               />
-              
+
               {/* Selector de color */}
               <div className="flex gap-1 pl-1.5">
                 {coloresDisponibles.map((color) => (
@@ -531,7 +531,7 @@ export function NotesWidget() {
                     placeholder="Contenido de la nota..."
                     minHeight="120px"
                   />
-                  
+
                   {/* Selector de color en edición */}
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground">Color:</span>
@@ -553,7 +553,7 @@ export function NotesWidget() {
                   </div>
                 </div>
               ) : (
-                <div 
+                <div
                   className={cn(
                     'p-3 rounded-lg border prose prose-sm dark:prose-invert max-w-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-primary prose-code:font-mono prose-code:text-xs prose-code:before:content-none prose-code:after:content-none',
                     getColorClasses(selectedNote?.color || '#FBBF24')
@@ -561,7 +561,7 @@ export function NotesWidget() {
                   dangerouslySetInnerHTML={{ __html: selectedNote?.contenido || '' }}
                 />
               )}
-              
+
               {/* Fecha en modal */}
               {!isEditing && selectedNote && (
                 <p className="text-xs text-muted-foreground mt-2">
@@ -581,7 +581,7 @@ export function NotesWidget() {
                   <Trash2 className="h-4 w-4 mr-1" />
                   Eliminar
                 </Button>
-                
+
                 {!isEditing && selectedNote && (
                   <>
                     <Tooltip>
@@ -602,7 +602,7 @@ export function NotesWidget() {
                         <p>{selectedNote.archived ? 'Desarchivar' : 'Archivar'}</p>
                       </TooltipContent>
                     </Tooltip>
-                    
+
                     {!selectedNote.archived && (
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -619,7 +619,7 @@ export function NotesWidget() {
                         </TooltipContent>
                       </Tooltip>
                     )}
-                    
+
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
@@ -628,7 +628,7 @@ export function NotesWidget() {
                           onClick={() => copyToClipboard(selectedNote)}
                         >
                           {copiedNoteId === selectedNote.id ? (
-                            <Check className="h-4 w-4 text-green-600" />
+                            <Check className="h-4 w-4 text-vt-green" />
                           ) : (
                             <Copy className="h-4 w-4" />
                           )}
@@ -638,7 +638,7 @@ export function NotesWidget() {
                         <p>{copiedNoteId === selectedNote.id ? '¡Copiado!' : 'Copiar'}</p>
                       </TooltipContent>
                     </Tooltip>
-                    
+
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
@@ -656,7 +656,7 @@ export function NotesWidget() {
                   </>
                 )}
               </div>
-              
+
               <div className="flex gap-2">
                 {isEditing ? (
                   <>
@@ -692,7 +692,7 @@ export function NotesWidget() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        
+
         {/* Estilos para TaskList en contenido renderizado */}
         <style jsx global>{`
           .prose ul[data-type="taskList"] {

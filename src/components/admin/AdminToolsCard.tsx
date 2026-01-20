@@ -80,14 +80,14 @@ export function AdminToolsCard() {
                 <li>PACs próximas a vencer (24h/48h)</li>
                 <li>VTs en la próxima hora</li>
               </ul>
-              <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+              <p className="text-xs text-vt-blue dark:text-vt-blue-light mt-2">
                 💡 Las noticias del blog generan notificaciones automáticamente al publicarlas.
               </p>
-              
+
               {/* Resultado de última ejecución */}
               {lastResult && lastResult.success && (
                 <div className="mt-3 p-2 rounded bg-green-500/10 border border-green-500/20">
-                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <div className="flex items-center gap-2 text-vt-green dark:text-vt-green-light">
                     <CheckCircle2 className="h-4 w-4" />
                     <span className="text-xs font-medium">
                       {totalGenerated} notificaciones generadas
@@ -109,7 +109,7 @@ export function AdminToolsCard() {
                   </p>
                 </div>
               )}
-              
+
               {/* Error */}
               {error && (
                 <div className="mt-3 p-2 rounded bg-destructive/10 border border-destructive/20">
@@ -163,8 +163,8 @@ export function AdminToolsCard() {
 
         {/* Info sobre automatización */}
         <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-          <p className="text-xs text-blue-600 dark:text-blue-400">
-            💡 <strong>Tip:</strong> En producción, estas tareas se ejecutarán automáticamente 
+          <p className="text-xs text-vt-blue dark:text-vt-blue-light">
+            💡 <strong>Tip:</strong> En producción, estas tareas se ejecutarán automáticamente
             cada 30 minutos mediante Vercel Cron o pg_cron.
           </p>
         </div>

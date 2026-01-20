@@ -110,8 +110,8 @@ export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModal
             {/* Dropzone */}
             <div className="space-y-2">
               <Label>Archivo PDF de la Guía Didáctica *</Label>
-              <GDDropzone 
-                file={file} 
+              <GDDropzone
+                file={file}
                 onFileSelect={setFile}
                 onFileRemove={() => setFile(null)}
               />
@@ -128,7 +128,7 @@ export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModal
               <Button variant="outline" onClick={handleClose}>
                 Cancelar
               </Button>
-              <Button 
+              <Button
                 onClick={handleSubmit}
                 disabled={!selectedAsignatura || !file}
               >
@@ -151,8 +151,8 @@ export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModal
 
         {uploadState === 'success' && (
           <div className="py-8 text-center">
-            <CheckCircle2 className="h-12 w-12 mx-auto text-green-500 mb-4" />
-            <p className="font-medium text-green-600">¡GD subida correctamente!</p>
+            <CheckCircle2 className="h-12 w-12 mx-auto text-vt-green mb-4" />
+            <p className="font-medium text-vt-green">¡GD subida correctamente!</p>
             <p className="text-sm text-muted-foreground mt-1">
               {asignaturas.find(a => a.id === selectedAsignatura)?.nombre}
             </p>
@@ -172,8 +172,8 @@ export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModal
 
         {uploadState === 'error' && (
           <div className="py-8 text-center">
-            <XCircle className="h-12 w-12 mx-auto text-red-500 mb-4" />
-            <p className="font-medium text-red-600">Error al subir</p>
+            <XCircle className="h-12 w-12 mx-auto text-vt-red mb-4" />
+            <p className="font-medium text-vt-red">Error al subir</p>
             <p className="text-sm text-muted-foreground mt-1">
               {errorMessage}
             </p>

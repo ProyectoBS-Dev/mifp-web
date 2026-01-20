@@ -183,7 +183,7 @@ export default async function VTsAdminPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-green-500">{stats.conGrabacion}</p>
+              <p className="text-3xl font-bold text-vt-green">{stats.conGrabacion}</p>
               <p className="text-xs text-muted-foreground">Con grabación</p>
             </div>
           </CardContent>
@@ -191,7 +191,7 @@ export default async function VTsAdminPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-yellow-500">{stats.sinGrabacion}</p>
+              <p className="text-3xl font-bold text-vt-yellow">{stats.sinGrabacion}</p>
               <p className="text-xs text-muted-foreground">Sin grabación</p>
             </div>
           </CardContent>
@@ -199,7 +199,7 @@ export default async function VTsAdminPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold text-blue-500">{stats.asignaturas}</p>
+              <p className="text-3xl font-bold text-vt-blue">{stats.asignaturas}</p>
               <p className="text-xs text-muted-foreground">Asignaturas</p>
             </div>
           </CardContent>
@@ -208,10 +208,10 @@ export default async function VTsAdminPage() {
 
       {/* Info de ayuda */}
       {stats.sinGrabacion > 0 && (
-        <Card className="border-yellow-500/50 bg-yellow-500/5">
+        <Card className="border-vt-yellow/50 bg-vt-yellow/5">
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
-              <LinkIcon className="h-5 w-5 text-yellow-500" />
+              <LinkIcon className="h-5 w-5 text-vt-yellow" />
               <div>
                 <p className="font-medium text-sm">
                   Hay {stats.sinGrabacion} VT{stats.sinGrabacion !== 1 ? 's' : ''} sin enlace de grabación

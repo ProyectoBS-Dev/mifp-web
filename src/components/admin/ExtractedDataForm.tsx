@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { 
-  CheckCircle2, 
-  Loader2, 
-  ChevronDown, 
+import {
+  CheckCircle2,
+  Loader2,
+  ChevronDown,
   ChevronUp,
   BookOpen,
   FileText,
@@ -66,8 +66,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
     const raNumero = data.ras[index].numero
     // También eliminar PACs asociadas a este RA
     const newPacs = data.pacs.filter(p => p.ra_numero !== raNumero)
-    setData({ 
-      ...data, 
+    setData({
+      ...data,
       ras: data.ras.filter((_, i) => i !== index),
       pacs: newPacs
     })
@@ -126,7 +126,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
   return (
     <div className="space-y-6">
       {error && (
-        <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/50 text-red-500">
+        <div className="p-4 rounded-lg bg-vt-red/10 border border-vt-red/50 text-vt-red">
           {error}
         </div>
       )}
@@ -177,8 +177,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
             <CardContent className="grid grid-cols-3 gap-4">
               <div>
                 <Label>Código</Label>
-                <Input 
-                  value={data.modulo.codigo} 
+                <Input
+                  value={data.modulo.codigo}
                   onChange={(e) => setData({
                     ...data,
                     modulo: { ...data.modulo, codigo: e.target.value }
@@ -187,7 +187,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
               </div>
               <div className="col-span-2">
                 <Label>Nombre</Label>
-                <Input 
+                <Input
                   value={data.modulo.nombre}
                   onChange={(e) => setData({
                     ...data,
@@ -220,17 +220,17 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                 <div key={index} className="p-4 border rounded-lg space-y-3">
                   <div className="flex items-center justify-between">
                     <Badge>{ra.codigo}</Badge>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="icon"
                       onClick={() => removeRA(index)}
                     >
-                      <Trash2 className="h-4 w-4 text-red-500" />
+                      <Trash2 className="h-4 w-4 text-vt-red" />
                     </Button>
                   </div>
                   <div>
                     <Label>Título</Label>
-                    <Input 
+                    <Input
                       value={ra.titulo}
                       onChange={(e) => updateRA(index, 'titulo', e.target.value)}
                     />
@@ -240,7 +240,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                       <Label className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" /> Fecha inicio
                       </Label>
-                      <Input 
+                      <Input
                         type="date"
                         value={ra.fecha_inicio || ''}
                         onChange={(e) => updateRA(index, 'fecha_inicio', e.target.value || null)}
@@ -250,7 +250,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                       <Label className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" /> Fecha fin
                       </Label>
-                      <Input 
+                      <Input
                         type="date"
                         value={ra.fecha_fin || ''}
                         onChange={(e) => updateRA(index, 'fecha_fin', e.target.value || null)}
@@ -289,25 +289,25 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                         {pac.tipo}
                       </Badge>
                     </div>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="icon"
                       onClick={() => removePAC(index)}
                     >
-                      <Trash2 className="h-4 w-4 text-red-500" />
+                      <Trash2 className="h-4 w-4 text-vt-red" />
                     </Button>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>Título</Label>
-                      <Input 
+                      <Input
                         value={pac.titulo}
                         onChange={(e) => updatePAC(index, 'titulo', e.target.value)}
                       />
                     </div>
                     <div>
                       <Label>RA asociado</Label>
-                      <Select 
+                      <Select
                         value={String(pac.ra_numero)}
                         onValueChange={(v) => updatePAC(index, 'ra_numero', parseInt(v))}
                       >
@@ -329,7 +329,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                       <Label className="flex items-center gap-1">
                         <Percent className="h-3 w-3" /> Peso en RA
                       </Label>
-                      <Input 
+                      <Input
                         type="number"
                         min={0}
                         max={100}
@@ -341,7 +341,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                       <Label className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" /> Fecha límite
                       </Label>
-                      <Input 
+                      <Input
                         type="date"
                         value={pac.fecha_limite || ''}
                         onChange={(e) => updatePAC(index, 'fecha_limite', e.target.value || null)}
@@ -349,7 +349,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                     </div>
                     <div>
                       <Label>Tipo</Label>
-                      <Select 
+                      <Select
                         value={pac.tipo}
                         onValueChange={(v) => updatePAC(index, 'tipo', v as 'interactiva' | 'desarrollo')}
                       >
@@ -390,17 +390,17 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                 <div key={index} className="p-4 border rounded-lg space-y-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="outline">VT {vt.numero}</Badge>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="icon"
                       onClick={() => removeVT(index)}
                     >
-                      <Trash2 className="h-4 w-4 text-red-500" />
+                      <Trash2 className="h-4 w-4 text-vt-red" />
                     </Button>
                   </div>
                   <div>
                     <Label>Título</Label>
-                    <Input 
+                    <Input
                       value={vt.titulo}
                       onChange={(e) => updateVT(index, 'titulo', e.target.value)}
                     />
@@ -410,7 +410,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                       <Label className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" /> Fecha
                       </Label>
-                      <Input 
+                      <Input
                         type="date"
                         value={vt.fecha || ''}
                         onChange={(e) => updateVT(index, 'fecha', e.target.value || null)}
@@ -418,7 +418,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                     </div>
                     <div>
                       <Label>Hora inicio</Label>
-                      <Input 
+                      <Input
                         type="time"
                         value={vt.hora_inicio || ''}
                         onChange={(e) => updateVT(index, 'hora_inicio', e.target.value || null)}
@@ -426,7 +426,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                     </div>
                     <div>
                       <Label>Duración (min)</Label>
-                      <Input 
+                      <Input
                         type="number"
                         min={0}
                         value={vt.duracion_minutos || ''}

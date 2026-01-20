@@ -9,11 +9,11 @@
 // - Podcasts: Reproductor inline custom
 
 import { useState } from 'react'
-import { 
-  FileText, 
-  Link as LinkIcon, 
-  Headphones, 
-  ExternalLink, 
+import {
+  FileText,
+  Link as LinkIcon,
+  Headphones,
+  ExternalLink,
   Eye
 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -53,8 +53,8 @@ function isNew(createdAt: string): boolean {
 function NewIndicator() {
   return (
     <span className="relative flex h-2 w-2 shrink-0">
-      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-vt-sky opacity-75"></span>
-      <span className="relative inline-flex rounded-full h-2 w-2 bg-vt-sky"></span>
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-vt-blue-light opacity-75"></span>
+      <span className="relative inline-flex rounded-full h-2 w-2 bg-vt-blue-light"></span>
     </span>
   )
 }
@@ -121,17 +121,17 @@ function PDFCard({ recurso, onPreview }: PDFCardProps) {
         )}
         {recurso.asignaturas && recurso.asignaturas.length > 0 && (
           <p className="text-xs text-muted-foreground mt-0.5">
-            📁 {recurso.asignaturas.length === 1 
-              ? recurso.asignaturas[0].nombre 
+            📁 {recurso.asignaturas.length === 1
+              ? recurso.asignaturas[0].nombre
               : `${recurso.asignaturas.length} asignaturas`}
           </p>
         )}
       </div>
       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-7 w-7" 
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
           onClick={onPreview}
           title="Ver PDF"
         >

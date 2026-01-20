@@ -123,7 +123,7 @@ export function EnlaceForm({ recurso, mode }: EnlaceFormProps) {
   }, [watchUrl])
 
   const toggleAsignatura = (asignaturaId: string) => {
-    setSelectedAsignaturas(prev => 
+    setSelectedAsignaturas(prev =>
       prev.includes(asignaturaId)
         ? prev.filter(id => id !== asignaturaId)
         : [...prev, asignaturaId]
@@ -134,8 +134,8 @@ export function EnlaceForm({ recurso, mode }: EnlaceFormProps) {
     setIsSubmitting(true)
 
     try {
-      const url = mode === 'create' 
-        ? '/api/recursos' 
+      const url = mode === 'create'
+        ? '/api/recursos'
         : `/api/recursos/${recurso?.id}`
 
       const method = mode === 'create' ? 'POST' : 'PATCH'
@@ -174,7 +174,7 @@ export function EnlaceForm({ recurso, mode }: EnlaceFormProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <LinkIcon className="h-5 w-5 text-blue-500" />
+            <LinkIcon className="h-5 w-5 text-vt-blue" />
             Información del Enlace
           </CardTitle>
           <CardDescription>
@@ -246,7 +246,7 @@ export function EnlaceForm({ recurso, mode }: EnlaceFormProps) {
               Selecciona las asignaturas para las que este recurso será visible.
               Si no seleccionas ninguna, será visible para todos.
             </p>
-            
+
             {/* Selected badges */}
             {selectedAsignaturas.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-2">

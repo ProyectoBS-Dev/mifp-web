@@ -251,12 +251,12 @@ export default async function HomePage() {
                 <div className="mt-4 rounded-lg border bg-muted/30 overflow-hidden flex-1 min-h-[120px] flex items-center justify-center">
                   {/* PACs preview */}
                   <Image
-                      src="/images/pacs_preview.png"
-                      alt="PACs del Dashboard de MiFP"
-                      width={300}
-                      height={200}
-                      className="rounded-lg object-cover"
-                    />
+                    src="/images/pacs_preview.png"
+                    alt="PACs del Dashboard de MiFP"
+                    width={300}
+                    height={200}
+                    className="rounded-lg object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -299,12 +299,12 @@ export default async function HomePage() {
                 <div className="hidden md:flex rounded-lg border bg-muted/30 overflow-hidden w-32 h-20 items-center justify-center shrink-0">
                   {/* Recursos de Estudio preview */}
                   <Image
-                      src="/images/recursos_preview.png"
-                      alt="Recursos de Estudio del Dashboard de MiFP"
-                      width={300}
-                      height={200}
-                      className="rounded-lg object-cover"
-                    />
+                    src="/images/recursos_preview.png"
+                    alt="Recursos de Estudio del Dashboard de MiFP"
+                    width={300}
+                    height={200}
+                    className="rounded-lg object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -336,12 +336,12 @@ export default async function HomePage() {
                 <div className="hidden md:flex rounded-lg border bg-muted/30 overflow-hidden w-32 h-20 items-center justify-center shrink-0">
                   {/* Asignaturas preview */}
                   <Image
-                      src="/images/asignaturas_preview.png"
-                      alt="Asignaturas del Dashboard de MiFP"
-                      width={300}
-                      height={200}
-                      className="rounded-lg object-cover"
-                    />
+                    src="/images/asignaturas_preview.png"
+                    alt="Asignaturas del Dashboard de MiFP"
+                    width={300}
+                    height={200}
+                    className="rounded-lg object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -559,7 +559,7 @@ export default async function HomePage() {
             <TooltipProvider>
               <div className="flex items-center justify-center gap-3">
                 <span className="text-sm text-muted-foreground font-medium">Hecho con</span>
-                <Heart className="h-4 w-4 text-red-500" />
+                <Heart className="h-4 w-4 text-vt-red" />
                 <span className="text-sm text-muted-foreground font-medium">por:</span>
                 <Tooltip>
                   <TooltipTrigger asChild>

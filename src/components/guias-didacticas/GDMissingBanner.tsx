@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Upload } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Upload, AlertTriangle } from 'lucide-react'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { GDUploadModal } from './GDUploadModal'
 import { useMissingGDs } from '@/hooks/useMissingGDs'
@@ -20,16 +20,15 @@ export function GDMissingBanner() {
 
   return (
     <>
-      <Alert className="mb-6 border-yellow-500/50 bg-yellow-500/10">
+      <Alert variant="warning" className="mb-6">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>
+          Faltan datos de {missingGDs.length} asignatura{missingGDs.length > 1 ? 's' : ''}
+        </AlertTitle>
         <AlertDescription className="flex items-center justify-between w-full">
-          <div>
-            <span className="font-medium text-yellow-600 dark:text-yellow-400">
-              ⚠️ Faltan datos de {missingGDs.length} asignatura{missingGDs.length > 1 ? 's' : ''}
-            </span>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              {asignaturaNames}
-            </p>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            {asignaturaNames}
+          </p>
           <Button onClick={() => setShowModal(true)} size="sm" variant="outline">
             <Upload className="h-4 w-4 mr-2" />
             Subir GD

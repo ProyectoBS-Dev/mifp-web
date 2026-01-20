@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Mail, GraduationCap, Calendar, Edit2, Save, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getInitials } from '@/lib/user'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -45,18 +46,6 @@ export function ProfileCard({ user, profile, grado }: ProfileCardProps) {
     const [isSaving, setIsSaving] = useState(false)
     const [fullName, setFullName] = useState(profile?.full_name || '')
     const [error, setError] = useState<string | null>(null)
-
-    const getInitials = () => {
-        if (fullName) {
-            return fullName
-                .split(' ')
-                .map((n) => n[0])
-                .join('')
-                .toUpperCase()
-                .slice(0, 2)
-        }
-        return user?.email?.[0].toUpperCase() || 'U'
-    }
 
     const handleSave = async () => {
         setIsSaving(true)
@@ -105,7 +94,7 @@ export function ProfileCard({ user, profile, grado }: ProfileCardProps) {
                     <Avatar className="h-16 w-16 border-2 border-primary/20">
                         <AvatarImage src={profile?.avatar_url || undefined} />
                         <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
-                            {getInitials()}
+                            {getInitials(fullName, user?.email)}
                         </AvatarFallback>
                     </Avatar>
 

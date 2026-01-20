@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import { Loader2, BookOpen, Award, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { getGradeColor } from '@/lib/grades'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
@@ -15,18 +16,6 @@ import { useGradeProgress, type AsignaturaDetalle } from '@/hooks/useGradeProgre
 interface SemestreGroup {
     semestre: string
     asignaturas: AsignaturaDetalle[]
-}
-
-// ============================================
-// UTILIDADES
-// ============================================
-
-function getGradeColor(nota: number | null) {
-    if (nota === null) return 'text-muted-foreground'
-    if (nota >= 9) return 'text-vt-green dark:text-vt-green-light'
-    if (nota >= 7) return 'text-vt-green dark:text-vt-green-light'
-    if (nota >= 5) return 'text-vt-blue dark:text-vt-blue-light'
-    return 'text-vt-red dark:text-vt-red-light'
 }
 
 // Componente de indicador de estado

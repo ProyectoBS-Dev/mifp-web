@@ -97,15 +97,6 @@ export const RECURSO_ICONS: Record<RecursoTipo, string> = {
 }
 
 /**
- * Formatea duración de segundos a MM:SS
- */
-export function formatDuration(seconds: number): string {
-  const mins = Math.floor(seconds / 60)
-  const secs = seconds % 60
-  return `${mins}:${secs.toString().padStart(2, '0')}`
-}
-
-/**
  * Parsea duración de MM:SS a segundos
  */
 export function parseDuration(duration: string): number {

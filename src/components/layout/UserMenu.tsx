@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { User, Settings, LogOut, Shield } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getInitials } from '@/lib/user'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -35,19 +36,6 @@ export function UserMenu({ user }: UserMenuProps) {
     router.refresh()
   }
 
-  // Get initials from name or email
-  const getInitials = () => {
-    if (user.full_name) {
-      return user.full_name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
-    }
-    return user.email[0].toUpperCase()
-  }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -55,7 +43,7 @@ export function UserMenu({ user }: UserMenuProps) {
           <Avatar className="h-9 w-9">
             <AvatarImage src={user.avatar_url || undefined} alt={user.full_name || user.email} />
             <AvatarFallback className="bg-primary/10 text-primary">
-              {getInitials()}
+              {getInitials(user.full_name, user.email)}
             </AvatarFallback>
           </Avatar>
         </Button>

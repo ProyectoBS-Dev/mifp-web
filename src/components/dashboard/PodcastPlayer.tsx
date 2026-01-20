@@ -10,7 +10,8 @@ import { Play, Pause, Volume2, VolumeX, RotateCcw, RotateCw } from 'lucide-react
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { cn } from '@/lib/utils'
-import { formatDuration, type Recurso } from '@/types/recursos'
+import { formatSeconds } from '@/lib/format'
+import { type Recurso } from '@/types/recursos'
 
 interface PodcastPlayerProps {
   recurso: Recurso
@@ -160,9 +161,9 @@ export function PodcastPlayer({ recurso, className }: PodcastPlayerProps) {
       {/* Barra de progreso */}
       <div className="flex items-center gap-2">
         <span className="text-[10px] text-muted-foreground tabular-nums w-10">
-          {formatDuration(Math.round(progress))}
+          {formatSeconds(Math.round(progress))}
         </span>
-        
+
         <Slider
           value={[progress]}
           max={duration || 100}
@@ -171,9 +172,9 @@ export function PodcastPlayer({ recurso, className }: PodcastPlayerProps) {
           className="flex-1"
           disabled={isLoading}
         />
-        
+
         <span className="text-[10px] text-muted-foreground tabular-nums w-10 text-right">
-          {formatDuration(Math.round(duration))}
+          {formatSeconds(Math.round(duration))}
         </span>
       </div>
 
@@ -246,7 +247,7 @@ export function PodcastPlayer({ recurso, className }: PodcastPlayerProps) {
 
       {/* Barra de progreso visual (mini) */}
       <div className="h-1 bg-muted rounded-full overflow-hidden">
-        <div 
+        <div
           className="h-full bg-vt-purple transition-all duration-100"
           style={{ width: `${progressPercent}%` }}
         />

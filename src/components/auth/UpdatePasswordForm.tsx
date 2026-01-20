@@ -62,9 +62,9 @@ export function UpdatePasswordForm() {
   if (success) {
     return (
       <div className="text-center space-y-4">
-        <div className="mx-auto w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
+        <div className="mx-auto w-12 h-12 rounded-full bg-vt-green/10 flex items-center justify-center">
           <svg
-            className="w-6 h-6 text-green-500"
+            className="w-6 h-6 text-vt-green"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

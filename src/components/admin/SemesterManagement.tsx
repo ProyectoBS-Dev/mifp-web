@@ -298,8 +298,8 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
 
             {success && (
                 <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <span className="text-green-600">{success}</span>
+                    <CheckCircle2 className="h-5 w-5 text-vt-green" />
+                    <span className="text-vt-green">{success}</span>
                 </div>
             )}
 
@@ -484,7 +484,7 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
                                     </TableCell>
                                     <TableCell>
                                         {semestre.activo ? (
-                                            <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
+                                            <Badge className="bg-vt-green/10 text-vt-green border-vt-green/20">
                                                 Activo
                                             </Badge>
                                         ) : (

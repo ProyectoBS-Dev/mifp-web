@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  Video, 
-  ExternalLink, 
-  Pencil, 
-  Trash2, 
+import {
+  Video,
+  ExternalLink,
+  Pencil,
+  Trash2,
   ChevronDown,
   Clock,
   Link as LinkIcon,
@@ -78,8 +78,8 @@ export function VTsAdminList({ vtsByAsignatura, semestreId }: VTsAdminListProps)
   const [selectedAsignatura, setSelectedAsignatura] = useState<VTsByAsignatura['asignatura'] | null>(null)
 
   const toggleAsignatura = (id: string) => {
-    setOpenAsignaturas(prev => 
-      prev.includes(id) 
+    setOpenAsignaturas(prev =>
+      prev.includes(id)
         ? prev.filter(i => i !== id)
         : [...prev, id]
     )
@@ -124,7 +124,7 @@ export function VTsAdminList({ vtsByAsignatura, semestreId }: VTsAdminListProps)
                         <span>{totalVts} VT{totalVts !== 1 ? 's' : ''}</span>
                         <span>•</span>
                         <span className={cn(
-                          porcentaje === 100 ? 'text-green-500' : porcentaje > 0 ? 'text-yellow-500' : 'text-red-500'
+                          porcentaje === 100 ? 'text-vt-green' : porcentaje > 0 ? 'text-vt-yellow' : 'text-vt-red'
                         )}>
                           {conGrabacion}/{totalVts} con grabación
                         </span>
@@ -132,7 +132,7 @@ export function VTsAdminList({ vtsByAsignatura, semestreId }: VTsAdminListProps)
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge 
+                    <Badge
                       variant={porcentaje === 100 ? 'default' : porcentaje > 0 ? 'secondary' : 'destructive'}
                     >
                       {porcentaje}%
@@ -363,11 +363,11 @@ function VTCard({ vt }: { vt: VTData }) {
     })
   }, [vt.titulo, vt.fecha_programada, vt.hora_inicio, vt.duracion_minutos, vt.enlace_grabacion])
 
-  const fechaFormateada = vt.fecha_programada 
+  const fechaFormateada = vt.fecha_programada
     ? new Date(vt.fecha_programada).toLocaleDateString('es-ES', {
-        day: 'numeric',
-        month: 'short',
-      })
+      day: 'numeric',
+      month: 'short',
+    })
     : null
 
   const formatDuration = (minutes: number | null): string => {
@@ -466,13 +466,13 @@ function VTCard({ vt }: { vt: VTData }) {
                     VT {vt.numero} - {vt.titulo}
                   </span>
                   {vt.enlace_grabacion && (
-                    <Badge variant="outline" className="text-green-600 border-green-600/50 text-xs">
+                    <Badge variant="outline" className="text-vt-green border-vt-green/50 text-xs">
                       <LinkIcon className="h-3 w-3 mr-1" />
                       Grabación
                     </Badge>
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
                   {fechaFormateada && (
                     <span className="flex items-center gap-1">
@@ -482,7 +482,7 @@ function VTCard({ vt }: { vt: VTData }) {
                     </span>
                   )}
                   {!fechaFormateada && !vt.hora_inicio && (
-                    <span className="flex items-center gap-1 text-yellow-500">
+                    <span className="flex items-center gap-1 text-vt-yellow">
                       <Clock className="h-3 w-3" />
                       Sin fecha/hora
                     </span>
@@ -498,7 +498,7 @@ function VTCard({ vt }: { vt: VTData }) {
                     href={vt.enlace_grabacion}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 text-xs text-blue-500 hover:text-blue-600 flex items-center gap-1 truncate max-w-[400px]"
+                    className="mt-2 text-xs text-vt-blue hover:text-vt-blue-light flex items-center gap-1 truncate max-w-[400px]"
                   >
                     <ExternalLink className="h-3 w-3 flex-shrink-0" />
                     <span className="truncate">{vt.enlace_grabacion}</span>
@@ -516,7 +516,7 @@ function VTCard({ vt }: { vt: VTData }) {
                     disabled={isSaving}
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
                     <Label className="text-xs">Fecha</Label>
@@ -631,7 +631,7 @@ function VTCard({ vt }: { vt: VTData }) {
           <AlertDialogHeader>
             <AlertDialogTitle>¿Eliminar esta VT?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción eliminará permanentemente la VT <strong>&quot;{vt.titulo}&quot;</strong> y 
+              Esta acción eliminará permanentemente la VT <strong>&quot;{vt.titulo}&quot;</strong> y
               todos los registros de vista de los usuarios. Esta acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>

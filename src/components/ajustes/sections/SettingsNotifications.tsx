@@ -108,7 +108,7 @@ export function SettingsNotifications({ userRole = 'estudiante' }: SettingsNotif
         )}
 
         <div className="flex items-center gap-2 pt-2 border-t text-xs text-muted-foreground">
-          <Check className="h-3 w-3 text-green-500" />
+          <Check className="h-3 w-3 text-vt-green" />
           Tus preferencias se guardan automáticamente
         </div>
       </div>

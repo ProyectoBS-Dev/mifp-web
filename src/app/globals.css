@@ -7,23 +7,23 @@
     /* ─────────────────────────────────────────
        PALETA VUE.JS - Colores Base (HEX para uso directo)
        ───────────────────────────────────────── */
-    
+
     /* Neutrals - Blancos */
     --vt-c-white: #ffffff;
     --vt-c-white-soft: #f9f9f9;
     --vt-c-white-mute: #f1f1f1;
-    
+
     /* Neutrals - Negros */
     --vt-c-black: #1a1a1a;
     --vt-c-black-pure: #000000;
     --vt-c-black-soft: #242424;
     --vt-c-black-mute: #2f2f2f;
-    
+
     /* Indigo - Texto principal light mode */
     --vt-c-indigo: #213547;
     --vt-c-indigo-soft: #476582;
     --vt-c-indigo-light: #aac8e4;
-    
+
     /* Grises */
     --vt-c-gray: #8e8e8e;
     --vt-c-gray-light-1: #aeaeae;
@@ -36,20 +36,20 @@
     --vt-c-gray-dark-3: #3a3a3a;
     --vt-c-gray-dark-4: #282828;
     --vt-c-gray-dark-5: #202020;
-    
+
     /* Divisores */
     --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
     --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
     --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
     --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
-    
+
     /* Verde Vue - Color Primario */
     --vt-c-green: #42b883;
     --vt-c-green-light: #42d392;
     --vt-c-green-lighter: #35eb9a;
     --vt-c-green-dark: #33a06f;
     --vt-c-green-darker: #155f3e;
-    
+
     /* Azul Vue - Color Secundario */
     --vt-c-blue: #3b8eed;
     --vt-c-blue-light: #549ced;
@@ -57,89 +57,91 @@
     --vt-c-blue-dark: #3468a3;
     --vt-c-blue-darker: #255489;
 
-    /* Azul - Pulse animate-ping */
-    --vt-c-sky: #57e1fc;
-    --vt-c-sky-light: #549ced;
-    --vt-c-sky-lighter: #50a2ff;
-    --vt-c-sky-dark: #3468a3;
-    --vt-c-sky-darker: #255489;
-    
-    /* Estados y Acentos */
+    /* Estados y Acentos: Yellow (Warnings) */
     --vt-c-yellow: #ffc517;
     --vt-c-yellow-light: #ffe417;
+    --vt-c-yellow-lighter: #ffff17;
     --vt-c-yellow-dark: #e0ad15;
-    
+    --vt-c-yellow-darker: #bc9112;
+
+    /* Estados y Acentos: Red (Errors/Danger) */
     --vt-c-red: #ed3c50;
     --vt-c-red-light: #f43771;
+    --vt-c-red-lighter: #fd1d7c;
     --vt-c-red-dark: #cd2d3f;
-    
+    --vt-c-red-darker: #ab2131;
+
+    /* Estados y Acentos: Purple (Special/Highlights) */
     --vt-c-purple: #de41e0;
     --vt-c-purple-light: #e936eb;
+    --vt-c-purple-lighter: #f616f8;
     --vt-c-purple-dark: #823c83;
-    
+    --vt-c-purple-darker: #602960;
+
     --radius: 0.5rem;
 
     /* ─────────────────────────────────────────
        LIGHT MODE - Colores Semánticos (HSL para Shadcn)
        ───────────────────────────────────────── */
-    
+
     /* Backgrounds */
     --background: 0 0% 100%;
     --background-soft: 0 0% 98%;
     --background-mute: 0 0% 95%;
-    
+
     /* Texto */
-    --foreground: 204 33% 20%;  /* #213547 indigo */
+    --foreground: 204 33% 20%;
+    /* #213547 indigo */
     --foreground-soft: 206 28% 40%;
     --foreground-mute: 206 28% 60%;
-    
+
     /* Bordes */
     --border: 0 0% 85%;
     --border-hover: 0 0% 70%;
     --input: 0 0% 90%;
-    
+
     /* Primary - Verde Vue #42b883 */
     --primary: 160 47% 49%;
     --primary-foreground: 0 0% 100%;
-    
+
     /* Secondary - Azul Vue #3b8eed */
     --secondary: 212 82% 58%;
     --secondary-foreground: 0 0% 100%;
-    
+
     /* Muted */
     --muted: 0 0% 95%;
     --muted-foreground: 0 0% 45%;
-    
+
     /* Accent */
     --accent: 0 0% 95%;
     --accent-foreground: 204 33% 20%;
-    
+
     /* Destructive - Rojo Vue #ed3c50 */
     --destructive: 354 83% 58%;
     --destructive-foreground: 0 0% 100%;
-    
+
     /* Card */
     --card: 0 0% 100%;
     --card-foreground: 204 33% 20%;
-    
+
     /* Popover */
     --popover: 0 0% 100%;
     --popover-foreground: 204 33% 20%;
-    
+
     /* Ring */
     --ring: 160 47% 49%;
-    
+
     /* Warning (para alertas) - Amarillo Vue */
     --warning: 45 100% 55%;
     --warning-foreground: 204 33% 20%;
-    
+
     /* Charts */
     --chart-1: 160 47% 49%;
     --chart-2: 212 82% 58%;
     --chart-3: 45 100% 55%;
     --chart-4: 354 83% 58%;
     --chart-5: 293 76% 57%;
-    
+
     /* Colores de notas/calificaciones */
     --grade-fail: var(--vt-c-red);
     --grade-pass: var(--vt-c-yellow);
@@ -155,59 +157,59 @@
     --background: 0 0% 10%;
     --background-soft: 0 0% 14%;
     --background-mute: 0 0% 18%;
-    
+
     /* Texto */
     --foreground: 0 0% 93%;
     --foreground-soft: 0 0% 75%;
     --foreground-mute: 0 0% 55%;
-    
+
     /* Bordes */
     --border: 0 0% 20%;
     --border-hover: 0 0% 30%;
     --input: 0 0% 20%;
-    
+
     /* Primary - Verde Vue más brillante #42d392 */
     --primary: 153 60% 55%;
     --primary-foreground: 0 0% 10%;
-    
+
     /* Secondary - Azul Vue más brillante #549ced */
     --secondary: 216 77% 63%;
     --secondary-foreground: 0 0% 10%;
-    
+
     /* Muted */
     --muted: 0 0% 18%;
     --muted-foreground: 0 0% 60%;
-    
+
     /* Accent */
     --accent: 0 0% 18%;
     --accent-foreground: 0 0% 93%;
-    
+
     /* Destructive - Rojo más brillante #f43771 */
     --destructive: 344 89% 59%;
     --destructive-foreground: 0 0% 10%;
-    
+
     /* Card */
     --card: 0 0% 14%;
     --card-foreground: 0 0% 93%;
-    
+
     /* Popover */
     --popover: 0 0% 14%;
     --popover-foreground: 0 0% 93%;
-    
+
     /* Ring */
     --ring: 153 60% 55%;
-    
+
     /* Warning (para alertas) - Amarillo Vue */
     --warning: 51 100% 62%;
     --warning-foreground: 0 0% 10%;
-    
+
     /* Charts */
     --chart-1: 153 60% 55%;
     --chart-2: 216 77% 63%;
     --chart-3: 51 100% 62%;
     --chart-4: 344 89% 59%;
     --chart-5: 293 82% 65%;
-    
+
     /* Colores de notas/calificaciones */
     --grade-fail: var(--vt-c-red-light);
     --grade-pass: var(--vt-c-yellow-light);
@@ -220,57 +222,113 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
 
 @layer utilities {
+
   /* Ocultar scrollbar pero mantener funcionalidad de scroll */
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
+
   .scrollbar-hide::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari and Opera */
+    display: none;
+    /* Chrome, Safari and Opera */
   }
 
   /* Gradiente para títulos Hero */
   .gradient-text {
-    background: linear-gradient(
-      315deg,
-      var(--vt-c-green-light) 25%,
-      var(--vt-c-green) 50%,
-      var(--vt-c-blue-light) 75%,
-      var(--vt-c-blue)
-    );
+    background: linear-gradient(315deg,
+        var(--vt-c-green-light) 25%,
+        var(--vt-c-green) 50%,
+        var(--vt-c-blue-light) 75%,
+        var(--vt-c-blue));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   /* Gradiente con animación para hover */
   .gradient-text-animated {
-    background: linear-gradient(
-      315deg,
-      var(--vt-c-green-light) 25%,
-      var(--vt-c-green) 50%,
-      var(--vt-c-blue-light) 75%,
-      var(--vt-c-blue)
-    );
+    background: linear-gradient(315deg,
+        var(--vt-c-green-light) 25%,
+        var(--vt-c-green) 50%,
+        var(--vt-c-blue-light) 75%,
+        var(--vt-c-blue));
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: gradient-shift 3s ease infinite;
   }
-  
+
   @keyframes gradient-shift {
-    0%, 100% {
+
+    0%,
+    100% {
       background-position: 0% 50%;
     }
+
     50% {
       background-position: 100% 50%;
     }
+  }
+
+  /* ─────────────────────────────────────────
+     SCROLLBAR - Tema adaptativo light/dark
+     ───────────────────────────────────────── */
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--vt-c-gray) transparent;
+  }
+
+  /* Webkit (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--vt-c-gray-light-2);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--vt-c-gray);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  /* Dark mode scrollbar */
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--vt-c-gray-dark-1);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--vt-c-gray);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .dark * {
+    scrollbar-color: var(--vt-c-gray-dark-1) transparent;
   }
 }

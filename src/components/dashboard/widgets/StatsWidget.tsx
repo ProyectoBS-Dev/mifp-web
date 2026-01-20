@@ -22,7 +22,7 @@ function StatItem({ icon, label, value, trend, trendUp }: StatItemProps) {
         <p className="text-lg font-bold">{value}</p>
       </div>
       {trend && (
-        <span className={`text-xs font-medium ${trendUp ? 'text-emerald-500' : 'text-rose-500'}`}>
+        <span className={`text-xs font-medium ${trendUp ? 'text-vt-green' : 'text-vt-red'}`}>
           {trend}
         </span>
       )}
@@ -46,7 +46,7 @@ interface NivelRingProps {
 function NivelRing({ nivel, porcentaje }: NivelRingProps) {
   const config = nivelConfig[nivel]
   const color = nivelColors[nivel]
-  
+
   // SVG circle parameters
   const size = 88
   const strokeWidth = 8
@@ -108,8 +108,8 @@ export function StatsWidget() {
     )
   }
 
-  const porcentajePacs = stats?.pacsTotal 
-    ? Math.round((stats.pacsCompletadas / stats.pacsTotal) * 100) 
+  const porcentajePacs = stats?.pacsTotal
+    ? Math.round((stats.pacsCompletadas / stats.pacsTotal) * 100)
     : 0
 
   return (
@@ -127,7 +127,7 @@ export function StatsWidget() {
           value={
             <>
               {stats?.pacsCompletadas || 0}/{stats?.pacsTotal || 0}{' '}
-              <span className="text-xs text-emerald-500">{porcentajePacs}%</span>
+              <span className="text-xs text-vt-green">{porcentajePacs}%</span>
             </>
           }
         />
@@ -140,9 +140,9 @@ export function StatsWidget() {
       {/* Anillo de nivel a la derecha */}
       <div className="flex items-center justify-center px-2">
         {stats && (
-          <NivelRing 
-            nivel={stats.nivel} 
-            porcentaje={stats.porcentajeTotal} 
+          <NivelRing
+            nivel={stats.nivel}
+            porcentaje={stats.porcentajeTotal}
           />
         )}
       </div>

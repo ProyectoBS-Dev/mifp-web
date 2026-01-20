@@ -39,9 +39,9 @@ export function GDDropzone({ file, onFileSelect, onFileRemove }: GDDropzoneProps
     return (
       <div className="border rounded-lg p-4 bg-muted/50">
         <div className="flex items-start gap-3">
-          <FileText className="h-8 w-8 text-red-500 flex-shrink-0 mt-0.5" />
+          <FileText className="h-8 w-8 text-vt-red flex-shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0 pr-2">
-            <p 
+            <p
               className="font-medium text-sm break-all leading-snug"
               title={file.name}
             >
@@ -51,9 +51,9 @@ export function GDDropzone({ file, onFileSelect, onFileRemove }: GDDropzoneProps
               {formatFileSize(file.size)}
             </p>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onFileRemove}
             className="flex-shrink-0 -mt-1 -mr-2"
           >
@@ -87,9 +87,9 @@ export function GDDropzone({ file, onFileSelect, onFileRemove }: GDDropzoneProps
       <p className="text-xs text-muted-foreground mt-2">
         Formatos: PDF • Tamaño máximo: 10MB
       </p>
-      
+
       {fileRejections.length > 0 && (
-        <p className="text-xs text-red-500 mt-2">
+        <p className="text-xs text-vt-red mt-2">
           {fileRejections[0].errors[0].message}
         </p>
       )}

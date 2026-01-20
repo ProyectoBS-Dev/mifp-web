@@ -96,11 +96,11 @@ export default async function ValidarGDPage({
   const fileUrl = gd.archivo_path ? await getFileUrl(gd.archivo_path) : null
 
   const estadoConfig = {
-    pendiente: { label: 'Pendiente', color: 'text-yellow-500', bgColor: 'bg-yellow-500/10' },
-    extrayendo: { label: 'Extrayendo...', color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
-    extraida: { label: 'Datos Extraídos', color: 'text-purple-500', bgColor: 'bg-purple-500/10' },
-    validada: { label: 'Validada', color: 'text-green-500', bgColor: 'bg-green-500/10' },
-    rechazada: { label: 'Rechazada', color: 'text-red-500', bgColor: 'bg-red-500/10' },
+    pendiente: { label: 'Pendiente', color: 'text-vt-yellow', bgColor: 'bg-vt-yellow/10' },
+    extrayendo: { label: 'Extrayendo...', color: 'text-vt-blue', bgColor: 'bg-vt-blue/10' },
+    extraida: { label: 'Datos Extraídos', color: 'text-vt-purple', bgColor: 'bg-vt-purple/10' },
+    validada: { label: 'Validada', color: 'text-vt-green', bgColor: 'bg-vt-green/10' },
+    rechazada: { label: 'Rechazada', color: 'text-vt-red', bgColor: 'bg-vt-red/10' },
   }
   const estadoInfo = estadoConfig[gd.estado] || estadoConfig.pendiente
 
@@ -274,8 +274,8 @@ export default async function ValidarGDPage({
               <Card className="border-green-500/50">
                 <CardContent className="pt-6">
                   <div className="text-center">
-                    <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                    <p className="font-medium text-green-600">GD Validada</p>
+                    <CheckCircle2 className="h-12 w-12 text-vt-green mx-auto mb-4" />
+                    <p className="font-medium text-vt-green">GD Validada</p>
                     <p className="text-sm text-muted-foreground mt-1">
                       Los datos han sido extraídos y guardados
                     </p>
@@ -288,8 +288,8 @@ export default async function ValidarGDPage({
               <Card className="border-red-500/50">
                 <CardContent className="pt-6">
                   <div className="text-center">
-                    <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                    <p className="font-medium text-red-600">GD Rechazada</p>
+                    <XCircle className="h-12 w-12 text-vt-red mx-auto mb-4" />
+                    <p className="font-medium text-vt-red">GD Rechazada</p>
                     {gd.motivo_rechazo && (
                       <p className="text-sm text-muted-foreground mt-2">
                         Motivo: {gd.motivo_rechazo}

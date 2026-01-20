@@ -102,10 +102,10 @@ export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplific
     // Obtener color de nota
     const getGradeColor = (nota: number | null) => {
         if (nota === null) return 'text-muted-foreground'
-        if (nota >= 9) return 'text-emerald-600 dark:text-emerald-400'
-        if (nota >= 7) return 'text-emerald-600 dark:text-emerald-400'
-        if (nota >= 5) return 'text-blue-600 dark:text-blue-400'
-        return 'text-red-600 dark:text-red-400'
+        if (nota >= 9) return 'text-vt-green dark:text-vt-green-light'
+        if (nota >= 7) return 'text-vt-green dark:text-vt-green-light'
+        if (nota >= 5) return 'text-vt-blue dark:text-vt-blue-light'
+        return 'text-vt-red dark:text-vt-red-light'
     }
 
     if (isLoading) {
@@ -199,7 +199,7 @@ export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplific
                                             <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                                         )}
                                         {savedId === asig.id && (
-                                            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                                            <CheckCircle2 className="h-4 w-4 text-vt-green" />
                                         )}
                                     </div>
                                 </div>

@@ -136,7 +136,7 @@ export function GDValidationForm({ gdId, asignaturaId, semestreId }: GDValidatio
   return (
     <div className="space-y-4">
       {error && (
-        <div className="p-3 rounded-lg bg-red-500/10 text-red-500 text-sm">
+        <div className="p-3 rounded-lg bg-vt-red/10 text-vt-red text-sm">
           {error}
         </div>
       )}

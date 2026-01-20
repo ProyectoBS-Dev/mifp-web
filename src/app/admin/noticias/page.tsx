@@ -112,13 +112,13 @@ export default async function NoticiasAdminPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Publicadas</CardDescription>
-            <CardTitle className="text-3xl text-green-600">{stats.publicadas}</CardTitle>
+            <CardTitle className="text-3xl text-vt-green">{stats.publicadas}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Borradores</CardDescription>
-            <CardTitle className="text-3xl text-yellow-600">{stats.borradores}</CardTitle>
+            <CardTitle className="text-3xl text-vt-yellow">{stats.borradores}</CardTitle>
           </CardHeader>
         </Card>
       </div>

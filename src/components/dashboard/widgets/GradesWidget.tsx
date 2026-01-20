@@ -19,21 +19,21 @@ interface GradeItem {
 
 function getGradeColor(nota: number | null) {
   if (nota === null) return 'text-muted-foreground'
-  if (nota >= 9) return 'text-emerald-600 dark:text-emerald-400'
-  if (nota >= 7) return 'text-emerald-600 dark:text-emerald-400'
-  if (nota >= 5) return 'text-blue-600 dark:text-blue-400'
-  return 'text-red-600 dark:text-red-400'
+  if (nota >= 9) return 'text-vt-green dark:text-vt-green-light'
+  if (nota >= 7) return 'text-vt-green dark:text-vt-green-light'
+  if (nota >= 5) return 'text-vt-blue dark:text-vt-blue-light'
+  return 'text-vt-red dark:text-vt-red-light'
 }
 
 function getGradeBadge(nota: number | null) {
   if (nota === null) return null
-  if (nota >= 5) return { text: '✓', className: 'text-emerald-500' }
-  return { text: '✗', className: 'text-red-500' }
+  if (nota >= 5) return { text: '✓', className: 'text-vt-green' }
+  return { text: '✗', className: 'text-vt-red' }
 }
 
 function GradeRow({ grade }: { grade: GradeItem }) {
   const badge = getGradeBadge(grade.nota)
-  
+
   return (
     <div className="flex items-center justify-between py-2 border-b last:border-0">
       <div className="flex-1 min-w-0">
@@ -71,7 +71,7 @@ export function GradesWidget() {
   // Calcular notas por asignatura
   const grades = useMemo((): GradeItem[] => {
     if (!data?.asignaturas) return []
-    
+
     return data.asignaturas.map(asig => {
       if (!asig.tieneGD || asig.ras.length === 0) {
         return {
@@ -92,19 +92,19 @@ export function GradesWidget() {
       let examenAprobado = asig.notaExamen !== null && asig.notaExamen >= 5
       let sumaMediaEC = 0
       let countMediaEC = 0
-      
+
       asig.ras.forEach(ra => {
         const pacsDelRA = asig.pacs.filter(p => p.raId === ra.id)
         const resultado = calcularNotaRA(pacsDelRA, asig.notaExamen)
         const { media: mediaECRA } = calcularMediaPACsRA(pacsDelRA)
-        
+
         if (resultado.notaRA !== null) {
           notasMap.set(ra.id, resultado.notaRA)
           if (resultado.notaRA < 5) todosRAsAprobados = false
         } else {
           todosRAsAprobados = false
         }
-        
+
         if (mediaECRA !== null) {
           sumaMediaEC += mediaECRA
           countMediaEC++
@@ -119,8 +119,8 @@ export function GradesWidget() {
         asignaturaId: asig.asignaturaId,
         asignatura: asig.nombre,
         codigo: asig.codigo,
-        nota: data.fct.nota !== null && notaModulo.notaConFCT !== null 
-          ? notaModulo.notaConFCT 
+        nota: data.fct.nota !== null && notaModulo.notaConFCT !== null
+          ? notaModulo.notaConFCT
           : notaModulo.notaSinFCT,
         mediaEC,
         tieneGD: true,
@@ -135,7 +135,7 @@ export function GradesWidget() {
     const mediasValidas = grades
       .filter((g) => g.tieneGD && g.mediaEC !== null)
       .map((g) => g.mediaEC as number)
-    
+
     return mediasValidas.length > 0
       ? mediasValidas.reduce((a, b) => a + b, 0) / mediasValidas.length
       : null
@@ -202,8 +202,8 @@ export function GradesWidget() {
 
       {/* Footer: Link a notas completas */}
       <div className="pt-2 mt-2 border-t shrink-0">
-        <Link 
-          href="/notas" 
+        <Link
+          href="/notas"
           className="flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
         >
           <TrendingUp className="h-3 w-3" />

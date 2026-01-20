@@ -8,41 +8,41 @@ import { cn } from '@/lib/utils'
 export type ReactionType = 'like' | 'love' | 'clap' | 'fire' | 'thinking'
 
 // Configuración de cada reacción con iconos Lucide
-const REACTION_CONFIG: Record<ReactionType, { 
+const REACTION_CONFIG: Record<ReactionType, {
   icon: typeof ThumbsUp
   label: string
   activeColor: string
   activeBg: string
 }> = {
-  like: { 
-    icon: ThumbsUp, 
-    label: 'Me gusta', 
-    activeColor: 'text-blue-500',
-    activeBg: 'bg-blue-500/10'
+  like: {
+    icon: ThumbsUp,
+    label: 'Me gusta',
+    activeColor: 'text-vt-blue',
+    activeBg: 'bg-vt-blue/10'
   },
-  love: { 
-    icon: Heart, 
-    label: 'Me encanta', 
-    activeColor: 'text-red-500',
-    activeBg: 'bg-red-500/10'
+  love: {
+    icon: Heart,
+    label: 'Me encanta',
+    activeColor: 'text-vt-red',
+    activeBg: 'bg-vt-red/10'
   },
-  clap: { 
-    icon: Sparkles, 
-    label: 'Genial', 
-    activeColor: 'text-yellow-500',
-    activeBg: 'bg-yellow-500/10'
+  clap: {
+    icon: Sparkles,
+    label: 'Genial',
+    activeColor: 'text-vt-yellow',
+    activeBg: 'bg-vt-yellow/10'
   },
-  fire: { 
-    icon: Flame, 
-    label: 'Fuego', 
+  fire: {
+    icon: Flame,
+    label: 'Fuego',
     activeColor: 'text-orange-500',
     activeBg: 'bg-orange-500/10'
   },
-  thinking: { 
-    icon: Lightbulb, 
-    label: 'Interesante', 
-    activeColor: 'text-purple-500',
-    activeBg: 'bg-purple-500/10'
+  thinking: {
+    icon: Lightbulb,
+    label: 'Interesante',
+    activeColor: 'text-vt-purple',
+    activeBg: 'bg-vt-purple/10'
   },
 }
 
@@ -63,13 +63,13 @@ interface ReactionBarProps {
   className?: string
 }
 
-export function ReactionBar({ 
-  noticiaId, 
-  counts, 
-  userReaction, 
+export function ReactionBar({
+  noticiaId,
+  counts,
+  userReaction,
   onReact,
   size = 'sm',
-  className 
+  className
 }: ReactionBarProps) {
   const [hoveredType, setHoveredType] = useState<ReactionType | null>(null)
 
@@ -112,14 +112,14 @@ export function ReactionBar({
               count === 0 && !isHovered && !isActive && 'opacity-50 hover:opacity-100'
             )}
           >
-            <Icon 
+            <Icon
               className={cn(
                 iconSize,
                 'transition-transform duration-200',
                 (isHovered || isActive) && 'scale-110',
                 // Rellenar icono cuando está activo
                 isActive && 'fill-current'
-              )} 
+              )}
             />
             {count > 0 && (
               <span className={cn(
@@ -145,7 +145,7 @@ interface ReactionCountsDisplayProps {
 
 export function ReactionCountsDisplay({ counts, className }: ReactionCountsDisplayProps) {
   const total = Object.values(counts).reduce((sum, c) => sum + c, 0)
-  
+
   if (total === 0) return null
 
   // Mostrar los iconos de las reacciones que tienen conteo
@@ -159,9 +159,9 @@ export function ReactionCountsDisplay({ counts, className }: ReactionCountsDispl
         {activeReactions.map((type) => {
           const Icon = REACTION_CONFIG[type].icon
           return (
-            <Icon 
-              key={type} 
-              className={cn('h-4 w-4', REACTION_CONFIG[type].activeColor)} 
+            <Icon
+              key={type}
+              className={cn('h-4 w-4', REACTION_CONFIG[type].activeColor)}
             />
           )
         })}

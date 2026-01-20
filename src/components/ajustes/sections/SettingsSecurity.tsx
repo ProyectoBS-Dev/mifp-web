@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 export function SettingsSecurity() {
   return (
     <div className="space-y-6">
-      <div>
+      <div className="pb-4 border-b border-border">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Shield className="h-5 w-5" />
           Seguridad

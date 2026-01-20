@@ -1,13 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { SettingsSidebar, type SettingsSection } from './SettingsSidebar'
 import { 
   SettingsAppearance, 
   SettingsNotifications, 
   SettingsSecurity, 
-  SettingsDanger 
+  SettingsDanger,
+  SettingsSupport,
+  SettingsFeedback
 } from './sections'
+import { HelpCircle, ExternalLink } from 'lucide-react'
 
 interface SettingsPanelProps {
   userEmail: string
@@ -27,13 +31,17 @@ export function SettingsPanel({ userEmail, userRole = 'estudiante' }: SettingsPa
         return <SettingsSecurity />
       case 'peligro':
         return <SettingsDanger userEmail={userEmail} />
+      case 'soporte':
+        return <SettingsSupport />
+      case 'feedback':
+        return <SettingsFeedback />
       default:
         return <SettingsAppearance />
     }
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8">
+    <div className="flex flex-col lg:flex-row gap-12">
       {/* Sidebar - hidden on mobile, shown on lg+ */}
       <div className="hidden lg:block">
         <SettingsSidebar 
@@ -43,7 +51,8 @@ export function SettingsPanel({ userEmail, userRole = 'estudiante' }: SettingsPa
       </div>
 
       {/* Mobile navigation */}
-      <div className="lg:hidden">
+      <div className="lg:hidden space-y-3">
+        {/* Config items */}
         <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
           <MobileNavButton 
             active={activeSection === 'apariencia'}
@@ -69,6 +78,30 @@ export function SettingsPanel({ userEmail, userRole = 'estudiante' }: SettingsPa
             danger
           >
             Peligro
+          </MobileNavButton>
+        </div>
+        
+        {/* Resources items */}
+        <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 border-t pt-3">
+          <Link
+            href="/home#faqs"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-muted hover:bg-muted/80 transition-colors"
+          >
+            <HelpCircle className="h-3.5 w-3.5" />
+            Ayuda
+            <ExternalLink className="h-3 w-3 text-muted-foreground" />
+          </Link>
+          <MobileNavButton 
+            active={activeSection === 'soporte'}
+            onClick={() => setActiveSection('soporte')}
+          >
+            Soporte
+          </MobileNavButton>
+          <MobileNavButton 
+            active={activeSection === 'feedback'}
+            onClick={() => setActiveSection('feedback')}
+          >
+            Feedback
           </MobileNavButton>
         </div>
       </div>

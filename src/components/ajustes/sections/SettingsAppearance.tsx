@@ -1,6 +1,6 @@
 'use client'
 
-import { Moon, Sun, Monitor } from 'lucide-react'
+import { Palette, Moon, Sun, Monitor } from 'lucide-react'
 import { useTheme } from '@/hooks/useTheme'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
@@ -9,10 +9,13 @@ export function SettingsAppearance() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-lg font-semibold">Apariencia</h2>
-        <p className="text-sm text-muted-foreground">
+    <div className="space-y-6">
+      <div className="pb-4 border-b border-border">
+        <h2 className="text-lg font-semibold flex items-center gap-2">
+          <Palette className="h-5 w-5" />
+          Apariencia
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
           Personaliza el aspecto de la aplicación
         </p>
       </div>

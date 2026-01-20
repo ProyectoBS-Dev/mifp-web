@@ -14,7 +14,7 @@ export function SettingsNotifications({ userRole = 'estudiante' }: SettingsNotif
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="pb-4 border-b border-border">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Bell className="h-5 w-5" />
           Notificaciones

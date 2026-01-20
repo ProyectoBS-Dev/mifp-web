@@ -61,7 +61,7 @@ export function SettingsDanger({ userEmail }: SettingsDangerProps) {
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="pb-4 border-b border-destructive/30">
         <h2 className="text-lg font-semibold flex items-center gap-2 text-destructive">
           <Trash2 className="h-5 w-5" />
           Zona de peligro
@@ -93,31 +93,33 @@ export function SettingsDanger({ userEmail }: SettingsDangerProps) {
                     <AlertTriangle className="h-5 w-5 text-destructive" />
                     ¿Estás seguro?
                   </AlertDialogTitle>
-                  <AlertDialogDescription className="space-y-3">
-                    <p>
-                      Esta acción <strong>no se puede deshacer</strong>. Se eliminarán 
-                      permanentemente:
-                    </p>
-                    <ul className="list-disc list-inside text-sm space-y-1">
-                      <li>Tu perfil y configuración</li>
-                      <li>Todas tus notas y calificaciones</li>
-                      <li>Tu progreso en las asignaturas</li>
-                      <li>Todos tus datos personales</li>
-                    </ul>
-                    <div className="pt-3">
-                      <Label htmlFor="confirmEmail" className="text-foreground">
-                        Escribe <strong>{userEmail}</strong> para confirmar:
-                      </Label>
-                      <Input
-                        id="confirmEmail"
-                        value={deleteConfirmation}
-                        onChange={(e) => setDeleteConfirmation(e.target.value)}
-                        placeholder="tu@email.com"
-                        className="mt-2"
-                      />
-                      {deleteError && (
-                        <p className="text-sm text-destructive mt-2">{deleteError}</p>
-                      )}
+                  <AlertDialogDescription asChild>
+                    <div className="text-sm text-muted-foreground space-y-3">
+                      <p>
+                        Esta acción <strong>no se puede deshacer</strong>. Se eliminarán 
+                        permanentemente:
+                      </p>
+                      <ul className="list-disc list-inside space-y-1">
+                        <li>Tu perfil y configuración</li>
+                        <li>Todas tus notas y calificaciones</li>
+                        <li>Tu progreso en las asignaturas</li>
+                        <li>Todos tus datos personales</li>
+                      </ul>
+                      <div className="pt-3">
+                        <Label htmlFor="confirmEmail" className="text-foreground">
+                          Escribe <strong>{userEmail}</strong> para confirmar:
+                        </Label>
+                        <Input
+                          id="confirmEmail"
+                          value={deleteConfirmation}
+                          onChange={(e) => setDeleteConfirmation(e.target.value)}
+                          placeholder="tu@email.com"
+                          className="mt-2"
+                        />
+                        {deleteError && (
+                          <p className="text-sm text-destructive mt-2">{deleteError}</p>
+                        )}
+                      </div>
                     </div>
                   </AlertDialogDescription>
                 </AlertDialogHeader>

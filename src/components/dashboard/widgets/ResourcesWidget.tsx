@@ -20,10 +20,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
+import { formatSeconds } from '@/lib/format'
 import { useRecursosByType } from '@/hooks/useRecursos'
 import { PodcastPlayer } from '../PodcastPlayer'
 import { PDFPreviewModal } from '../PDFPreviewModal'
-import { formatDuration, type Recurso, type RecursoTipo } from '@/types/recursos'
+import { type Recurso, type RecursoTipo } from '@/types/recursos'
 
 // ============================================
 // Constantes de estilos
@@ -203,7 +204,7 @@ function PodcastCard({ recurso }: { recurso: Recurso }) {
             <p className="text-sm font-medium truncate flex-1">{recurso.titulo}</p>
             {recurso.duracion && (
               <span className="text-xs text-muted-foreground flex-shrink-0">
-                {formatDuration(recurso.duracion)}
+                {formatSeconds(recurso.duracion)}
               </span>
             )}
           </div>

@@ -1,14 +1,14 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Save, Loader2, CheckCircle2 } from 'lucide-react'
+import { Loader2, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useQueryClient } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
+import { getGradeColor } from '@/lib/grades'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { useNotas } from '@/hooks/useNotas'
 
 // ============================================
@@ -97,15 +97,6 @@ export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplific
         if (newNota !== currentNota) {
             handleSaveNota(userAsignaturaId, newNota)
         }
-    }
-
-    // Obtener color de nota
-    const getGradeColor = (nota: number | null) => {
-        if (nota === null) return 'text-muted-foreground'
-        if (nota >= 9) return 'text-vt-green dark:text-vt-green-light'
-        if (nota >= 7) return 'text-vt-green dark:text-vt-green-light'
-        if (nota >= 5) return 'text-vt-blue dark:text-vt-blue-light'
-        return 'text-vt-red dark:text-vt-red-light'
     }
 
     if (isLoading) {

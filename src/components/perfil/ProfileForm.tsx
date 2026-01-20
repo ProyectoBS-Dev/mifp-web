@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { User, Mail, GraduationCap, Calendar, Save, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getInitials } from '@/lib/user'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -50,18 +51,6 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
   const [fullName, setFullName] = useState(profile?.full_name || '')
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-
-  const getInitials = () => {
-    if (fullName) {
-      return fullName
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
-    }
-    return user?.email?.[0].toUpperCase() || 'U'
-  }
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -139,7 +128,7 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
             <Avatar className="h-20 w-20">
               <AvatarImage src={profile?.avatar_url || undefined} />
               <AvatarFallback className="bg-primary/10 text-primary text-xl">
-                {getInitials()}
+                {getInitials(fullName, user?.email)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">

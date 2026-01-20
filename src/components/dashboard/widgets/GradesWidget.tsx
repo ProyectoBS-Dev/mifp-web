@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import { TrendingUp, Loader2, GraduationCap } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { getGradeColor } from '@/lib/grades'
 import { useNotas, calcularNotaRA, calcularNotaModulo, calcularMediaPACsRA } from '@/hooks/useNotas'
 import Link from 'next/link'
 
@@ -15,14 +16,6 @@ interface GradeItem {
   tieneGD: boolean
   todosRAsAprobados: boolean
   examenAprobado: boolean
-}
-
-function getGradeColor(nota: number | null) {
-  if (nota === null) return 'text-muted-foreground'
-  if (nota >= 9) return 'text-vt-green dark:text-vt-green-light'
-  if (nota >= 7) return 'text-vt-green dark:text-vt-green-light'
-  if (nota >= 5) return 'text-vt-blue dark:text-vt-blue-light'
-  return 'text-vt-red dark:text-vt-red-light'
 }
 
 function getGradeBadge(nota: number | null) {

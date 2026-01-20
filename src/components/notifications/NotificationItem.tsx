@@ -4,8 +4,9 @@ import { useRouter } from 'next/navigation'
 import { X, ExternalLink, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { formatTimeAgo } from '@/lib/format'
 import { useMarkAsRead, useDeleteNotification } from '@/hooks/useNotifications'
-import { formatTimeAgo, NOTIFICATION_CONFIG, type Notification } from '@/types/notifications'
+import { NOTIFICATION_CONFIG, type Notification } from '@/types/notifications'
 
 interface NotificationItemProps {
   notification: Notification
@@ -16,26 +17,26 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
   const router = useRouter()
   const { mutate: markAsRead } = useMarkAsRead()
   const { mutate: deleteNotification } = useDeleteNotification()
-  
+
   const config = NOTIFICATION_CONFIG[notification.tipo]
-  
+
   const handleClick = () => {
     if (!notification.leida) {
       markAsRead(notification.id)
     }
   }
-  
+
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
     deleteNotification(notification.id)
   }
-  
+
   // Determinar si mostrar botón de "Unirse a VT"
   const showVTAction = notification.tipo === 'vt_recordatorio' && notification.data?.zoom_link
-  
+
   // Determinar si mostrar botón "Leer más" para noticias
   const showNoticiaAction = notification.tipo === 'noticia_nueva' && notification.data?.noticia_id
-  
+
   const handleJoinVT = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (notification.data?.zoom_link) {
@@ -46,7 +47,7 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
       onClose?.()
     }
   }
-  
+
   const handleReadNoticia = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (notification.data?.noticia_id) {
@@ -57,14 +58,14 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
       router.push(`/blog/${notification.data.noticia_id}`)
     }
   }
-  
+
   return (
     <div
       onClick={handleClick}
       className={cn(
         'group relative flex gap-3 p-3 rounded-lg cursor-pointer transition-colors',
-        notification.leida 
-          ? 'bg-transparent hover:bg-muted/50' 
+        notification.leida
+          ? 'bg-transparent hover:bg-muted/50'
           : 'bg-primary/5 hover:bg-primary/10'
       )}
     >
@@ -72,10 +73,10 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
       {!notification.leida && (
         <span className="absolute left-1 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-primary animate-pulse" />
       )}
-      
+
       {/* Icono del tipo */}
       <span className="text-xl flex-shrink-0 mt-0.5">{config.icon}</span>
-      
+
       {/* Contenido */}
       <div className="flex-1 min-w-0 space-y-1">
         <p className={cn(
@@ -84,31 +85,31 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
         )}>
           {notification.titulo}
         </p>
-        
+
         {notification.mensaje && (
           <p className="text-xs text-muted-foreground line-clamp-2">
             {notification.mensaje}
           </p>
         )}
-        
+
         {/* Info adicional según tipo */}
         {notification.tipo === 'pac_vencimiento' && notification.data?.asignatura_nombre && (
           <p className="text-xs text-muted-foreground">
             📁 {notification.data.asignatura_nombre}
           </p>
         )}
-        
+
         {notification.tipo === 'vt_recordatorio' && notification.data?.hora_inicio && (
           <p className="text-xs text-muted-foreground">
             🕐 {notification.data.hora_inicio}
           </p>
         )}
-        
+
         <div className="flex items-center justify-between gap-2 pt-1">
           <span className="text-xs text-muted-foreground">
             {formatTimeAgo(notification.created_at)}
           </span>
-          
+
           {/* Acción de Unirse a VT */}
           {showVTAction && (
             <Button
@@ -121,7 +122,7 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
               Unirse
             </Button>
           )}
-          
+
           {/* Acción de Leer noticia */}
           {showNoticiaAction && (
             <Button
@@ -136,7 +137,7 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
           )}
         </div>
       </div>
-      
+
       {/* Botón eliminar (visible en hover) */}
       <Button
         variant="ghost"

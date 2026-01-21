@@ -129,7 +129,7 @@ export function AsignaturaDetail({
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>{asignatura.nombre}</span>
-              <Badge variant="secondary">Sin datos</Badge>
+              <Badge color="gray">Sin datos</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -163,7 +163,7 @@ export function AsignaturaDetail({
               <h2 className="text-xl font-bold">{asignatura.nombre}</h2>
               <p className="text-sm text-muted-foreground">{asignatura.codigo}</p>
             </div>
-            <Badge variant={badge.variant}>{badge.label}</Badge>
+            <Badge color={badge.color}>{badge.label}</Badge>
           </div>
 
           {/* Nota grande central */}
@@ -258,8 +258,12 @@ export function AsignaturaDetail({
                           pac.tipo === 'interactiva' ? 'bg-vt-blue' : 'bg-vt-purple'
                         )} />
                         <span className="truncate">{pac.titulo}</span>
-                        <Badge variant="outline" className="text-xs flex-shrink-0">
-                          {pac.tipo === 'interactiva' ? 'INT' : 'DES'}
+                        <Badge 
+                          color={pac.tipo === 'interactiva' ? 'gray' : 'gray'} 
+                          colorStyle="outline" 
+                          size="adjusted" 
+                          className="flex-shrink-0">
+                          {pac.tipo === 'interactiva' ? 'Interactiva' : 'Desarrollo'}
                         </Badge>
                         <span className="text-xs text-muted-foreground flex-shrink-0">
                           ({pac.pesoEnRA}%)

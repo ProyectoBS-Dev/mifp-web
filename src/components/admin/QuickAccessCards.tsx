@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { 
-  FileText, 
-  Users, 
-  BookOpen, 
-  Video, 
+import {
+  FileText,
+  Users,
+  BookOpen,
+  Video,
   Package,
   LucideIcon
 } from 'lucide-react'
@@ -83,25 +83,22 @@ export function QuickAccessCards({ stats }: QuickAccessCardsProps) {
               href={card.enabled ? card.href : undefined as never}
               className={`group block ${!card.enabled && 'cursor-not-allowed'}`}
             >
-              <Card className={`h-full transition-colors ${
-                card.enabled 
-                  ? 'hover:border-primary/50 hover:bg-muted/50' 
+              <Card className={`h-full transition-colors ${card.enabled
+                  ? 'hover:border-primary/50 hover:bg-muted/50'
                   : 'opacity-60'
-              }`}>
+                }`}>
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center text-center gap-3">
-                    <div className={`p-3 rounded-xl ${
-                      card.enabled ? 'bg-primary/10' : 'bg-muted'
-                    }`}>
-                      <Icon className={`h-6 w-6 ${
-                        card.enabled ? 'text-primary' : 'text-muted-foreground'
-                      }`} />
+                    <div className={`p-3 rounded-xl ${card.enabled ? 'bg-primary/10' : 'bg-muted'
+                      }`}>
+                      <Icon className={`h-6 w-6 ${card.enabled ? 'text-primary' : 'text-muted-foreground'
+                        }`} />
                     </div>
                     <div>
                       <span className="font-medium text-sm flex items-center gap-2 justify-center">
                         {card.title}
                         {card.badge && (
-                          <Badge variant="destructive" className="h-5 px-1.5">
+                          <Badge color="red" className="h-5 px-1.5">
                             {card.badge}
                           </Badge>
                         )}
@@ -111,7 +108,7 @@ export function QuickAccessCards({ stats }: QuickAccessCardsProps) {
                       </span>
                     </div>
                     {!card.enabled && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge color="gray" className="text-xs">
                         Próximamente
                       </Badge>
                     )}

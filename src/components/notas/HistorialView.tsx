@@ -189,7 +189,7 @@ export function HistorialView() {
                                                     {asig.asignatura_nombre}
                                                 </span>
                                                 {asig.num_convocatorias > 1 && (
-                                                    <Badge variant="outline" className="text-xs flex-shrink-0">
+                                                    <Badge color="gray" colorStyle="outline" className="text-xs flex-shrink-0">
                                                         {asig.num_convocatorias}ª conv.
                                                     </Badge>
                                                 )}

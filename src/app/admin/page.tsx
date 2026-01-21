@@ -103,7 +103,7 @@ export default async function AdminPage() {
             <CardTitle className="flex items-center gap-2">
               📋 GDs Pendientes de Validación
               {stats.gdsPendientes > 0 && (
-                <Badge variant="destructive">{stats.gdsPendientes}</Badge>
+                <Badge color="red">{stats.gdsPendientes}</Badge>
               )}
             </CardTitle>
             <CardDescription>

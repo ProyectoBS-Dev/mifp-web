@@ -41,12 +41,14 @@ interface GD {
   } | null
 }
 
-const estadoConfig: Record<GDEstado, { label: string; icon: React.ElementType; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-  pendiente: { label: 'Pendiente', icon: Clock, variant: 'secondary' },
-  extrayendo: { label: 'Extrayendo...', icon: AlertCircle, variant: 'outline' },
-  extraida: { label: 'Datos Extraídos', icon: CheckCircle2, variant: 'outline' },
-  validada: { label: 'Validada', icon: CheckCircle2, variant: 'default' },
-  rechazada: { label: 'Rechazada', icon: XCircle, variant: 'destructive' },
+import type { BadgeColor } from '@/components/ui/badge'
+
+const estadoConfig: Record<GDEstado, { label: string; icon: React.ElementType; color: BadgeColor }> = {
+  pendiente: { label: 'Pendiente', icon: Clock, color: 'yellow' },
+  extrayendo: { label: 'Extrayendo...', icon: AlertCircle, color: 'blue' },
+  extraida: { label: 'Datos Extraídos', icon: CheckCircle2, color: 'blue' },
+  validada: { label: 'Validada', icon: CheckCircle2, color: 'green' },
+  rechazada: { label: 'Rechazada', icon: XCircle, color: 'red' },
 }
 
 async function getGDs(): Promise<GD[]> {
@@ -140,7 +142,7 @@ export default async function GuiasDidacticasPage() {
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-vt-yellow" />
               Pendientes de Validación
-              <Badge variant="secondary">{pendientes.length}</Badge>
+              <Badge color="gray">{pendientes.length}</Badge>
             </CardTitle>
             <CardDescription>
               Estas guías necesitan ser revisadas y validadas
@@ -223,7 +225,7 @@ function GDCard({ gd }: { gd: GD }) {
             locale: es,
           })}
         </div>
-        <Badge variant={config.variant} className="flex items-center gap-1">
+        <Badge color={config.color} className="flex items-center gap-1">
           <IconComponent className="h-3 w-3" />
           {config.label}
         </Badge>

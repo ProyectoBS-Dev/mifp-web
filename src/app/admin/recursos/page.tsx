@@ -230,7 +230,7 @@ export default async function RecursosAdminPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="font-semibold truncate">{recurso.titulo}</h3>
-                          <Badge variant="outline" className="shrink-0 text-xs">
+                          <Badge color="gray" colorStyle="outline" className="shrink-0 text-xs">
                             {TIPO_LABELS[recurso.tipo]}
                           </Badge>
                           {recurso.tipo === 'podcast' && recurso.duracion && (

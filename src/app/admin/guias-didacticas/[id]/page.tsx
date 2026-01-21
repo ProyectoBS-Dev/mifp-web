@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -96,12 +97,12 @@ export default async function ValidarGDPage({
   const fileUrl = gd.archivo_path ? await getFileUrl(gd.archivo_path) : null
 
   const estadoConfig = {
-    pendiente: { label: 'Pendiente', color: 'text-vt-yellow', bgColor: 'bg-vt-yellow/10' },
-    extrayendo: { label: 'Extrayendo...', color: 'text-vt-blue', bgColor: 'bg-vt-blue/10' },
-    extraida: { label: 'Datos Extraídos', color: 'text-vt-purple', bgColor: 'bg-vt-purple/10' },
-    validada: { label: 'Validada', color: 'text-vt-green', bgColor: 'bg-vt-green/10' },
-    rechazada: { label: 'Rechazada', color: 'text-vt-red', bgColor: 'bg-vt-red/10' },
-  }
+    pendiente: { label: 'Pendiente', color: 'yellow' },
+    extrayendo: { label: 'Extrayendo...', color: 'blue' },
+    extraida: { label: 'Datos Extraídos', color: 'purple' },
+    validada: { label: 'Validada', color: 'green' },
+    rechazada: { label: 'Rechazada', color: 'red' },
+  } as const
   const estadoInfo = estadoConfig[gd.estado] || estadoConfig.pendiente
 
   return (
@@ -122,10 +123,7 @@ export default async function ValidarGDPage({
             {gd.asignatura?.nombre} ({gd.asignatura?.codigo})
           </p>
         </div>
-        <Badge
-          variant="outline"
-          className={`${estadoInfo.color} ${estadoInfo.bgColor} border-current`}
-        >
+        <Badge color={estadoInfo.color} size="lg">
           {estadoInfo.label}
         </Badge>
       </div>

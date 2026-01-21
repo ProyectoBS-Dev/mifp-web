@@ -178,7 +178,7 @@ export function NewSemesterOnboarding({
                                 <p className="text-sm text-muted-foreground">{asig.codigo}</p>
                             </Label>
                             {asig.semestre_recomendado && (
-                                <Badge variant="secondary" className="text-xs">
+                                <Badge color="gray" className="text-xs">
                                     S{asig.semestre_recomendado}
                                 </Badge>
                             )}

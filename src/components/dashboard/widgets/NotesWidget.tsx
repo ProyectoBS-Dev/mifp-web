@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { Plus, X, Loader2, StickyNote, Search, Pencil, Trash2, Pin, Copy, Check, Archive, ArchiveRestore, LayoutList, LayoutGrid, Download } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatTimeAgo } from '@/lib/format'
@@ -39,6 +39,103 @@ function getColorClasses(hexColor: string) {
 // Constante para localStorage
 const COMPACT_MODE_KEY = 'notes-widget-compact-mode'
 const SHOW_ARCHIVED_KEY = 'notes-widget-show-archived'
+
+// Componente para renderizar contenido con checkboxes interactivos
+function NoteContent({
+  note,
+  onCheckboxClick
+}: {
+  note: Apunte
+  onCheckboxClick: (note: Apunte, index: number, e: React.MouseEvent) => void
+}) {
+  // Parsear HTML y extraer elementos
+  const elements = useMemo(() => {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(note.contenido, 'text/html')
+    const result: React.ReactNode[] = []
+    let checkboxIndex = 0
+
+    const processNode = (node: Node, key: string): React.ReactNode => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return node.textContent
+      }
+
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as Element
+        const tagName = el.tagName.toLowerCase()
+
+        // TaskItem con checkbox
+        if (tagName === 'li' && el.getAttribute('data-type') === 'taskItem') {
+          const isChecked = el.getAttribute('data-checked') === 'true'
+          const currentIndex = checkboxIndex++
+          const content = el.querySelector('div')?.textContent || ''
+
+          return (
+            <li key={key} className="notes-task-item flex items-start gap-2 my-1">
+              <button
+                type="button"
+                onClick={(e) => onCheckboxClick(note, currentIndex, e)}
+                className={cn(
+                  'notes-checkbox flex-shrink-0 w-4 h-4 mt-0.5 rounded border-2 transition-all duration-200',
+                  isChecked
+                    ? 'bg-primary border-primary'
+                    : 'border-muted-foreground/40 hover:border-primary/60'
+                )}
+              >
+                {isChecked && (
+                  <svg className="w-full h-full text-primary-foreground" viewBox="0 0 16 16" fill="none">
+                    <path d="M4 8L7 11L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </button>
+              <span className={cn('flex-1', isChecked && 'line-through opacity-60')}>
+                {content}
+              </span>
+            </li>
+          )
+        }
+
+        // TaskList
+        if (tagName === 'ul' && el.getAttribute('data-type') === 'taskList') {
+          const children = Array.from(el.childNodes).map((child, i) =>
+            processNode(child, `${key}-${i}`)
+          )
+          return <ul key={key} className="notes-task-list list-none pl-0 my-1">{children}</ul>
+        }
+
+        // Otros elementos - renderizar como HTML normal
+        if (['p', 'ul', 'li', 'strong', 'em', 'code'].includes(tagName)) {
+          const children = Array.from(el.childNodes).map((child, i) =>
+            processNode(child, `${key}-${i}`)
+          )
+          return React.createElement(tagName, { key }, children)
+        }
+
+        // Fallback para divs y otros
+        if (tagName === 'div') {
+          const children = Array.from(el.childNodes).map((child, i) =>
+            processNode(child, `${key}-${i}`)
+          )
+          return <div key={key}>{children}</div>
+        }
+      }
+
+      return null
+    }
+
+    Array.from(doc.body.childNodes).forEach((node, i) => {
+      result.push(processNode(node, `node-${i}`))
+    })
+
+    return result
+  }, [note, onCheckboxClick])
+
+  return (
+    <div className="text-sm line-clamp-3 prose prose-sm dark:prose-invert max-w-none prose-p:my-0.5 prose-ul:my-0.5 prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-primary prose-code:font-mono prose-code:text-xs prose-code:before:content-none prose-code:after:content-none text-muted-foreground">
+      {elements}
+    </div>
+  )
+}
 
 export function NotesWidget() {
   const [showArchived, setShowArchived] = useState(false)
@@ -199,6 +296,29 @@ export function NotesWidget() {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
+  }
+
+  // Toggle checkbox en tasklist sin abrir modal
+  const toggleCheckbox = async (note: Apunte, checkboxIndex: number, e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    // Parsear HTML y encontrar todos los checkboxes
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(note.contenido, 'text/html')
+    const taskItems = doc.querySelectorAll('li[data-type="taskItem"]')
+
+    if (taskItems[checkboxIndex]) {
+      const currentChecked = taskItems[checkboxIndex].getAttribute('data-checked') === 'true'
+      taskItems[checkboxIndex].setAttribute('data-checked', String(!currentChecked))
+
+      // Serializar de vuelta a HTML
+      const newContent = doc.body.innerHTML
+      await updateApunte.mutateAsync({
+        id: note.id,
+        contenido: newContent,
+      })
+    }
   }
 
   if (isLoading) {
@@ -395,10 +515,7 @@ export function NotesWidget() {
 
               {/* Contenido (oculto en modo compacto) */}
               {!isCompactMode && (
-                <div
-                  className="text-sm line-clamp-3 prose prose-sm dark:prose-invert max-w-none prose-p:my-0.5 prose-ul:my-0.5 prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-primary prose-code:font-mono prose-code:text-xs prose-code:before:content-none prose-code:after:content-none"
-                  dangerouslySetInnerHTML={{ __html: note.contenido }}
-                />
+                <NoteContent note={note} onCheckboxClick={toggleCheckbox} />
               )}
 
               {/* Fecha de modificación */}
@@ -410,80 +527,16 @@ export function NotesWidget() {
               </p>
             </div>
           ))}
-
-          {/* Formulario de nueva nota */}
-          {isAdding && (
-            <div className="space-y-2">
-              {/* Campo de título */}
-              <input
-                type="text"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="Título (opcional)"
-                className="w-full px-2 py-1.5 text-sm rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-
-              {/* Editor de contenido enriquecido */}
-              <MiniRichTextEditor
-                value={newContent}
-                onChange={setNewContent}
-                placeholder="Escribe tu nota..."
-                minHeight="60px"
-              />
-
-              {/* Selector de color */}
-              <div className="flex gap-1 pl-1.5">
-                {coloresDisponibles.map((color) => (
-                  <button
-                    key={color.hex}
-                    type="button"
-                    onClick={() => setSelectedColor(color.hex)}
-                    className={cn(
-                      'w-5 h-5 rounded-full transition-transform',
-                      selectedColor === color.hex && 'ring-2 ring-offset-1 ring-primary scale-110'
-                    )}
-                    style={{ backgroundColor: color.hex }}
-                    title={color.name}
-                  />
-                ))}
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={addNote}
-                  disabled={createApunte.isPending || (!newContent.trim() && !newTitle.trim())}
-                  className="px-3 py-1 text-xs font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
-                >
-                  {createApunte.isPending ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    'Guardar'
-                  )}
-                </button>
-                <button
-                  onClick={() => {
-                    setIsAdding(false)
-                    setNewTitle('')
-                    setNewContent('')
-                  }}
-                  className="px-3 py-1 text-xs font-medium bg-muted rounded-md hover:bg-muted/80"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
-        {!isAdding && (
-          <button
-            onClick={() => setIsAdding(true)}
-            className="mt-2 flex items-center justify-center gap-1 w-full py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            Añadir nota
-          </button>
-        )}
+        {/* Botón añadir nota */}
+        <button
+          onClick={() => setIsAdding(true)}
+          className="mt-2 flex items-center justify-center gap-1 w-full py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          Añadir nota
+        </button>
 
         {/* Modal de visualización/edición */}
         <Dialog open={!!selectedNote} onOpenChange={(open) => !open && closeNoteModal()}>
@@ -540,7 +593,7 @@ export function NotesWidget() {
               ) : (
                 <div
                   className={cn(
-                    'p-3 rounded-lg border prose prose-sm dark:prose-invert max-w-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-primary prose-code:font-mono prose-code:text-xs prose-code:before:content-none prose-code:after:content-none',
+                    'p-3 rounded-lg border prose prose-sm dark:prose-invert max-w-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-primary prose-code:font-mono prose-code:text-xs prose-code:before:content-none prose-code:after:content-none text-muted-foreground',
                     getColorClasses(selectedNote?.color || '#FBBF24')
                   )}
                   dangerouslySetInnerHTML={{ __html: selectedNote?.contenido || '' }}
@@ -674,6 +727,81 @@ export function NotesWidget() {
                   </Button>
                 )}
               </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal de nueva nota */}
+        <Dialog open={isAdding} onOpenChange={(open) => {
+          if (!open) {
+            setIsAdding(false)
+            setNewTitle('')
+            setNewContent('')
+            setSelectedColor(coloresDisponibles[0].hex)
+          }
+        }}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Nueva nota</DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 py-2">
+              <Input
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="Título (opcional)"
+              />
+
+              <MiniRichTextEditor
+                value={newContent}
+                onChange={setNewContent}
+                placeholder="Escribe tu nota..."
+                minHeight="100px"
+              />
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Color:</span>
+                <div className="flex gap-1.5">
+                  {coloresDisponibles.map((color) => (
+                    <button
+                      key={color.hex}
+                      type="button"
+                      onClick={() => setSelectedColor(color.hex)}
+                      className={cn(
+                        'w-6 h-6 rounded-full transition-transform',
+                        selectedColor === color.hex && 'ring-2 ring-offset-2 ring-primary scale-110'
+                      )}
+                      style={{ backgroundColor: color.hex }}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsAdding(false)
+                  setNewTitle('')
+                  setNewContent('')
+                  setSelectedColor(coloresDisponibles[0].hex)
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={addNote}
+                disabled={createApunte.isPending || (!newContent.trim() && !newTitle.trim())}
+              >
+                {createApunte.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <Plus className="h-4 w-4 mr-2" />
+                )}
+                Guardar nota
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

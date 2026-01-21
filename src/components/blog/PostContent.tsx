@@ -86,8 +86,8 @@ function RenderContent({ content }: { content: string }) {
 
 interface PostContentProps {
   post: NoticiaConMeta
-  prevPost?: { id: string; titulo: string } | null
-  nextPost?: { id: string; titulo: string } | null
+  prevPost?: { slug: string; titulo: string } | null
+  nextPost?: { slug: string; titulo: string } | null
 }
 
 export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
@@ -183,7 +183,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
                   Siguiente artículo
                 </p>
                 <Link
-                  href={`/blog/${nextPost.id}`}
+                  href={`/blog/${nextPost.slug}`}
                   className="text-sm text-primary hover:underline line-clamp-2"
                 >
                   {nextPost.titulo}
@@ -198,7 +198,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
                   Artículo anterior
                 </p>
                 <Link
-                  href={`/blog/${prevPost.id}`}
+                  href={`/blog/${prevPost.slug}`}
                   className="text-sm text-primary hover:underline line-clamp-2"
                 >
                   {prevPost.titulo}
@@ -244,7 +244,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
           <div className="flex items-center gap-2">
             {prevPost && (
               <Button variant="ghost" size="sm" asChild>
-                <Link href={`/blog/${prevPost.id}`} className="gap-1">
+                <Link href={`/blog/${prevPost.slug}`} className="gap-1">
                   <ArrowLeft className="h-4 w-4" />
                   Anterior
                 </Link>
@@ -252,7 +252,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
             )}
             {nextPost && (
               <Button variant="ghost" size="sm" asChild>
-                <Link href={`/blog/${nextPost.id}`} className="gap-1">
+                <Link href={`/blog/${nextPost.slug}`} className="gap-1">
                   Siguiente
                   <ArrowRight className="h-4 w-4" />
                 </Link>

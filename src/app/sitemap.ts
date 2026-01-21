@@ -45,14 +45,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       
       const { data: posts } = await supabase
         .from('noticias')
-        .select('id, updated_at, created_at')
+        .select('slug, updated_at, created_at')
         .eq('publicada', true)
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
 
       if (posts) {
         blogPosts = posts.map((post) => ({
-          url: `${baseUrl}/blog/${post.id}`,
+          url: `${baseUrl}/blog/${post.slug}`,
           lastModified: new Date(post.updated_at || post.created_at),
           changeFrequency: 'weekly' as const,
           priority: 0.7,

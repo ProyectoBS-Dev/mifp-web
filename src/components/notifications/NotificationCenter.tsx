@@ -11,7 +11,7 @@ import {
   NOTIFICATION_CONFIG 
 } from '@/hooks/useNotifications'
 import { NotificationItem } from './NotificationItem'
-import type { NotificationFilter as FilterType, NotificationType } from '@/types/notifications'
+import type { NotificationFilter as FilterType } from '@/types/notifications'
 
 interface NotificationCenterProps {
   onClose?: () => void

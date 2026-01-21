@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 
 interface Noticia {
   id: string
+  slug: string
   titulo: string
   contenido: string
   imagen_url: string | null
@@ -41,7 +42,7 @@ async function getNoticias(): Promise<Noticia[]> {
   const { data } = await (supabase as any)
     .from('noticias')
     .select(`
-      id, titulo, contenido, imagen_url, publicada, created_at,
+      id, slug, titulo, contenido, imagen_url, publicada, created_at,
       autor:users!autor_id(full_name, email)
     `)
     .is('deleted_at', null)
@@ -187,7 +188,7 @@ export default async function NoticiasAdminPage() {
                       </Link>
                     </Button>
                     <Button variant="ghost" size="icon" asChild>
-                      <Link href={`/blog/${noticia.id}`} target="_blank">
+                      <Link href={`/blog/${noticia.slug}`} target="_blank">
                         <Eye className="h-4 w-4" />
                       </Link>
                     </Button>

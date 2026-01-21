@@ -76,7 +76,7 @@ export function MiniRichTextEditor({
     editorProps: {
       attributes: {
         class: cn(
-          'prose prose-sm dark:prose-invert max-w-none focus:outline-none px-3 py-2',
+          'prose prose-sm dark:prose-invert max-w-none focus:outline-none px-3 py-2 text-muted-foreground',
           'prose-p:my-1 prose-ul:my-1 prose-li:my-0'
         ),
         style: `min-height: ${minHeight}`,

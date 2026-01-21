@@ -43,6 +43,7 @@ const badgeVariants = cva(
         sm: "px-1.5 py-0.5 text-[10px]",
         md: "px-2.5 py-0.5 text-xs",
         lg: "px-3 py-1 text-sm",
+        adjusted: "px-1.5 py-0 text-[10px]",
       },
       rounded: {
         default: "rounded-md",
@@ -57,7 +58,7 @@ const badgeVariants = cva(
       { color: "red", colorStyle: "solid", className: "border-transparent bg-vt-red text-white hover:bg-vt-red/90" },
       { color: "blue", colorStyle: "solid", className: "border-transparent bg-vt-blue text-white hover:bg-vt-blue/90" },
       { color: "purple", colorStyle: "solid", className: "border-transparent bg-vt-purple text-white hover:bg-vt-purple/90" },
-      { color: "gray", colorStyle: "solid", className: "border-transparent bg-vt-gray-dark-2 text-white hover:bg-vt-gray-dark-2/90" },
+      { color: "gray", colorStyle: "solid", className: "border-transparent bg-vt-gray-light-1 text-white hover:bg-vt-gray-light-1/90" },
 
       // === Soft variants (default) ===
       { color: "green", colorStyle: "soft", className: "bg-vt-green/10 text-vt-green border-vt-green/20 hover:bg-vt-green/20" },

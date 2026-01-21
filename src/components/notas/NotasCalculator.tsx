@@ -262,8 +262,8 @@ function AsignaturaCard({
                             pac.tipo === 'interactiva' ? 'bg-vt-blue' : 'bg-vt-purple'
                           )} />
                           <span>{pac.titulo}</span>
-                          <Badge color={pac.tipo === 'interactiva' ? 'blue' : 'purple'} colorStyle="outline" className="text-xs">
-                            {pac.tipo === 'interactiva' ? 'INT' : 'DES'}
+                          <Badge color={pac.tipo === 'interactiva' ? 'gray' : 'gray'} colorStyle="outline" size="adjusted" className="flex-shrink-0">
+                            {pac.tipo === 'interactiva' ? 'Interactiva' : 'Desarrollo'}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
                             ({pac.pesoEnRA}% del 40% EC)

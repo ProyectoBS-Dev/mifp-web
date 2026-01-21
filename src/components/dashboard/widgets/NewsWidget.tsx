@@ -81,9 +81,8 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
         <h4 className="text-sm font-semibold line-clamp-1 flex-1">{noticia.titulo}</h4>
         <Badge
           color={catStyle.color}
-          colorStyle="soft" // para el widget no es tan intrusivo
-          size="sm"
-          rounded="full"
+          colorStyle="outline" // para el widget no es tan
+          size="adjusted"
           className="shrink-0"
         >
           {catStyle.label}

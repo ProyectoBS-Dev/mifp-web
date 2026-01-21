@@ -65,10 +65,9 @@ function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps
         {/* Badge categoría */}
         <Badge
           color={category.color}  
-          colorStyle="solid"
+          colorStyle="soft"
           size="sm"
-          rounded="full"
-          className="absolute top-4 left-4"
+          className="absolute top-4 left-4 flex-shrink-0"
         >
           {category.label}
         </Badge>
@@ -236,7 +235,7 @@ export function NewsFeed() {
             </DropdownMenuItem>
             {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
               <DropdownMenuItem key={key} onClick={() => setFilter(key as NoticiaCategoria)}>
-                <Badge color={config.color} colorStyle="solid" size="sm" rounded="full" className="scale-50">
+                <Badge color={config.color} colorStyle="solid" size="adjusted" rounded="full" className="scale-50">
                   &nbsp;
                 </Badge>
                 {config.label}

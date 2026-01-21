@@ -103,7 +103,7 @@ export function FAQSection() {
   const [openId, setOpenId] = useState<string | null>(null)
 
   return (
-    <section className="py-24 sm:py-32 bg-muted/30">
+    <section className="py-24 sm:py-32 bg-muted/30" id="faqs">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">

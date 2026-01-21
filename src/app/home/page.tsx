@@ -17,18 +17,7 @@ import {
   Rocket,
   TabletSmartphone,
   MonitorSmartphoneIcon,
-  MessageCircle,
-  HelpCircle,
-  Coins,
-  Calculator,
-  Shield,
 } from 'lucide-react'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 import {
   Tooltip,
   TooltipContent,
@@ -37,6 +26,11 @@ import {
 } from '@/components/ui/tooltip'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { createClient } from '@/lib/supabase/server'
+import { HeroParallax } from '@/components/landing/HeroParallax'
+import { HeroTabs } from '@/components/landing/HeroTabs'
+import { FAQSection } from '@/components/landing/FAQSection'
+import { HowItWorks } from '@/components/landing/HowItWorks'
+import { ScrollReveal } from '@/components/ui/scroll-reveal'
 
 // SEO: Canonical URL pointing to root - tells Google /home is a duplicate of /
 export const metadata: Metadata = {
@@ -87,36 +81,39 @@ export default async function HomePage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-vt-green/10 via-transparent to-vt-blue/10" />
-        <div className="container mx-auto px-4 py-24 sm:py-32 relative">
+      {/* Hero Section - fixed light background regardless of theme */}
+      <section className="relative min-h-[90vh] overflow-hidden bg-white">
+        {/* Parallax Background */}
+        <HeroParallax />
+
+        {/* Content - z-10 to appear above background */}
+        <div className="relative z-10 container mx-auto px-4 pt-16 pb-32">
           <div className="text-center max-w-3xl mx-auto">
-            {/* Notice Banner - GitHub Style */}
+            {/* Notice Banner */}
             <Link
               href="/blog"
-              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-vt-green/10 dark:bg-vt-green/20 border border-vt-green/20 dark:border-vt-green/30 hover:bg-vt-green/15 dark:hover:bg-vt-green/25 transition-all mb-6"
+              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/10 backdrop-blur-sm border border-black/20 hover:bg-black/15 transition-all mb-8"
             >
               <span className="text-lg">🚀</span>
-              <span className="text-sm font-medium text-foreground">
-                V1.0.0 - Presentamos MiFP - conoce más en nuestro Blog de noticias y novedades
+              <span className="text-sm font-medium text-slate-800">
+                V1.0.0 - Presentamos MiFP
               </span>
               <ArrowRight className="h-4 w-4 text-vt-green group-hover:translate-x-0.5 transition-transform" />
             </Link>
 
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl text-slate-900">
               Tu compañero de estudios{' '}
-              <span className="gradient-text">FP</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-vt-green to-vt-blue">FP</span>
             </h1>
-
-            <p className="mt-6 text-lg sm:text-xl leading-8 text-muted-foreground">
-              Gestiona tus PACs, videotutorías, recursosy notas de forma sencilla.
+            
+            <p className="mt-6 text-lg sm:text-xl leading-8 text-slate-600">
+              Gestiona tus PACs, videotutorías, recursos y notas de forma sencilla.
               Organiza tu tiempo y mejora tu rendimiento académico.
             </p>
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               {isLoggedIn ? (
-                <Button asChild size="lg" className="w-full sm:w-auto">
+                <Button asChild size="lg" className="w-full sm:w-auto bg-vt-green hover:bg-vt-green/90 text-slate-950">
                   <Link href="#faqs">
                     Ver preguntas frecuentes
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -124,13 +121,13 @@ export default async function HomePage() {
                 </Button>
               ) : (
                 <>
-                  <Button asChild size="lg" className="w-full sm:w-auto">
+                  <Button asChild size="lg" className="w-full sm:w-auto bg-vt-green hover:bg-vt-green/90 text-slate-950">
                     <Link href="/registro">
                       Crear cuenta
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+                  <Button asChild variant="outline" size="lg" className="w-full sm:w-auto bg-white border-slate-300 text-slate-800 hover:bg-slate-100">
                     <Link href="/login">
                       Ya tengo cuenta
                     </Link>
@@ -140,381 +137,292 @@ export default async function HomePage() {
             </div>
 
             {/* Stats */}
-            <div className="mt-16 grid grid-cols-3 gap-8 border-t pt-8">
+            <div className="mt-16 grid grid-cols-3 gap-8 border-t border-vt-blue/30 pt-8">
               <div>
-                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-primary"><TabletSmartphone className="h-6 w-6" />DAM</div>
-                <div className="text-sm text-muted-foreground text-center">Multiplataforma</div>
+                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-slate-900"><TabletSmartphone className="h-6 w-6" />DAM</div>
+                <div className="text-sm text-slate-500 text-center">Multiplataforma</div>
               </div>
               <div>
-                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-primary"><MonitorSmartphoneIcon className="h-6 w-6" />DAW</div>
-                <div className="text-sm text-muted-foreground text-center">Web</div>
+                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-slate-900"><MonitorSmartphoneIcon className="h-6 w-6" />DAW</div>
+                <div className="text-sm text-slate-500 text-center">Web</div>
               </div>
               <div>
-                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-primary"><Rocket className="h-6 w-6" />100%</div>
-                <div className="text-sm text-muted-foreground text-center">Gratis</div>
+                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-slate-900"><Rocket className="h-6 w-6" />100%</div>
+                <div className="text-sm text-slate-500 text-center">Gratis</div>
               </div>
             </div>
           </div>
+
+          {/* Dashboard Preview with Tabs */}
+          <HeroTabs />
         </div>
       </section>
 
       {/* Feature Showcase */}
-      <section className="py-24 sm:py-32 relative overflow-hidden">
-        {/* Background gradient - adapts to theme */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
+      <ScrollReveal delay={0.2}>
+        <section className="py-24 sm:py-32 relative overflow-hidden">
+          {/* Background gradient - adapts to theme */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
 
-        {/* Glow effects */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-vt-blue/20 dark:bg-vt-blue/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 left-1/3 w-[400px] h-[300px] bg-vt-green/15 dark:bg-vt-green/10 rounded-full blur-3xl" />
+          {/* Glow effects */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-vt-blue/20 dark:bg-vt-blue/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/3 left-1/3 w-[400px] h-[300px] bg-vt-green/15 dark:bg-vt-green/10 rounded-full blur-3xl" />
 
-        <div className="container mx-auto px-4 relative z-10">
-          {/* Header */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue mb-6">
-              <GraduationCap className="h-7 w-7 text-white" />
+          <div className="container mx-auto px-4 relative z-10">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue mb-6">
+                <GraduationCap className="h-7 w-7 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-5xl mb-4">
+                Todo tu FP en un solo lugar
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Un dashboard personalizado que te muestra exactamente lo que necesitas para aprobar tus asignaturas.
+              </p>
             </div>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-5xl mb-4">
-              Todo tu FP en un solo lugar
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Un dashboard personalizado que te muestra exactamente lo que necesitas para aprobar tus asignaturas.
-            </p>
-          </div>
 
-          {/* Main Feature Card */}
-          <div className="max-w-6xl mx-auto mb-8">
-            <div className="relative rounded-2xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm overflow-hidden">
-              {/* Card glow effect */}
-              <div className="absolute -top-20 right-1/4 w-[500px] h-[300px] bg-vt-green/20 dark:bg-vt-blue/10 rounded-full blur-3xl pointer-events-none" />
+            {/* Main Feature Card */}
+            <div className="max-w-6xl mx-auto mb-8">
+              <div className="relative rounded-2xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm overflow-hidden">
+                {/* Card glow effect */}
+                <div className="absolute -top-20 right-1/4 w-[500px] h-[300px] bg-vt-green/20 dark:bg-vt-blue/10 rounded-full blur-3xl pointer-events-none" />
 
-              <div className="relative p-8 lg:p-12 grid lg:grid-cols-2 gap-8 items-center">
-                {/* Left content */}
-                <div className="space-y-6">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-vt-green/10 text-vt-green text-sm font-medium">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-vt-green opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-vt-green"></span>
-                    </span>
-                    Dashboard Personal
+                <div className="relative p-8 lg:p-12 grid lg:grid-cols-2 gap-8 items-center">
+                  {/* Left content */}
+                  <div className="space-y-6">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-vt-green/10 text-vt-green text-sm font-medium">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-vt-green opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-vt-green"></span>
+                      </span>
+                      Dashboard Personal
+                    </div>
+
+                    <h3 className="text-2xl sm:text-3xl font-bold">
+                      Tu centro de control académico.{' '}
+                      <span className="text-muted-foreground">
+                        Visualiza PACs pendientes, próximas videotutorías y tu progreso en tiempo real.
+                      </span>
+                    </h3>
+
+                    <Button asChild variant="link" className="p-0 h-auto text-vt-green hover:text-vt-green/80">
+                      <Link href="/registro">
+                        Acceder al Dashboard
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
                   </div>
 
-                  <h3 className="text-2xl sm:text-3xl font-bold">
-                    Tu centro de control académico.{' '}
-                    <span className="text-muted-foreground">
-                      Visualiza PACs pendientes, próximas videotutorías y tu progreso en tiempo real.
-                    </span>
-                  </h3>
+                  {/* Right - Dashboard preview */}
+                  <div className="relative">
+                    {/* Screenshot container with glow */}
+                    <div className="relative rounded-xl overflow-hidden shadow-2xl border bg-background">
+                      {/* Dashboard preview */}
+                      <Image
+                        src="/images/dashboard_preview.png"
+                        alt="Dashboard de MiFP"
+                        width={600}
+                        height={400}
+                        className="rounded-lg object-cover"
+                      />
+                    </div>
 
-                  <Button asChild variant="link" className="p-0 h-auto text-vt-green hover:text-vt-green/80">
-                    <Link href="/registro">
-                      Acceder al Dashboard
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
+                    {/* Decorative glow behind screenshot */}
+                    <div className="absolute -inset-4 -z-10 bg-gradient-to-r from-vt-green/20 via-vt-blue/20 to-vt-blue-light/20 rounded-2xl blur-2xl opacity-60" />
+                  </div>
                 </div>
+              </div>
+            </div>
 
-                {/* Right - Dashboard preview */}
-                <div className="relative">
-                  {/* Screenshot container with glow */}
-                  <div className="relative rounded-xl overflow-hidden shadow-2xl border bg-background">
-                    {/* Dashboard preview */}
+            {/* Bento Grid - 6 Feature Cards */}
+            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[minmax(180px,auto)]">
+
+              {/* Card 1 - PACs (Grande - ocupa 2 filas) */}
+              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-green/50 transition-all lg:row-span-2">
+                <div className="h-full flex flex-col">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-green/10 mb-4">
+                    <FileText className="h-6 w-6 text-vt-green" />
+                  </div>
+                  <h4 className="text-lg font-semibold mb-2">Gestión de PACs</h4>
+                  <p className="text-sm text-muted-foreground flex-1">
+                    Controla tus tareas pendientes, fechas de entrega y progreso. Nunca olvides una entrega.
+                  </p>
+                  {/* Preview placeholder */}
+                  <div className="mt-4 rounded-lg border bg-muted/30 overflow-hidden flex-1 min-h-[120px] flex items-center justify-center">
+                    {/* PACs preview */}
                     <Image
-                      src="/images/dashboard_preview.png"
-                      alt="Dashboard de MiFP"
-                      width={600}
-                      height={400}
+                      src="/images/pacs_preview.png"
+                      alt="PACs del Dashboard de MiFP"
+                      width={300}
+                      height={200}
                       className="rounded-lg object-cover"
                     />
                   </div>
-
-                  {/* Decorative glow behind screenshot */}
-                  <div className="absolute -inset-4 -z-10 bg-gradient-to-r from-vt-green/20 via-vt-blue/20 to-vt-blue-light/20 rounded-2xl blur-2xl opacity-60" />
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Bento Grid - 6 Feature Cards */}
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[minmax(180px,auto)]">
-
-            {/* Card 1 - PACs (Grande - ocupa 2 filas) */}
-            <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-green/50 transition-all lg:row-span-2">
-              <div className="h-full flex flex-col">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-green/10 mb-4">
-                  <FileText className="h-6 w-6 text-vt-green" />
+              {/* Card 2 - Calendario (Normal) */}
+              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-blue/50 transition-all">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-blue/10 mb-4">
+                  <Calendar className="h-6 w-6 text-vt-blue" />
                 </div>
-                <h4 className="text-lg font-semibold mb-2">Gestión de PACs</h4>
-                <p className="text-sm text-muted-foreground flex-1">
-                  Controla tus tareas pendientes, fechas de entrega y progreso. Nunca olvides una entrega.
+                <h4 className="text-lg font-semibold mb-2">Calendario Integrado</h4>
+                <p className="text-sm text-muted-foreground">
+                  Visualiza videotutorías, entregas y exámenes en un calendario personalizado.
                 </p>
-                {/* Preview placeholder */}
-                <div className="mt-4 rounded-lg border bg-muted/30 overflow-hidden flex-1 min-h-[120px] flex items-center justify-center">
-                  {/* PACs preview */}
-                  <Image
-                    src="/images/pacs_preview.png"
-                    alt="PACs del Dashboard de MiFP"
-                    width={300}
-                    height={200}
-                    className="rounded-lg object-cover"
-                  />
+              </div>
+
+              {/* Card 3 - Notas (Normal) */}
+              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-yellow/50 transition-all">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-yellow/10 mb-4">
+                  <BarChart3 className="h-6 w-6 text-vt-yellow-dark" />
+                </div>
+                <h4 className="text-lg font-semibold mb-2">Seguimiento de Notas</h4>
+                <p className="text-sm text-muted-foreground">
+                  Calcula tu nota final automáticamente según los criterios de evaluación oficiales.
+                </p>
+              </div>
+
+              {/* Card 4 - Recursos (Grande - ocupa 2 columnas en lg) */}
+              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-purple/50 transition-all lg:col-span-2">
+                <div className="flex flex-col md:flex-row md:items-start gap-4">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-purple/10 shrink-0">
+                    <BookOpen className="h-6 w-6 text-vt-purple" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold mb-2">Recursos de Estudio</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Accede a materiales organizados por asignatura: PDFs, podcasts, enlaces útiles.
+                    </p>
+                  </div>
+                  {/* Preview placeholder */}
+                  <div className="hidden md:flex rounded-lg border bg-muted/30 overflow-hidden w-32 h-20 items-center justify-center shrink-0">
+                    {/* Recursos de Estudio preview */}
+                    <Image
+                      src="/images/recursos_preview.png"
+                      alt="Recursos de Estudio del Dashboard de MiFP"
+                      width={300}
+                      height={200}
+                      className="rounded-lg object-cover"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Card 2 - Calendario (Normal) */}
-            <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-blue/50 transition-all">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-blue/10 mb-4">
-                <Calendar className="h-6 w-6 text-vt-blue" />
-              </div>
-              <h4 className="text-lg font-semibold mb-2">Calendario Integrado</h4>
-              <p className="text-sm text-muted-foreground">
-                Visualiza videotutorías, entregas y exámenes en un calendario personalizado.
-              </p>
-            </div>
-
-            {/* Card 3 - Notas (Normal) */}
-            <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-yellow/50 transition-all">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-yellow/10 mb-4">
-                <BarChart3 className="h-6 w-6 text-vt-yellow-dark" />
-              </div>
-              <h4 className="text-lg font-semibold mb-2">Seguimiento de Notas</h4>
-              <p className="text-sm text-muted-foreground">
-                Calcula tu nota final automáticamente según los criterios de evaluación oficiales.
-              </p>
-            </div>
-
-            {/* Card 4 - Recursos (Grande - ocupa 2 columnas en lg) */}
-            <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-purple/50 transition-all lg:col-span-2">
-              <div className="flex flex-col md:flex-row md:items-start gap-4">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-purple/10 shrink-0">
-                  <BookOpen className="h-6 w-6 text-vt-purple" />
+              {/* Card 5 - Notificaciones (Normal) */}
+              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-red/50 transition-all">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-red/10 mb-4">
+                  <Bell className="h-6 w-6 text-vt-red" />
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-lg font-semibold mb-2">Recursos de Estudio</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Accede a materiales organizados por asignatura: PDFs, podcasts, enlaces útiles.
-                  </p>
-                </div>
-                {/* Preview placeholder */}
-                <div className="hidden md:flex rounded-lg border bg-muted/30 overflow-hidden w-32 h-20 items-center justify-center shrink-0">
-                  {/* Recursos de Estudio preview */}
-                  <Image
-                    src="/images/recursos_preview.png"
-                    alt="Recursos de Estudio del Dashboard de MiFP"
-                    width={300}
-                    height={200}
-                    className="rounded-lg object-cover"
-                  />
+                <h4 className="text-lg font-semibold mb-2">Notificaciones</h4>
+                <p className="text-sm text-muted-foreground">
+                  Recibe alertas de entregas próximas, nuevos recursos y comunicados importantes.
+                </p>
+              </div>
+
+              {/* Card 6 - Dashboard (Normal) */}
+              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-primary/50 transition-all lg:col-span-2">
+                <div className="flex flex-col md:flex-row md:items-start gap-4">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 shrink-0">
+                    <GraduationCap className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold mb-2">Dashboard Personal</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Un panel de control personalizable con los widgets que más necesitas.
+                    </p>
+                  </div>
+                  {/* Preview placeholder */}
+                  <div className="hidden md:flex rounded-lg border bg-muted/30 overflow-hidden w-32 h-20 items-center justify-center shrink-0">
+                    {/* Asignaturas preview */}
+                    <Image
+                      src="/images/asignaturas_preview.png"
+                      alt="Asignaturas del Dashboard de MiFP"
+                      width={300}
+                      height={200}
+                      className="rounded-lg object-cover"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Card 5 - Notificaciones (Normal) */}
-            <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-red/50 transition-all">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-red/10 mb-4">
-                <Bell className="h-6 w-6 text-vt-red" />
-              </div>
-              <h4 className="text-lg font-semibold mb-2">Notificaciones</h4>
-              <p className="text-sm text-muted-foreground">
-                Recibe alertas de entregas próximas, nuevos recursos y comunicados importantes.
-              </p>
             </div>
-
-            {/* Card 6 - Dashboard (Normal) */}
-            <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-primary/50 transition-all lg:col-span-2">
-              <div className="flex flex-col md:flex-row md:items-start gap-4">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 shrink-0">
-                  <GraduationCap className="h-6 w-6 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-lg font-semibold mb-2">Dashboard Personal</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Un panel de control personalizable con los widgets que más necesitas.
-                  </p>
-                </div>
-                {/* Preview placeholder */}
-                <div className="hidden md:flex rounded-lg border bg-muted/30 overflow-hidden w-32 h-20 items-center justify-center shrink-0">
-                  {/* Asignaturas preview */}
-                  <Image
-                    src="/images/asignaturas_preview.png"
-                    alt="Asignaturas del Dashboard de MiFP"
-                    width={300}
-                    height={200}
-                    className="rounded-lg object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-
           </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
 
       {/* How it works */}
-      <section className="py-24 sm:py-32">
-        {/* Header */}
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue mb-6 mx-auto">
-            <MessageCircle className="h-7 w-7 text-white" />
-          </div>
-        </div>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Comienza en 3 simples pasos
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <StepCard
-              number="1"
-              title="Crea tu cuenta"
-              description="Regístrate con tu email o usa Google/GitHub"
-            />
-            <StepCard
-              number="2"
-              title="Selecciona tu grado"
-              description="Elige DAM o DAW y las asignaturas que cursas"
-            />
-            <StepCard
-              number="3"
-              title="¡Listo!"
-              description="Comienza a organizar tus estudios desde tu dashboard"
-            />
-          </div>
-        </div>
-      </section>
+      <ScrollReveal>
+        <HowItWorks />
+      </ScrollReveal>
 
       {/* FAQ Section */}
-      <section className="py-24 sm:py-32 bg-muted/30" id="faqs">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue mb-6">
-              <HelpCircle className="w-7 h-7 text-white" />
+      <ScrollReveal delay={0.1}>
+        <FAQSection />
+      </ScrollReveal>
+
+      {/* CTA Section - Premium */}
+      <ScrollReveal delay={0.2}>
+        <section className="py-24 sm:py-32 relative overflow-hidden">
+          {/* Background gradient layers */}
+          <div className="absolute inset-0 bg-gradient-to-br from-vt-green/10 via-transparent to-vt-blue/10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background" />
+
+          {/* Decorative floating elements */}
+          <div className="absolute top-1/4 left-[10%] w-32 h-32 bg-vt-green/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-[10%] w-40 h-40 bg-vt-blue/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-vt-purple/10 rounded-full blur-[100px]" />
+
+          <div className="container mx-auto px-4 text-center relative">
+            {/* Mascot Image with glow */}
+            <div className="flex justify-center mb-8 relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-48 h-48 bg-vt-green/30 rounded-full blur-3xl" />
+              </div>
+              <Image
+                src="/images/owl_mascot_nobg.png"
+                alt="MiFP Mascot"
+                width={200}
+                height={200}
+                className="object-contain drop-shadow-2xl relative z-10"
+              />
             </div>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Preguntas frecuentes
+
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+              ¿Listo para organizar tus estudios?
             </h2>
-            <p className="mt-4 text-muted-foreground max-w-lg mx-auto">
-              Todo lo que necesitas saber sobre MiFP
+            <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto">
+              Únete a la comunidad de estudiantes de FP que ya están mejorando su rendimiento académico.
             </p>
+
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              {isLoggedIn ? (
+                <Button asChild size="lg" className="shadow-lg shadow-vt-green/30 hover:shadow-vt-green/50 transition-shadow">
+                  <Link href="/dashboard">
+                    Ir al Dashboard
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              ) : (
+                <>
+                  <Button asChild size="lg" className="shadow-lg shadow-vt-green/30 hover:shadow-vt-green/50 transition-shadow">
+                    <Link href="/registro">
+                      Crear cuenta gratis
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg" className="bg-background/80 backdrop-blur-sm">
+                    <Link href="/login">
+                      Ya tengo cuenta
+                    </Link>
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
-
-          <div className="max-w-2xl mx-auto">
-            <Accordion type="single" collapsible className="w-full space-y-4">
-              <AccordionItem value="item-1" className="border rounded-lg px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center gap-3 text-left">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-vt-green/10 shrink-0">
-                      <Coins className="w-4 h-4 text-vt-green" />
-                    </span>
-                    <span className="font-medium">¿Es gratis?</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pl-11 text-muted-foreground">
-                  Sí, MiFP es completamente gratis. Es un proyecto creado por estudiantes de FP de Grado Superior de iLERNA Online y para estudiantes de FP.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-2" className="border rounded-lg px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center gap-3 text-left">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-vt-blue/10 shrink-0">
-                      <GraduationCap className="w-4 h-4 text-vt-blue" />
-                    </span>
-                    <span className="font-medium">¿Solo funciona para ILERNA?</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pl-11 text-muted-foreground">
-                  Actualmente está optimizado para estudiantes de ILERNA Online, con el sistema de evaluación específico (PACs, VTs, exámenes). Aunque puede adaptarse a otros centros.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-3" className="border rounded-lg px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center gap-3 text-left">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-vt-purple/10 shrink-0">
-                      <BookOpen className="w-4 h-4 text-vt-purple" />
-                    </span>
-                    <span className="font-medium">¿Qué grados están disponibles?</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pl-11 text-muted-foreground">
-                  Actualmente soportamos DAM (Desarrollo de Aplicaciones Multiplataforma) y DAW (Desarrollo de Aplicaciones Web), con todas sus asignaturas.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-4" className="border rounded-lg px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center gap-3 text-left">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-vt-yellow/10 shrink-0">
-                      <Calculator className="w-4 h-4 text-vt-yellow" />
-                    </span>
-                    <span className="font-medium">¿Cómo calcula las notas?</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pl-11 text-muted-foreground">
-                  Utilizamos el sistema oficial de evaluación de ILERNA: PACs (interactivas y desarrollo), Videotutorías y Examen Final, con los pesos correspondientes de cada Resultado de Aprendizaje (RA) establecidos en la Guía Didáctica.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-5" className="border rounded-lg px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center gap-3 text-left">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-vt-red/10 shrink-0">
-                      <Shield className="w-4 h-4 text-vt-red" />
-                    </span>
-                    <span className="font-medium">¿Mis datos están seguros?</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pl-11 text-muted-foreground">
-                  Sí, utilizamos Supabase con encriptación y Row Level Security (RLS). Tus datos son privados y solo tú puedes acceder a ellos.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 sm:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-vt-green/20 to-vt-blue/20" />
-        <div className="container mx-auto px-4 text-center relative">
-          {/* Mascot Image */}
-          <div className="flex justify-center mb-8">
-            <Image
-              src="/images/mifp_mascot.png"
-              alt="MiFP Mascot"
-              width={200}
-              height={200}
-              className="object-contain drop-shadow-lg"
-            />
-          </div>
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            ¿Listo para organizar tus estudios?
-          </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto">
-            Únete a la comunidad de estudiantes de FP que ya están mejorando su rendimiento académico.
-          </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            {isLoggedIn ? (
-              <Button asChild size="lg">
-                <Link href="/dashboard">
-                  Ir al Dashboard
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            ) : (
-              <Button asChild size="lg">
-                <Link href="/registro">
-                  Crear cuenta gratis
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            )}
-          </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
 
       {/* Footer */}
       <footer className="border-t py-12 bg-card">
@@ -601,25 +509,5 @@ export default async function HomePage() {
         </div>
       </footer>
     </main>
-  )
-}
-
-function StepCard({
-  number,
-  title,
-  description,
-}: {
-  number: string
-  title: string
-  description: string
-}) {
-  return (
-    <div className="text-center">
-      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary text-primary-foreground font-bold text-xl mb-4">
-        {number}
-      </div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
   )
 }

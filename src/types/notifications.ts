@@ -37,6 +37,7 @@ export interface NotificationData {
 
   // Para noticia_nueva
   noticia_id?: string
+  noticia_slug?: string  // URL amigable del post
   noticia_titulo?: string
   imagen_url?: string
 

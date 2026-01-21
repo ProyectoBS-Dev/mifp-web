@@ -8,7 +8,6 @@ import {
   Filter,
   Loader2
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { formatDate } from '@/lib/format'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge, type BadgeColor } from '@/components/ui/badge'
@@ -94,7 +93,7 @@ function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps
 
         {/* Título */}
         <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-          <Link href={`/blog/${news.id}`}>
+          <Link href={`/blog/${news.slug}`}>
             {news.titulo}
           </Link>
         </h3>
@@ -107,7 +106,7 @@ function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps
         {/* Footer */}
         <div className="flex items-center justify-between pt-3 border-t">
           <Link
-            href={`/blog/${news.id}`}
+            href={`/blog/${news.slug}`}
             className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1"
           >
             Leer más

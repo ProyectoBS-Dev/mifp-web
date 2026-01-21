@@ -52,18 +52,35 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { titulo, contenido, imagen_url, publicada } = body
+    const { titulo, slug, contenido, imagen_url, publicada } = body
 
     if (!titulo || !contenido) {
       return NextResponse.json({ error: 'Título y contenido son requeridos' }, { status: 400 })
     }
 
+    if (!slug) {
+      return NextResponse.json({ error: 'Slug es requerido' }, { status: 400 })
+    }
+
     const adminClient = getAdminClient()
+
+    // Verificar unicidad del slug
+    const { data: existingSlug } = await adminClient
+      .from('noticias')
+      .select('id')
+      .eq('slug', slug)
+      .is('deleted_at', null)
+      .single()
+
+    if (existingSlug) {
+      return NextResponse.json({ error: 'Ya existe una noticia con este slug. Por favor, elige otro.' }, { status: 400 })
+    }
 
     const { data: noticia, error: insertError } = await adminClient
       .from('noticias')
       .insert({
         titulo,
+        slug,
         contenido,
         imagen_url: imagen_url || null,
         autor_id: auth.user.id,
@@ -100,7 +117,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { titulo, contenido, imagen_url, publicada } = body
+    const { titulo, slug, contenido, imagen_url, publicada } = body
 
     const adminClient = getAdminClient()
 
@@ -124,6 +141,21 @@ export async function PATCH(request: NextRequest) {
     // Construir objeto de actualización solo con campos proporcionados
     const updateData: Record<string, unknown> = {}
     if (titulo !== undefined) updateData.titulo = titulo
+    if (slug !== undefined) {
+      // Verificar unicidad del nuevo slug (excepto el actual)
+      const { data: existingSlug } = await adminClient
+        .from('noticias')
+        .select('id')
+        .eq('slug', slug)
+        .neq('id', id)
+        .is('deleted_at', null)
+        .single()
+
+      if (existingSlug) {
+        return NextResponse.json({ error: 'Ya existe una noticia con este slug. Por favor, elige otro.' }, { status: 400 })
+      }
+      updateData.slug = slug
+    }
     if (contenido !== undefined) updateData.contenido = contenido
     if (imagen_url !== undefined) updateData.imagen_url = imagen_url
     if (publicada !== undefined) updateData.publicada = publicada

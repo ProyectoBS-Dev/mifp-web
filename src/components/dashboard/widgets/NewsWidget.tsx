@@ -57,7 +57,6 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
       <div className="flex items-center gap-2 mb-2">
         <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium overflow-hidden">
           {noticia.autor?.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={noticia.autor.avatar_url}
               alt={noticia.autor.full_name || 'Avatar'}
@@ -97,7 +96,7 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
       {/* Footer: Leer más + Reacciones */}
       <div className="flex items-center justify-between">
         <Link
-          href={`/blog/${noticia.id}`}
+          href={`/blog/${noticia.slug}`}
           className="text-xs text-primary hover:underline font-medium"
         >
           Leer más →

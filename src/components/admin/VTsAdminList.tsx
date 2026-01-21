@@ -72,9 +72,7 @@ interface VTsAdminListProps {
 }
 
 export function VTsAdminList({ vtsByAsignatura, semestreId }: VTsAdminListProps) {
-  const [openAsignaturas, setOpenAsignaturas] = useState<string[]>(
-    vtsByAsignatura.map(g => g.asignatura.id)
-  )
+  const [openAsignaturas, setOpenAsignaturas] = useState<string[]>([])
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [selectedAsignatura, setSelectedAsignatura] = useState<VTsByAsignatura['asignatura'] | null>(null)
 

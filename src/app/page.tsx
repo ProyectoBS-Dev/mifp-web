@@ -17,18 +17,7 @@ import {
   Rocket,
   TabletSmartphone,
   MonitorSmartphoneIcon,
-  MessageCircle,
-  HelpCircle,
-  Coins,
-  Calculator,
-  Shield,
 } from 'lucide-react'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 import {
   Tooltip,
   TooltipContent,
@@ -37,6 +26,10 @@ import {
 } from '@/components/ui/tooltip'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { createClient } from '@/lib/supabase/server'
+import { HeroParallax } from '@/components/landing/HeroParallax'
+import { HeroTabs } from '@/components/landing/HeroTabs'
+import { FAQSection } from '@/components/landing/FAQSection'
+import { HowItWorks } from '@/components/landing/HowItWorks'
 
 export default async function LandingPage() {
   // Check if user is logged in - redirect to dashboard if so
@@ -70,62 +63,69 @@ export default async function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-vt-green/10 via-transparent to-vt-blue/10" />
-        <div className="container mx-auto px-4 py-24 sm:py-32 relative">
+      {/* Hero Section - fixed light background regardless of theme */}
+      <section className="relative min-h-[90vh] overflow-hidden bg-white">
+        {/* Parallax Background */}
+        <HeroParallax />
+        
+        {/* Content - z-10 to appear above background */}
+        <div className="relative z-10 container mx-auto px-4 pt-16 pb-32">
           <div className="text-center max-w-3xl mx-auto">
-            {/* Notice Banner - GitHub Style */}
+            {/* Notice Banner */}
             <Link
               href="/blog"
-              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-vt-green/10 dark:bg-vt-green/20 border border-vt-green/20 dark:border-vt-green/30 hover:bg-vt-green/15 dark:hover:bg-vt-green/25 transition-all mb-6"
+              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/10 backdrop-blur-sm border border-black/20 hover:bg-black/15 transition-all mb-8"
             >
               <span className="text-lg">🚀</span>
-              <span className="text-sm font-medium text-foreground">
-                V1.0.0 - Presentamos MiFP - conoce más en nuestro Blog de noticias y novedades
+              <span className="text-sm font-medium text-slate-800">
+                V1.0.0 - Presentamos MiFP
               </span>
               <ArrowRight className="h-4 w-4 text-vt-green group-hover:translate-x-0.5 transition-transform" />
             </Link>
 
-            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl text-slate-900">
               Tu compañero de estudios{' '}
-              <span className="gradient-text">FP</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-vt-green to-vt-blue">FP</span>
             </h1>
 
-            <p className="mt-6 text-lg sm:text-xl leading-8 text-muted-foreground">
-              Gestiona tus PACs, videotutorías, recursosy notas de forma sencilla.
+            <p className="mt-6 text-lg sm:text-xl leading-8 text-slate-600">
+              Gestiona tus PACs, videotutorías, recursos y notas de forma sencilla.
               Organiza tu tiempo y mejora tu rendimiento académico.
             </p>
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button asChild size="lg" className="w-full sm:w-auto">
+              <Button asChild size="lg" className="w-full sm:w-auto bg-vt-green hover:bg-vt-green/90 text-slate-950">
                 <Link href="/registro">
                   Crear cuenta
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto bg-white border-slate-300 text-slate-800 hover:bg-slate-100">
                 <Link href="/login">
-                  Ya tengo cuenta</Link>
+                  Ya tengo cuenta
+                </Link>
               </Button>
             </div>
 
             {/* Stats */}
-            <div className="mt-16 grid grid-cols-3 gap-8 border-t pt-8">
+            <div className="mt-16 grid grid-cols-3 gap-8 border-t border-vt-blue/30 pt-8">
               <div>
-                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-primary"><TabletSmartphone className="h-6 w-6" />DAM</div>
-                <div className="text-sm text-muted-foreground text-center">Multiplataforma</div>
+                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-slate-900"><TabletSmartphone className="h-6 w-6" />DAM</div>
+                <div className="text-sm text-slate-500 text-center">Multiplataforma</div>
               </div>
               <div>
-                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-primary"><MonitorSmartphoneIcon className="h-6 w-6" />DAW</div>
-                <div className="text-sm text-muted-foreground text-center">Web</div>
+                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-slate-900"><MonitorSmartphoneIcon className="h-6 w-6" />DAW</div>
+                <div className="text-sm text-slate-500 text-center">Web</div>
               </div>
               <div>
-                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-primary"><Rocket className="h-6 w-6" />100%</div>
-                <div className="text-sm text-muted-foreground text-center">Gratis</div>
+                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-slate-900"><Rocket className="h-6 w-6" />100%</div>
+                <div className="text-sm text-slate-500 text-center">Gratis</div>
               </div>
             </div>
           </div>
+          
+          {/* Dashboard Preview with Tabs */}
+          <HeroTabs />
         </div>
       </section>
 
@@ -140,7 +140,7 @@ export default async function LandingPage() {
 
         <div className="container mx-auto px-4 relative z-10">
           {/* Header */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue mb-6">
               <GraduationCap className="h-7 w-7 text-white" />
             </div>
@@ -322,156 +322,54 @@ export default async function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section className="py-24 sm:py-32">
-        {/* Header */}
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue mb-6 mx-auto">
-            <MessageCircle className="h-7 w-7 text-white" />
-          </div>
-        </div>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Comienza en 3 simples pasos
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <StepCard
-              number="1"
-              title="Crea tu cuenta"
-              description="Regístrate con tu email o usa Google/GitHub"
-            />
-            <StepCard
-              number="2"
-              title="Selecciona tu grado"
-              description="Elige DAM o DAW y las asignaturas que cursas"
-            />
-            <StepCard
-              number="3"
-              title="¡Listo!"
-              description="Comienza a organizar tus estudios desde tu dashboard"
-            />
-          </div>
-        </div>
-      </section>
+      <HowItWorks />
 
       {/* FAQ Section */}
-      <section className="py-24 sm:py-32 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue mb-6">
-              <HelpCircle className="w-7 h-7 text-white" />
-            </div>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Preguntas frecuentes
-            </h2>
-            <p className="mt-4 text-muted-foreground max-w-lg mx-auto">
-              Todo lo que necesitas saber sobre MiFP
-            </p>
-          </div>
+      <FAQSection />
 
-          <div className="max-w-2xl mx-auto">
-            <Accordion type="single" collapsible className="w-full space-y-4">
-              <AccordionItem value="item-1" className="border rounded-lg px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center gap-3 text-left">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-vt-green/10 shrink-0">
-                      <Coins className="w-4 h-4 text-vt-green" />
-                    </span>
-                    <span className="font-medium">¿Es gratis?</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pl-11 text-muted-foreground">
-                  Sí, MiFP es completamente gratis. Es un proyecto creado por estudiantes de FP de Grado Superior de iLERNA Online y para estudiantes de FP.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-2" className="border rounded-lg px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center gap-3 text-left">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-vt-blue/10 shrink-0">
-                      <GraduationCap className="w-4 h-4 text-vt-blue" />
-                    </span>
-                    <span className="font-medium">¿Solo funciona para ILERNA?</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pl-11 text-muted-foreground">
-                  Actualmente está optimizado para estudiantes de ILERNA Online, con el sistema de evaluación específico (PACs, VTs, exámenes). Aunque puede adaptarse a otros centros.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-3" className="border rounded-lg px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center gap-3 text-left">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-vt-purple/10 shrink-0">
-                      <BookOpen className="w-4 h-4 text-vt-purple" />
-                    </span>
-                    <span className="font-medium">¿Qué grados están disponibles?</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pl-11 text-muted-foreground">
-                  Actualmente soportamos DAM (Desarrollo de Aplicaciones Multiplataforma) y DAW (Desarrollo de Aplicaciones Web), con todas sus asignaturas.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-4" className="border rounded-lg px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center gap-3 text-left">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-vt-yellow/10 shrink-0">
-                      <Calculator className="w-4 h-4 text-vt-yellow" />
-                    </span>
-                    <span className="font-medium">¿Cómo calcula las notas?</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pl-11 text-muted-foreground">
-                  Utilizamos el sistema oficial de evaluación de ILERNA: PACs (interactivas y desarrollo), Videotutorías y Examen Final, con los pesos correspondientes de cada Resultado de Aprendizaje (RA) establecidos en la Guía Didáctica.
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-5" className="border rounded-lg px-4 bg-background">
-                <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="flex items-center gap-3 text-left">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-vt-red/10 shrink-0">
-                      <Shield className="w-4 h-4 text-vt-red" />
-                    </span>
-                    <span className="font-medium">¿Mis datos están seguros?</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pl-11 text-muted-foreground">
-                  Sí, utilizamos Supabase con encriptación y Row Level Security (RLS). Tus datos son privados y solo tú puedes acceder a ellos.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
+      {/* CTA Section - Premium */}
       <section className="py-24 sm:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-vt-green/20 to-vt-blue/20" />
+        {/* Background gradient layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-vt-green/10 via-transparent to-vt-blue/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background" />
+        
+        {/* Decorative floating elements */}
+        <div className="absolute top-1/4 left-[10%] w-32 h-32 bg-vt-green/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-[10%] w-40 h-40 bg-vt-blue/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-vt-purple/10 rounded-full blur-[100px]" />
+        
         <div className="container mx-auto px-4 text-center relative">
-          {/* Mascot Image */}
-          <div className="flex justify-center mb-8">
+          {/* Mascot Image with glow */}
+          <div className="flex justify-center mb-8 relative">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-48 h-48 bg-vt-green/30 rounded-full blur-3xl" />
+            </div>
             <Image
-              src="/images/mifp_mascot.png"
+              src="/images/owl_mascot_nobg.png"
               alt="MiFP Mascot"
               width={200}
               height={200}
-              className="object-contain drop-shadow-lg"
+              className="object-contain drop-shadow-2xl relative z-10"
             />
           </div>
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
             ¿Listo para organizar tus estudios?
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto">
             Únete a la comunidad de estudiantes de FP que ya están mejorando su rendimiento académico.
           </p>
+          
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button asChild size="lg">
+            <Button asChild size="lg" className="shadow-lg shadow-vt-green/30 hover:shadow-vt-green/50 transition-shadow">
               <Link href="/registro">
                 Crear cuenta gratis
                 <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="bg-background/80 backdrop-blur-sm">
+              <Link href="/login">
+                Ya tengo cuenta
               </Link>
             </Button>
           </div>
@@ -563,25 +461,5 @@ export default async function LandingPage() {
         </div>
       </footer>
     </main>
-  )
-}
-
-function StepCard({
-  number,
-  title,
-  description,
-}: {
-  number: string
-  title: string
-  description: string
-}) {
-  return (
-    <div className="text-center">
-      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary text-primary-foreground font-bold text-xl mb-4">
-        {number}
-      </div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
   )
 }

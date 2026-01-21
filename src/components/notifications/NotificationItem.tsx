@@ -48,14 +48,40 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
     }
   }
 
-  const handleReadNoticia = (e: React.MouseEvent) => {
+  const handleReadNoticia = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (notification.data?.noticia_id) {
+    
+    // Si ya tiene el slug, usarlo directamente
+    if (notification.data?.noticia_slug) {
       if (!notification.leida) {
         markAsRead(notification.id)
       }
       onClose?.()
-      router.push(`/blog/${notification.data.noticia_id}`)
+      router.push(`/blog/${notification.data.noticia_slug}`)
+      return
+    }
+    
+    // Si solo tiene noticia_id, consultar el slug desde la base de datos
+    if (notification.data?.noticia_id) {
+      try {
+        const response = await fetch(`/api/noticias/${notification.data.noticia_id}/slug`)
+        if (response.ok) {
+          const { slug } = await response.json()
+          if (slug) {
+            if (!notification.leida) {
+              markAsRead(notification.id)
+            }
+            onClose?.()
+            router.push(`/blog/${slug}`)
+            return
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching noticia slug:', error)
+      }
+      // Fallback: ir al blog principal si no se puede resolver
+      onClose?.()
+      router.push('/blog')
     }
   }
 

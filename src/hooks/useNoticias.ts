@@ -8,6 +8,7 @@ const getSupabase = () => createClient()
 
 export interface Noticia {
   id: string
+  slug: string
   titulo: string
   contenido: string
   imagen_url: string | null
@@ -157,6 +158,7 @@ export function useNoticiasMutation() {
   const createNoticia = useMutation({
     mutationFn: async (data: {
       titulo: string
+      slug: string
       contenido: string
       imagen_url?: string
       publicada?: boolean
@@ -184,6 +186,7 @@ export function useNoticiasMutation() {
     mutationFn: async ({ id, ...data }: {
       id: string
       titulo?: string
+      slug?: string
       contenido?: string
       imagen_url?: string
       publicada?: boolean

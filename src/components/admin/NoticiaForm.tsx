@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, Save, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -29,6 +29,7 @@ import {
 import { useNoticiasMutation, type Noticia } from '@/hooks/useNoticias'
 import { ImageDropzone } from './ImageDropzone'
 import { RichTextEditor } from './RichTextEditor'
+import { slugify, normalizeSlug } from '@/lib/slugify'
 
 const CATEGORIAS = [
   { value: 'comunicado', label: '📢 Comunicado' },
@@ -74,6 +75,8 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
   }
 
   const [titulo, setTitulo] = useState(noticia?.titulo || '')
+  const [slug, setSlug] = useState(noticia?.slug || '')
+  const [slugTouched, setSlugTouched] = useState(!!noticia?.slug) // Si está editando, el slug ya fue definido
   const [contenido, setContenido] = useState(cleanContenido(noticia?.contenido || ''))
   const [categoria, setCategoria] = useState(extractCategoria(noticia?.contenido || ''))
   const [imagenUrl, setImagenUrl] = useState<string | null>(noticia?.imagen_url || null)
@@ -81,11 +84,35 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  // Auto-generar slug desde título (solo si el usuario no lo ha editado manualmente)
+  useEffect(() => {
+    if (!slugTouched && titulo) {
+      setSlug(slugify(titulo))
+    }
+  }, [titulo, slugTouched])
+
+  // Handler para cuando el usuario edita el slug manualmente
+  const handleSlugChange = useCallback((value: string) => {
+    setSlugTouched(true)
+    setSlug(normalizeSlug(value))
+  }, [])
+
+  // Regenerar slug desde título
+  const handleRegenerateSlug = useCallback(() => {
+    setSlug(slugify(titulo))
+    setSlugTouched(true)
+  }, [titulo])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!titulo.trim()) {
       alert('El título es obligatorio')
+      return
+    }
+
+    if (!slug.trim()) {
+      alert('El slug es obligatorio')
       return
     }
     
@@ -104,6 +131,7 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
         await updateNoticia.mutateAsync({
           id: noticia.id,
           titulo,
+          slug,
           contenido: contenidoConCategoria,
           imagen_url: imagenUrl || undefined,
           publicada,
@@ -111,6 +139,7 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
       } else {
         await createNoticia.mutateAsync({
           titulo,
+          slug,
           contenido: contenidoConCategoria,
           imagen_url: imagenUrl || undefined,
           publicada,
@@ -163,6 +192,38 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
               placeholder="Escribe un título llamativo..."
               required
             />
+          </div>
+
+          {/* Slug (URL) */}
+          <div className="space-y-2">
+            <Label htmlFor="slug">URL del artículo *</Label>
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                  /blog/
+                </span>
+                <Input
+                  id="slug"
+                  value={slug}
+                  onChange={(e) => handleSlugChange(e.target.value)}
+                  placeholder="url-del-articulo"
+                  className="pl-14"
+                  required
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleRegenerateSlug}
+                title="Regenerar desde título"
+              >
+                🔄
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              URL final: <code className="bg-muted px-1 py-0.5 rounded">/blog/{slug || 'url-del-articulo'}</code>
+            </p>
           </div>
 
           {/* Categoría */}

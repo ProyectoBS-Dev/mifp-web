@@ -26,7 +26,7 @@ function extractExtracto(contenido: string, maxLength = 150): string {
   return text.trim()
 }
 
-async function getPost(id: string): Promise<NoticiaConMeta | null> {
+async function getPostBySlug(slug: string): Promise<NoticiaConMeta | null> {
   const supabase = await createClient()
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,7 +36,7 @@ async function getPost(id: string): Promise<NoticiaConMeta | null> {
       *,
       autor:users!autor_id(id, full_name, email, avatar_url)
     `)
-    .eq('id', id)
+    .eq('slug', slug)
     .eq('publicada', true)
     .is('deleted_at', null)
     .single()
@@ -52,9 +52,9 @@ async function getPost(id: string): Promise<NoticiaConMeta | null> {
   }
 }
 
-async function getAdjacentPosts(currentId: string): Promise<{
-  prev: { id: string; titulo: string } | null
-  next: { id: string; titulo: string } | null
+async function getAdjacentPosts(currentSlug: string): Promise<{
+  prev: { slug: string; titulo: string } | null
+  next: { slug: string; titulo: string } | null
 }> {
   const supabase = await createClient()
   
@@ -63,7 +63,7 @@ async function getAdjacentPosts(currentId: string): Promise<{
   const { data: current } = await (supabase as any)
     .from('noticias')
     .select('created_at')
-    .eq('id', currentId)
+    .eq('slug', currentSlug)
     .single()
 
   if (!current) {
@@ -74,7 +74,7 @@ async function getAdjacentPosts(currentId: string): Promise<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: prevData } = await (supabase as any)
     .from('noticias')
-    .select('id, titulo')
+    .select('slug, titulo')
     .eq('publicada', true)
     .is('deleted_at', null)
     .lt('created_at', current.created_at)
@@ -86,7 +86,7 @@ async function getAdjacentPosts(currentId: string): Promise<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: nextData } = await (supabase as any)
     .from('noticias')
-    .select('id, titulo')
+    .select('slug, titulo')
     .eq('publicada', true)
     .is('deleted_at', null)
     .gt('created_at', current.created_at)
@@ -105,10 +105,10 @@ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.app'
 export async function generateMetadata({ 
   params 
 }: { 
-  params: Promise<{ id: string }> 
+  params: Promise<{ slug: string }> 
 }): Promise<Metadata> {
-  const { id } = await params
-  const post = await getPost(id)
+  const { slug } = await params
+  const post = await getPostBySlug(slug)
   
   if (!post) {
     return { title: 'Post no encontrado | MiFP' }
@@ -122,12 +122,12 @@ export async function generateMetadata({
     keywords: ['FP', 'ILERNA', 'formación profesional', post.categoria],
     authors: [{ name: autorNombre }],
     alternates: {
-      canonical: `${baseUrl}/blog/${id}`,
+      canonical: `${baseUrl}/blog/${slug}`,
     },
     openGraph: {
       title: post.titulo,
       description: post.extracto,
-      url: `${baseUrl}/blog/${id}`,
+      url: `${baseUrl}/blog/${slug}`,
       siteName: 'MiFP',
       images: post.imagen_url ? [{
         url: post.imagen_url,
@@ -165,17 +165,16 @@ export async function generateMetadata({
 export default async function PostPage({ 
   params 
 }: { 
-  params: Promise<{ id: string }> 
+  params: Promise<{ slug: string }> 
 }) {
-  const { id } = await params
-  const post = await getPost(id)
+  const { slug } = await params
+  const post = await getPostBySlug(slug)
 
   if (!post) {
     notFound()
   }
 
-  const { prev, next } = await getAdjacentPosts(id)
+  const { prev, next } = await getAdjacentPosts(slug)
 
   return <PostContent post={post} prevPost={prev} nextPost={next} />
 }
-

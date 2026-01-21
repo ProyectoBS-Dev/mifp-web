@@ -30,6 +30,7 @@ import { HeroParallax } from '@/components/landing/HeroParallax'
 import { HeroTabs } from '@/components/landing/HeroTabs'
 import { FAQSection } from '@/components/landing/FAQSection'
 import { HowItWorks } from '@/components/landing/HowItWorks'
+import { ScrollReveal } from '@/components/ui/scroll-reveal'
 
 export default async function LandingPage() {
   // Check if user is logged in - redirect to dashboard if so
@@ -130,7 +131,8 @@ export default async function LandingPage() {
       </section>
 
       {/* Feature Showcase */}
-      <section className="py-24 sm:py-32 relative overflow-hidden">
+      <ScrollReveal delay={0.2}>
+        <section className="py-24 sm:py-32 relative overflow-hidden">
         {/* Background gradient - adapts to theme */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
 
@@ -320,61 +322,68 @@ export default async function LandingPage() {
           </div>
         </div>
       </section>
+      </ScrollReveal>
 
       {/* How it works */}
-      <HowItWorks />
+      <ScrollReveal>
+        <HowItWorks />
+      </ScrollReveal>
 
       {/* FAQ Section */}
-      <FAQSection />
+      <ScrollReveal delay={0.1}>
+        <FAQSection />
+      </ScrollReveal>
 
       {/* CTA Section - Premium */}
-      <section className="py-24 sm:py-32 relative overflow-hidden">
-        {/* Background gradient layers */}
-        <div className="absolute inset-0 bg-gradient-to-br from-vt-green/10 via-transparent to-vt-blue/10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background" />
-        
-        {/* Decorative floating elements */}
-        <div className="absolute top-1/4 left-[10%] w-32 h-32 bg-vt-green/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-[10%] w-40 h-40 bg-vt-blue/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-vt-purple/10 rounded-full blur-[100px]" />
-        
-        <div className="container mx-auto px-4 text-center relative">
-          {/* Mascot Image with glow */}
-          <div className="flex justify-center mb-8 relative">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-48 h-48 bg-vt-green/30 rounded-full blur-3xl" />
+      <ScrollReveal delay={0.2}>
+        <section className="py-24 sm:py-32 relative overflow-hidden">
+          {/* Background gradient layers */}
+          <div className="absolute inset-0 bg-gradient-to-br from-vt-green/10 via-transparent to-vt-blue/10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background" />
+          
+          {/* Decorative floating elements */}
+          <div className="absolute top-1/4 left-[10%] w-32 h-32 bg-vt-green/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-[10%] w-40 h-40 bg-vt-blue/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-vt-purple/10 rounded-full blur-[100px]" />
+          
+          <div className="container mx-auto px-4 text-center relative">
+            {/* Mascot Image with glow */}
+            <div className="flex justify-center mb-8 relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-48 h-48 bg-vt-green/30 rounded-full blur-3xl" />
+              </div>
+              <Image
+                src="/images/owl_mascot_nobg.png"
+                alt="MiFP Mascot"
+                width={200}
+                height={200}
+                className="object-contain drop-shadow-2xl relative z-10"
+              />
             </div>
-            <Image
-              src="/images/owl_mascot_nobg.png"
-              alt="MiFP Mascot"
-              width={200}
-              height={200}
-              className="object-contain drop-shadow-2xl relative z-10"
-            />
+            
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+              ¿Listo para organizar tus estudios?
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto">
+              Únete a la comunidad de estudiantes de FP que ya están mejorando su rendimiento académico.
+            </p>
+            
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button asChild size="lg" className="shadow-lg shadow-vt-green/30 hover:shadow-vt-green/50 transition-shadow">
+                <Link href="/registro">
+                  Crear cuenta gratis
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="bg-background/80 backdrop-blur-sm">
+                <Link href="/login">
+                  Ya tengo cuenta
+                </Link>
+              </Button>
+            </div>
           </div>
-          
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-            ¿Listo para organizar tus estudios?
-          </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto">
-            Únete a la comunidad de estudiantes de FP que ya están mejorando su rendimiento académico.
-          </p>
-          
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button asChild size="lg" className="shadow-lg shadow-vt-green/30 hover:shadow-vt-green/50 transition-shadow">
-              <Link href="/registro">
-                Crear cuenta gratis
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="bg-background/80 backdrop-blur-sm">
-              <Link href="/login">
-                Ya tengo cuenta
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+        </section>
+      </ScrollReveal>
 
       {/* Footer */}
       <footer className="border-t py-12 bg-card">

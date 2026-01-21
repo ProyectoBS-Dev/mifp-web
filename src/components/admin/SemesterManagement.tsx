@@ -488,7 +488,7 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
                                                 Activo
                                             </Badge>
                                         ) : (
-                                            <Badge variant="secondary">Inactivo</Badge>
+                                            <Badge color="gray">Inactivo</Badge>
                                         )}
                                     </TableCell>
                                     <TableCell className="text-right">

@@ -149,7 +149,7 @@ export function AdminToolsCard() {
             <div>
               <h4 className="font-medium text-sm flex items-center gap-2">
                 Limpiar Notificaciones Antiguas
-                <Badge variant="secondary" className="text-xs">Próximamente</Badge>
+                <Badge color="gray" className="text-xs">Próximamente</Badge>
               </h4>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Elimina notificaciones leídas de más de 30 días

@@ -137,7 +137,7 @@ export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplific
             <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                     <span>Notas - {semestreNombre}</span>
-                    <Badge variant="secondary">Semestre anterior</Badge>
+                    <Badge color="gray">Semestre anterior</Badge>
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -162,7 +162,7 @@ export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplific
                                     {/* Badge de estado */}
                                     {asig.notaExamen !== null && (
                                         <Badge
-                                            variant={asig.notaExamen >= 5 ? 'default' : 'destructive'}
+                                            color={asig.notaExamen >= 5 ? 'green' : 'red'}
                                             className="text-xs"
                                         >
                                             {asig.notaExamen >= 5 ? 'Aprobada' : 'Suspensa'}

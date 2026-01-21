@@ -181,7 +181,7 @@ export function PacsWidget() {
     <div className="flex flex-col h-full">
       {/* Header con filtros */}
       <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
-        <Badge variant="secondary" className="flex-shrink-0">
+        <Badge color="blue" colorStyle="soft" className="flex-shrink-0">
           {pendientes.length} pendiente{pendientes.length !== 1 ? 's' : ''}
         </Badge>
 

@@ -122,7 +122,7 @@ export function SemesterGeneratorModal({
                                         <p className="text-sm text-muted-foreground">{sem.año_academico}</p>
                                     </div>
                                     {sem.existe ? (
-                                        <Badge variant="secondary">Ya existe</Badge>
+                                        <Badge color="yellow">Ya existe</Badge>
                                     ) : selectedCodigo === sem.codigo && (
                                         <Check className="h-5 w-5 text-primary" />
                                     )}

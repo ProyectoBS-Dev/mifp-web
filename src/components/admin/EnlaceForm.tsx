@@ -253,7 +253,7 @@ export function EnlaceForm({ recurso, mode }: EnlaceFormProps) {
                 {selectedAsignaturas.map(id => {
                   const asig = asignaturas.find(a => a.id === id)
                   return asig ? (
-                    <Badge key={id} variant="secondary" className="gap-1">
+                    <Badge key={id} color="gray" className="gap-1">
                       {asig.codigo}
                       <button
                         type="button"
@@ -283,7 +283,7 @@ export function EnlaceForm({ recurso, mode }: EnlaceFormProps) {
                     {asig.codigo} - {asig.nombre}
                   </span>
                   {asig.grado && (
-                    <Badge variant="outline" className="text-xs ml-2">
+                    <Badge color="gray" colorStyle="outline" className="text-xs ml-2">
                       {asig.grado.siglas}
                     </Badge>
                   )}

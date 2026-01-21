@@ -165,7 +165,7 @@ export default async function VTsAdminPage() {
           <h1 className="text-3xl font-bold tracking-tight">Videotutorías (VTs)</h1>
           <div className="flex items-center gap-2 text-muted-foreground">
             <span>Gestiona las videotutorías y añade enlaces a las grabaciones.</span>
-            <Badge variant="outline">{semestre.nombre}</Badge>
+            <Badge color="gray" colorStyle="outline">{semestre.nombre}</Badge>
           </div>
         </div>
       </div>

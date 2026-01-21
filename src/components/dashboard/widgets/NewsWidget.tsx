@@ -4,16 +4,17 @@ import Link from 'next/link'
 import { MessageSquare, ThumbsUp, Heart, Sparkles, Flame, Lightbulb } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatTimeAgo } from '@/lib/format'
+import { Badge, type BadgeColor } from '@/components/ui/badge'
 import { useNoticias, type NoticiaConMeta, type NoticiaCategoria } from '@/hooks/useNoticias'
 import { useMultipleReactions } from '@/hooks/useReactions'
 import type { ReactionCounts } from '@/components/blog/ReactionBar'
 
 // Colores por categoría (consistente con NewsFeed.tsx)
-const CATEGORIA_STYLES: Record<NoticiaCategoria, { bgColor: string; color: string; label: string }> = {
-  comunicado: { bgColor: 'bg-vt-blue', color: 'text-white', label: 'COMUNICADO' },
-  recurso: { bgColor: 'bg-vt-green', color: 'text-white', label: 'RECURSO' },
-  evento: { bgColor: 'bg-vt-purple', color: 'text-white', label: 'EVENTO' },
-  general: { bgColor: 'bg-vt-gray-dark-2', color: 'text-white', label: 'GENERAL' },
+const CATEGORIA_STYLES: Record<NoticiaCategoria, { label: string; color: BadgeColor }> = {
+  comunicado: { label: 'COMUNICADO', color: 'blue' },
+  recurso: { label: 'RECURSO', color: 'green' },
+  evento: { label: 'EVENTO', color: 'purple' },
+  general: { label: 'GENERAL', color: 'gray' },
 }
 
 // Componente para mostrar conteo de reacciones (solo lectura)
@@ -78,13 +79,14 @@ function NewsCard({ noticia, reactionCounts }: NewsCardProps) {
       {/* Título + Categoría */}
       <div className="flex items-start gap-2 mb-1">
         <h4 className="text-sm font-semibold line-clamp-1 flex-1">{noticia.titulo}</h4>
-        <span className={cn(
-          'px-2 py-px text-[10px] font-bold tracking-wide rounded-full shrink-0',
-          catStyle.bgColor,
-          catStyle.color
-        )}>
+        <Badge
+          color={catStyle.color}
+          colorStyle="outline" // para el widget no es tan
+          size="adjusted"
+          className="shrink-0"
+        >
           {catStyle.label}
-        </span>
+        </Badge>
       </div>
 
       {/* Extracto */}

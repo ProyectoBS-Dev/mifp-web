@@ -151,7 +151,7 @@ export default async function NoticiasAdminPage() {
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-semibold truncate">{noticia.titulo}</h3>
                       <Badge
-                        variant={noticia.publicada ? 'default' : 'secondary'}
+                        color={noticia.publicada ? 'green' : 'yellow'}
                         className="shrink-0"
                       >
                         {noticia.publicada ? (

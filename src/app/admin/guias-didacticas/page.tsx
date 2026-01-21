@@ -2,18 +2,13 @@ import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import {
-  FileText,
   Clock,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
   ArrowLeft
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { formatDistanceToNow } from 'date-fns'
-import { es } from 'date-fns/locale'
+import { GDsAdminList } from '@/components/admin/GDsAdminList'
 
 export const metadata: Metadata = {
   title: 'Guías Didácticas - Admin',
@@ -31,6 +26,7 @@ interface GD {
   asignatura: {
     nombre: string
     codigo: string
+    grado: { codigo: string } | null
   } | null
   semestre: {
     nombre: string
@@ -41,16 +37,6 @@ interface GD {
   } | null
 }
 
-import type { BadgeColor } from '@/components/ui/badge'
-
-const estadoConfig: Record<GDEstado, { label: string; icon: React.ElementType; color: BadgeColor }> = {
-  pendiente: { label: 'Pendiente', icon: Clock, color: 'yellow' },
-  extrayendo: { label: 'Extrayendo...', icon: AlertCircle, color: 'blue' },
-  extraida: { label: 'Datos Extraídos', icon: CheckCircle2, color: 'blue' },
-  validada: { label: 'Validada', icon: CheckCircle2, color: 'green' },
-  rechazada: { label: 'Rechazada', icon: XCircle, color: 'red' },
-}
-
 async function getGDs(): Promise<GD[]> {
   const supabase = await createClient()
 
@@ -59,7 +45,7 @@ async function getGDs(): Promise<GD[]> {
     .from('guias_didacticas')
     .select(`
       id, created_at, estado, procesada, archivo_path,
-      asignatura:asignaturas(nombre, codigo),
+      asignatura:asignaturas(nombre, codigo, grado:grados(codigo)),
       semestre:semestres(nombre),
       uploader:users!guias_didacticas_subido_por_fkey(full_name, email)
     `)
@@ -73,7 +59,6 @@ export default async function GuiasDidacticasPage() {
   const gds = await getGDs()
 
   const pendientes = gds.filter(g => g.estado === 'pendiente')
-  const procesadas = gds.filter(g => g.estado !== 'pendiente')
 
   return (
     <div className="space-y-6">
@@ -149,11 +134,7 @@ export default async function GuiasDidacticasPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {pendientes.map((gd) => (
-                <GDCard key={gd.id} gd={gd} />
-              ))}
-            </div>
+            <GDsAdminList gds={pendientes} showPendientes />
           </CardContent>
         </Card>
       )}
@@ -163,73 +144,13 @@ export default async function GuiasDidacticasPage() {
         <CardHeader>
           <CardTitle>Todas las Guías Didácticas</CardTitle>
           <CardDescription>
-            Historial completo de guías didácticas subidas
+            Historial completo de guías didácticas agrupadas por ciclo
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {gds.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No hay guías didácticas</p>
-              <p className="text-sm mt-1">
-                Los usuarios pueden subir GDs desde el dashboard
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {gds.map((gd) => (
-                <GDCard key={gd.id} gd={gd} />
-              ))}
-            </div>
-          )}
+          <GDsAdminList gds={gds} />
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-function GDCard({ gd }: { gd: GD }) {
-  const config = estadoConfig[gd.estado]
-  const IconComponent = config.icon
-
-  return (
-    <Link
-      href={`/admin/guias-didacticas/${gd.id}`}
-      className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors group"
-    >
-      <div className="flex items-center gap-4">
-        <div className="p-2 rounded-lg bg-primary/10">
-          <FileText className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <p className="font-medium group-hover:text-primary transition-colors">
-            {gd.asignatura?.nombre || 'Sin asignatura'}
-            {gd.asignatura?.codigo && (
-              <span className="text-muted-foreground ml-1">
-                ({gd.asignatura.codigo})
-              </span>
-            )}
-          </p>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-            <span>{gd.uploader?.full_name || gd.uploader?.email || 'Usuario'}</span>
-            <span>•</span>
-            <span>{gd.semestre?.nombre || 'Sin semestre'}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <div className="text-right text-xs text-muted-foreground">
-          {formatDistanceToNow(new Date(gd.created_at), {
-            addSuffix: true,
-            locale: es,
-          })}
-        </div>
-        <Badge color={config.color} className="flex items-center gap-1">
-          <IconComponent className="h-3 w-3" />
-          {config.label}
-        </Badge>
-      </div>
-    </Link>
   )
 }

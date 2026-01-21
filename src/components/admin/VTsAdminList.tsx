@@ -114,7 +114,7 @@ export function VTsAdminList({ vtsByAsignatura, semestreId }: VTsAdminListProps)
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{grupo.asignatura.nombre}</span>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge color="gray" colorStyle="outline" className="text-xs">
                           {grupo.asignatura.grado}
                         </Badge>
                         <span className="text-muted-foreground text-sm">
@@ -134,7 +134,7 @@ export function VTsAdminList({ vtsByAsignatura, semestreId }: VTsAdminListProps)
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge
-                      variant={porcentaje === 100 ? 'default' : porcentaje > 0 ? 'secondary' : 'destructive'}
+                      color={porcentaje === 100 ? 'green' : porcentaje > 0 ? 'yellow' : 'red'}
                     >
                       {porcentaje}%
                     </Badge>
@@ -459,7 +459,7 @@ function VTCard({ vt }: { vt: VTData }) {
                     VT {vt.numero} - {vt.titulo}
                   </span>
                   {vt.enlace_grabacion && (
-                    <Badge variant="outline" className="text-vt-green border-vt-green/50 text-xs">
+                    <Badge color="green" colorStyle="outline" className="text-xs">
                       <LinkIcon className="h-3 w-3 mr-1" />
                       Grabación
                     </Badge>

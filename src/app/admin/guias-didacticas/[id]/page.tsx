@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -122,12 +123,14 @@ export default async function ValidarGDPage({
             {gd.asignatura?.nombre} ({gd.asignatura?.codigo})
           </p>
         </div>
-        <Badge
-          variant="outline"
-          className={`${estadoInfo.color} ${estadoInfo.bgColor} border-current`}
-        >
+        <div className={cn(
+          "inline-flex items-center gap-1 border px-2.5 py-0.5 text-xs font-semibold rounded-md",
+          estadoInfo.color,
+          estadoInfo.bgColor,
+          "border-current"
+        )}>
           {estadoInfo.label}
-        </Badge>
+        </div>
       </div>
 
       {/* Si hay datos extraídos, mostrar el formulario de edición */}

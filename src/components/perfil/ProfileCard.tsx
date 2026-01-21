@@ -146,7 +146,7 @@ export function ProfileCard({ user, profile, grado }: ProfileCardProps) {
                     {/* Badges */}
                     <div className="flex flex-col items-end gap-1">
                         {grado && (
-                            <Badge variant="secondary" className="flex items-center gap-1">
+                            <Badge color="gray" className="flex items-center gap-1">
                                 <GraduationCap className="h-3 w-3" />
                                 {grado.codigo}
                             </Badge>

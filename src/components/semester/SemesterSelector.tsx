@@ -94,7 +94,7 @@ export function SemesterSelector({
                     </div>
                     <div className="flex items-center gap-2">
                         {selectedSemestre?.activo && (
-                            <Badge variant="secondary" className="text-xs">Activo</Badge>
+                            <Badge color="blue" colorStyle="soft" className="text-xs">Activo</Badge>
                         )}
                         <ChevronDown className="h-4 w-4 opacity-50" />
                     </div>
@@ -117,7 +117,7 @@ export function SemesterSelector({
                             </span>
                         </div>
                         {semestre.activo && (
-                            <Badge className="bg-vt-green/10 text-vt-green border-vt-green/20 text-xs">
+                            <Badge color="blue" colorStyle="soft" className="text-xs">
                                 Activo
                             </Badge>
                         )}

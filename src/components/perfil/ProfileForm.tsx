@@ -254,7 +254,7 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
                   <div>
                     <p className="font-medium text-sm">{asig.nombre}</p>
                   </div>
-                  <Badge variant="secondary">{asig.codigo}</Badge>
+                  <Badge color="gray">{asig.codigo}</Badge>
                 </div>
               ))}
             </div>

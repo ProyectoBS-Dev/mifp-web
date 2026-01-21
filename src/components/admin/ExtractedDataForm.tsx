@@ -208,7 +208,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
               <CardTitle className="flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   🎯 Resultados de Aprendizaje
-                  <Badge variant="secondary">{data.ras.length}</Badge>
+                  <Badge color="gray">{data.ras.length}</Badge>
                 </span>
                 {openSections.ras ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </CardTitle>
@@ -272,7 +272,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
               <CardTitle className="flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   📝 PACs
-                  <Badge variant="secondary">{data.pacs.length}</Badge>
+                  <Badge color="gray">{data.pacs.length}</Badge>
                 </span>
                 {openSections.pacs ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </CardTitle>
@@ -284,8 +284,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                 <div key={index} className="p-4 border rounded-lg space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline">PAC {pac.numero_global}</Badge>
-                      <Badge variant={pac.tipo === 'interactiva' ? 'secondary' : 'default'}>
+                      <Badge color="gray" colorStyle="outline">PAC {pac.numero_global}</Badge>
+                      <Badge color={pac.tipo === 'interactiva' ? 'blue' : 'purple'}>
                         {pac.tipo}
                       </Badge>
                     </div>
@@ -378,7 +378,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
               <CardTitle className="flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   📹 Videotutorías
-                  <Badge variant="secondary">{data.vts.length}</Badge>
+                  <Badge color="gray">{data.vts.length}</Badge>
                 </span>
                 {openSections.vts ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </CardTitle>
@@ -389,7 +389,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
               {data.vts.map((vt, index) => (
                 <div key={index} className="p-4 border rounded-lg space-y-3">
                   <div className="flex items-center justify-between">
-                    <Badge variant="outline">VT {vt.numero}</Badge>
+                    <Badge color="gray" colorStyle="outline">VT {vt.numero}</Badge>
                     <Button
                       variant="ghost"
                       size="icon"

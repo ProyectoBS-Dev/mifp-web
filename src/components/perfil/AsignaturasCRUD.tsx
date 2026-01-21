@@ -312,7 +312,7 @@ export function AsignaturasCRUD({
                                             </Badge>
                                         )}
                                     </div>
-                                    <Badge variant="secondary">
+                                    <Badge color="gray">
                                         {asignaturas.length} asignatura{asignaturas.length !== 1 ? 's' : ''}
                                     </Badge>
                                 </div>

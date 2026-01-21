@@ -143,7 +143,7 @@ export function ProfileCard({ user, profile, grado }: ProfileCardProps) {
                         )}
                     </div>
 
-                    {/* Badges */}
+                    {/* Badges - Grado y fecha de creación */}
                     <div className="flex flex-col items-end gap-1">
                         {grado && (
                             <Badge color="gray" className="flex items-center gap-1">

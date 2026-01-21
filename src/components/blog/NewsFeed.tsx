@@ -11,6 +11,7 @@ import {
 import { cn } from '@/lib/utils'
 import { formatDate } from '@/lib/format'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge, type BadgeColor } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -25,11 +26,11 @@ import { useMultipleReactions } from '@/hooks/useReactions'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 
-const CATEGORY_CONFIG: Record<NoticiaCategoria, { label: string; color: string; bgColor: string }> = {
-  comunicado: { label: 'COMUNICADO', color: 'text-white', bgColor: 'bg-vt-blue' },
-  recurso: { label: 'RECURSO', color: 'text-white', bgColor: 'bg-vt-green' },
-  evento: { label: 'EVENTO', color: 'text-white', bgColor: 'bg-vt-purple' },
-  general: { label: 'GENERAL', color: 'text-white', bgColor: 'bg-vt-gray-dark-2' },
+const CATEGORY_CONFIG: Record<NoticiaCategoria, { label: string; color: BadgeColor }> = {
+  comunicado: { label: 'COMUNICADO', color: 'blue' },
+  recurso: { label: 'RECURSO', color: 'green' },
+  evento: { label: 'EVENTO', color: 'purple' },
+  general: { label: 'GENERAL', color: 'gray' },
 }
 
 interface NewsCardProps {
@@ -62,13 +63,15 @@ function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps
         )}
 
         {/* Badge categoría */}
-        <span className={cn(
-          'absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold tracking-wide',
-          category.bgColor,
-          category.color
-        )}>
+        <Badge
+          color={category.color}  
+          colorStyle="solid"
+          size="sm"
+          rounded="full"
+          className="absolute top-4 left-4"
+        >
           {category.label}
-        </span>
+        </Badge>
       </div>
 
       {/* Contenido */}
@@ -233,7 +236,9 @@ export function NewsFeed() {
             </DropdownMenuItem>
             {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
               <DropdownMenuItem key={key} onClick={() => setFilter(key as NoticiaCategoria)}>
-                <span className={cn('w-2 h-2 rounded-full mr-2', config.bgColor)} />
+                <Badge color={config.color} colorStyle="solid" size="sm" rounded="full" className="scale-50">
+                  &nbsp;
+                </Badge>
                 {config.label}
               </DropdownMenuItem>
             ))}

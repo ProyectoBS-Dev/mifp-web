@@ -7,7 +7,6 @@ import {
   Eye,
   EyeOff,
   Pencil,
-  Trash2,
   ArrowLeft
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { LogIn, UserPlus, X } from 'lucide-react'
+import { LogIn, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

@@ -2,6 +2,9 @@
 // Tipos para el Calendario del Dashboard
 // ============================================
 
+import type { LucideIcon } from 'lucide-react'
+import { FileText, Video, BookOpen, Pin } from 'lucide-react'
+
 export type EventoTipo = 'pac' | 'vt' | 'examen' | 'custom'
 
 export interface CalendarEvent {
@@ -30,12 +33,12 @@ export const eventColors: Record<EventoTipo, string> = {
   custom: '#3b8eed', // vt-blue
 }
 
-// Iconos por tipo de evento
-export const eventIcons: Record<EventoTipo, string> = {
-  pac: '📝',
-  vt: '📹',
-  examen: '📚',
-  custom: '📌',
+// Iconos por tipo de evento (Lucide React)
+export const eventIcons: Record<EventoTipo, LucideIcon> = {
+  pac: FileText,
+  vt: Video,
+  examen: BookOpen,
+  custom: Pin,
 }
 
 // Labels en español
@@ -56,4 +59,3 @@ export interface CreateEventoInput {
   todo_el_dia: boolean
   asignatura_id?: string
 }
-

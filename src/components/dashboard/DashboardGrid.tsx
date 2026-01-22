@@ -252,7 +252,7 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
 
               {/* Widget Header */}
               <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
-                <span className="text-lg">{widget.icon}</span>
+                <widget.icon className="h-5 w-5 text-primary" />
                 <h3 className="font-semibold text-sm">{widget.title}</h3>
               </div>
 

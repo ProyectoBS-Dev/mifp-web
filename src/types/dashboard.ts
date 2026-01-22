@@ -3,6 +3,17 @@
 // ============================================
 
 import type { Layout } from 'react-grid-layout'
+import type { LucideIcon } from 'lucide-react'
+import {
+  BarChart3,
+  CalendarClock,
+  Video,
+  Calendar,
+  BookOpen,
+  StickyNote,
+  Newspaper,
+  GraduationCap,
+} from 'lucide-react'
 
 // Tipos de widgets disponibles
 export type WidgetType = 
@@ -20,7 +31,7 @@ export interface WidgetConfig {
   id: string
   type: WidgetType
   title: string
-  icon: string
+  icon: LucideIcon
   description?: string
 }
 
@@ -49,56 +60,56 @@ export const DEFAULT_WIDGETS: WidgetConfig[] = [
     id: 'stats',
     type: 'stats',
     title: 'Estadísticas',
-    icon: '📊',
+    icon: BarChart3,
     description: 'Tu progreso académico'
   },
   {
     id: 'pacs',
     type: 'pacs',
     title: 'Próximas PACs',
-    icon: '📅',
+    icon: CalendarClock,
     description: 'Fechas de entrega'
   },
   {
     id: 'vts',
     type: 'vts',
     title: 'Próximas VTs',
-    icon: '🎥',
+    icon: Video,
     description: 'Videoconferencias'
   },
   {
     id: 'calendar',
     type: 'calendar',
     title: 'Calendario',
-    icon: '📆',
+    icon: Calendar,
     description: 'Vista mensual'
   },
   {
     id: 'resources',
     type: 'resources',
     title: 'Recursos',
-    icon: '📚',
+    icon: BookOpen,
     description: 'Material de estudio'
   },
   {
     id: 'notes',
     type: 'notes',
     title: 'Notas rápidas',
-    icon: '📝',
+    icon: StickyNote,
     description: 'Tus apuntes'
   },
   {
     id: 'news',
     type: 'news',
     title: 'Blog',
-    icon: '📰',
+    icon: Newspaper,
     description: 'Últimas noticias'
   },
   {
     id: 'grades',
     type: 'grades',
     title: 'Mis Notas',
-    icon: '🎯',
+    icon: GraduationCap,
     description: 'Calificaciones'
   }
 ]
@@ -208,9 +219,6 @@ export function deriveResponsiveLayout(
   for (const widgetId of widgetOrder) {
     const baseItem = baseLayout.find(item => item.i === widgetId)
     if (!baseItem) continue
-
-    // Ajustar ancho al máximo de columnas si es necesario
-    const w = Math.min(baseItem.w, cols)
     
     result.push({
       i: widgetId,

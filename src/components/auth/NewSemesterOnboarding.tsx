@@ -91,7 +91,7 @@ export function NewSemesterOnboarding({
                 semestre_id: semestreActivo.id
             }))
 
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { error: insertError } = await (supabase
                 .from('user_asignaturas') as any)
                 .insert(inserts)

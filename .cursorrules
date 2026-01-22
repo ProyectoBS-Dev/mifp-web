@@ -2,11 +2,11 @@
 
 | Tarea | Acción Rápida |
 |-------|---------------|
-| 🔍 Crear feature nueva | Leer: `structure/01-proyecto/` → `03-database/` → `06-componentes/wireframes/` |
+| 🔍 Crear feature nueva | Leer: `structure/01-proyecto/` → `03-database/schema/` + `logic/` → `06-componentes/wireframes/` |
 | 🛣️ Crear API route | Patrón: RLS Bypass (línea 200) + `structure/07-integraciones/api-routes.md` |
 | 🎨 Nuevo componente | Verificar: `structure/06-componentes/wireframes/` + usar primitivos de `ui/` |
-| 🗄️ Modificar BD | Verificar PRIMERO: `structure/03-database/schema-completo-enero-26.txt` |
-| 🧮 Calcular notas | Leer: `structure/03-database/calculo-notas.md` + usar `lib/grades.ts` |
+| 🗄️ Modificar BD | Verificar PRIMERO: `structure/03-database/schema/schema-actual.sql` + `schema-explicado.md` |
+| 🧮 Calcular notas | Leer: `structure/03-database/logic/calculo-notas.md` + usar `lib/grades.ts` |
 | 📅 Formatear fechas | Usar: `formatDate()` de `lib/format.ts` (línea 37) |
 | 🏷️ Badges de estado | Usar: `<Badge color={getGradeBadge(nota).color}>` |
 | 🔐 Verificar auth | Patrón: `verifyAdminOrEditor()` (línea 220) |
@@ -91,19 +91,28 @@ Antes de cualquier tarea compleja, SIEMPRE lee:
 
 ### 03-database/ 🔴 Crítico
 - **Contenido:** 
-  - `schema-unificado.sql`: Schema completo de la BD
-  - `schema-completo-enero-26.txt`: Schema actualizado extraído de production
-  - `schema-explicado.md`: Documentación de tablas y relaciones
-  - `rls-policies.md`: Políticas de seguridad RLS
-  - `triggers-functions.md`: Funciones y triggers de PostgreSQL
-  - `calculo-notas.md`: Lógica de cálculo de calificaciones
-  - `migrations/`: Migraciones SQL ejecutadas
-  - `tests/`: Scripts de testing de RLS
+  - `_scripts/`: Scripts SQL para extraer información actualizada de Supabase (01-extract-tables-detailed.sql hasta 10-extract-full-ddl.sql)
+  - `schema/`: Esquema de la base de datos
+    - `schema-actual.sql`: DDL completo extraído de producción
+    - `schema-explicado.md`: Documentación legible de tablas y relaciones
+    - `enums.sql`, `indexes.sql`, `foreign-keys.csv`, `tables-info.csv`
+  - `security/`: Políticas de seguridad
+    - `rls-policies.sql`: Políticas RLS activas en formato SQL ejecutable
+    - `rls-policies.md`: Documentación de políticas RLS
+    - `storage-policies.sql`: Buckets y políticas de Storage
+  - `logic/`: Lógica de negocio en BD
+    - `calculo-notas.md`: Lógica de cálculo de calificaciones
+    - `functions.sql`: Funciones de PostgreSQL
+    - `triggers.sql`: Triggers activos
+    - `triggers-functions.md`: Documentación de triggers y funciones
+  - `migrations/`: Migraciones SQL ejecutadas (README.md)
+  - `seeds/`: Datos iniciales (seeds.sql)
 - **Consultar para:** 
   - Cualquier query o mutación de BD
-  - Entender estructura de tablas
-  - Verificar RLS antes de crear API routes
-  - Implementar lógica de notas
+  - Entender estructura de tablas (schema/)
+  - Verificar RLS antes de crear API routes (security/)
+  - Implementar lógica de notas (logic/calculo-notas.md)
+  - Extraer información actualizada de Supabase (_scripts/)
 
 ### 04-auth/ 🟡 Media
 - **Contenido:** Flujo de autenticación, roles, permisos, proxy Next.js 16
@@ -191,14 +200,14 @@ Si no encuentras la información buscada en las carpetas documentadas arriba:
 
 | Tarea | Carpetas a Consultar (en orden) |
 |-------|----------------------------------|
-| **Crear nueva feature** | `01-proyecto/` → `03-database/` → `06-componentes/wireframes/` → `05-vistas/` → **[Explorar si no existe]** |
-| **Modificar BD/Schema** | `03-database/schema-completo-enero-26.txt` → `03-database/schema-explicado.md` → `03-database/rls-policies.md` |
+| **Crear nueva feature** | `01-proyecto/` → `03-database/schema/` → `06-componentes/wireframes/` → `05-vistas/` → **[Explorar si no existe]** |
+| **Modificar BD/Schema** | `03-database/schema/schema-actual.sql` → `schema/schema-explicado.md` → `security/rls-policies.md` |
 | **Implementar UI** | `06-componentes/wireframes/{feature}.md` → `06-componentes/implementacion/react/{feature}.md` → `09-diseno/` |
-| **Crear API route** | `07-integraciones/api-routes.md` → `03-database/rls-policies.md` → `04-auth/roles-permisos.md` |
-| **Debugging RLS** | `03-database/rls-policies.md` → `03-database/rls-analysis-2024-12.md` |
-| **Calcular notas** | `03-database/calculo-notas.md` → `07-integraciones/calculo-notas.md` |
+| **Crear API route** | `07-integraciones/api-routes.md` → `03-database/security/rls-policies.md` → `04-auth/roles-permisos.md` |
+| **Debugging RLS** | `03-database/security/rls-policies.md` → `03-database/security/rls-policies.sql` (ejecutar queries de test) |
+| **Calcular notas** | `03-database/logic/calculo-notas.md` → `07-integraciones/calculo-notas.md` |
 | **Cambiar stack** | `decisions.md` → `02-stack/` → `12-estructura-proyecto/` |
-| **Auth/Roles** | `04-auth/flujo-auth.md` → `04-auth/roles-permisos.md` → `03-database/rls-policies.md` |
+| **Auth/Roles** | `04-auth/flujo-auth.md` → `04-auth/roles-permisos.md` → `03-database/security/rls-policies.md` |
 | **Agregar componente** | `06-componentes/wireframes/` (ver si existe) → `06-componentes/implementacion/react/README.md` |
 | **Subir archivos (GDs)** | `07-integraciones/cloudflare-r2.md` → `06-componentes/implementacion/react/upload-gd.md` |
 | **Feature compleja nueva** | Buscar carpeta tipo `{feature}-plan/` → **[Explorar structure/]** → `01-proyecto/objetivos-mvp.md` |
@@ -211,11 +220,11 @@ Si no encuentras la información buscada en las carpetas documentadas arriba:
 
 | Cambio Realizado | Archivos a Actualizar |
 |------------------|-----------------------|
-| Agregar/modificar tabla o columna en BD | `structure/03-database/schema-explicado.md` |
-| Crear/modificar política RLS | `structure/03-database/rls-policies.md` |
-| Agregar trigger o función SQL | `structure/03-database/triggers-functions.md` |
+| Agregar/modificar tabla o columna en BD | `structure/03-database/schema/schema-explicado.md` + `schema/schema-actual.sql` |
+| Crear/modificar política RLS | `structure/03-database/security/rls-policies.md` + `security/rls-policies.sql` |
+| Agregar trigger o función SQL | `structure/03-database/logic/triggers-functions.md` + `logic/functions.sql` o `logic/triggers.sql` |
 | Crear nueva ruta o página | `structure/05-vistas/rutas.md` |
-| Modificar lógica de cálculo de notas | `structure/03-database/calculo-notas.md` |
+| Modificar lógica de cálculo de notas | `structure/03-database/logic/calculo-notas.md` |
 | Agregar nueva integración externa | `structure/07-integraciones/{servicio}.md` (crear si no existe) |
 | Cambiar decisión de stack | `structure/decisions.md` + `structure/changelog.md` |
 | Crear componente complejo nuevo | Considerar documentar en `structure/06-componentes/implementacion/react/` |
@@ -250,14 +259,14 @@ Implementación:
 3. Crear migración
 
 Después de implementar:
-1. Read structure/03-database/schema-explicado.md
+1. Read structure/03-database/schema/schema-explicado.md
 2. StrReplace: Agregar descripción del nuevo campo en la sección de tabla users
 3. Read structure/changelog.md
 4. StrReplace: Agregar entrada:
    ## [2026-01-22] - Campo email_verified en users
    - Agregado campo boolean email_verified a tabla users
    - Permite validar emails antes de otorgar permisos completos
-   - Archivos afectados: src/types/database.ts, structure/03-database/schema-explicado.md
+   - Archivos afectados: src/types/database.ts, structure/03-database/schema/schema-explicado.md
 ```
 
 ## 🚨 Protocolo de Inconsistencias
@@ -288,14 +297,15 @@ Si durante la lectura de `structure/` encuentras información **contradictoria o
 5. **Una vez resuelto:** Actualizar `structure/changelog.md` con la resolución de la inconsistencia
 
 ## 🚫 Anti-Patrones (NO hacer)
-- ❌ Asumir el schema sin leer `03-database/schema-completo-enero-26.txt`
+- ❌ Asumir el schema sin leer `03-database/schema/schema-actual.sql` y `schema/schema-explicado.md`
 - ❌ Crear componentes nuevos sin revisar `06-componentes/wireframes/`
-- ❌ Modificar lógica de cálculo de notas sin leer `03-database/calculo-notas.md`
+- ❌ Modificar lógica de cálculo de notas sin leer `03-database/logic/calculo-notas.md`
 - ❌ Cambiar decisiones de stack sin consultar `decisions.md`
-- ❌ Implementar API routes sin revisar `03-database/rls-policies.md`
+- ❌ Implementar API routes sin revisar `03-database/security/rls-policies.md`
 - ❌ Asumir que no hay documentación sin aplicar Protocolo de Exploración Dinámica
 - ❌ Implementar cambios significativos sin actualizar `structure/changelog.md`
 - ❌ Ignorar inconsistencias en la documentación
+- ❌ Usar scripts de extracción sin consultar primero `03-database/_scripts/README.md`
 
 # 📁 Project Structure
 
@@ -331,8 +341,8 @@ Before writing any SQL or Supabase query for a new feature:
 
 1. **Check documentation first:**
    ```
-   Read: structure/03-database/schema-completo-enero-26.txt
-   Read: structure/03-database/schema-explicado.md
+   Read: structure/03-database/schema/schema-actual.sql
+   Read: structure/03-database/schema/schema-explicado.md
    ```
 
 2. **If documentation is unclear or potentially outdated:**
@@ -347,7 +357,9 @@ Before writing any SQL or Supabase query for a new feature:
 
 3. **Base implementation ONLY on verified schema**
 
-4. **After implementing:** Update `structure/03-database/schema-explicado.md` if you found discrepancies
+4. **After implementing:** Update `structure/03-database/schema/schema-explicado.md` if you found discrepancies
+
+5. **Update extraction scripts if needed:** If schema changes significantly, update or run relevant scripts in `structure/03-database/_scripts/`
 
 # 🔐 Supabase & RLS Patterns
 

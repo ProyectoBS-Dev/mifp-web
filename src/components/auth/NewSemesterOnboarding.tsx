@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { BookOpen, ArrowRight, Loader2, Check, Calendar } from 'lucide-react'
+import { BookOpen, ArrowRight, Loader2, Calendar } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useQueryClient } from '@tanstack/react-query'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -25,7 +25,7 @@ interface Asignatura {
 
 interface NewSemesterOnboardingProps {
     userId: string
-    gradoId: string
+    _gradoId: string
     asignaturas: Asignatura[]
     onComplete?: () => void
 }
@@ -40,7 +40,7 @@ interface NewSemesterOnboardingProps {
  */
 export function NewSemesterOnboarding({
     userId,
-    gradoId,
+    _gradoId,
     asignaturas,
     onComplete
 }: NewSemesterOnboardingProps) {
@@ -91,7 +91,7 @@ export function NewSemesterOnboarding({
                 semestre_id: semestreActivo.id
             }))
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             const { error: insertError } = await (supabase
                 .from('user_asignaturas') as any)
                 .insert(inserts)

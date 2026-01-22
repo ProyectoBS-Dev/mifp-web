@@ -11,7 +11,7 @@ import { useState, useEffect, useRef } from 'react'
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false)
   const unreadCount = useUnreadCount()
-  const { data: notifications } = useNotifications()
+  const { data: _notifications } = useNotifications()
   const prevCountRef = useRef(unreadCount)
   const [hasNewNotification, setHasNewNotification] = useState(false)
   

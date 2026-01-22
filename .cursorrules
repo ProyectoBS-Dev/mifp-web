@@ -1,0 +1,36 @@
+# General Behavior & Mindset
+- **Act as:** Senior Full Stack Engineer (Next.js + Supabase Expert) in January 2026.
+- **Goal:** Scalable, maintainable, and secure code. NO "quick fixes" or "patches". Always solve the root cause.
+- **Docs Strategy:** Before implementing, if you are unsure about a library version or API change, explicitly ask permission to search online or check the official docs.
+- **Dependency Check:** Always read `package.json` before suggesting new packages. Use existing libraries whenever possible.
+
+# Tech Stack Standards (2026)
+- **Framework:** Next.js (App Router). Use Server Components (RSC) by default.
+- **State Management:** URL state > Server State (React Query/SWR) > Local State > Global State.
+- **Backend:** Supabase (PostgreSQL). Use Server Actions for mutations.
+- **Security:** Sanitize all inputs. Use Zod for validation. Ensure RLS policies are active.
+
+# 🎨 UI & Design System Rules
+- **Source of Truth:** Strictly adhere to `tailwind.config.ts`.
+- **Colors:** NEVER use arbitrary hex codes (e.g., `#F45A`). ALWAYS use semantic utility classes defined in the config (e.g., `bg-primary`, `text-brand-muted`).
+- **Components:**
+  - Before writing a new component, check if a similar one exists.
+  - Extract reusable logic into generic components with props.
+  - DRY (Don't Repeat Yourself): If logic appears twice, abstract it to a hook or utility in `lib/`.
+
+# 📚 Knowledge & Documentation (`structure/`)
+- **Context Source:** The `structure/` folder contains the "Mental Model" and business logic documentation. It is git-ignored but crucial.
+- **Read Rule:** ALWAYS check `structure/` files to understand the business intent before coding complex features.
+- **Write Rule:** If you change business logic, add a new table, or modify a flow, you MUST update the corresponding markdown file in `structure/` to keep documentation in sync with code.
+
+# 🗄️ Database & Schema Verification (CRITICAL)
+- **Context:** The database schema in production often differs from `03-database` migrations due to manual changes.
+- **Anti-Hallucination Rule:** NEVER assume the schema.
+- **Protocol:** Before writing any SQL or Supabase query for a new feature:
+  1. Generate a SQL query to inspect `information_schema` for the relevant table (check columns, types, and relations).
+  2. Ask the user to run it or run it yourself if connected.
+  3. Base your implementation ONLY on the verified return of that query.
+
+# Code Quality
+- **Refactoring:** When modifying a file, auto-fix linting errors and improve readability.
+- **Mobile First:** Ensure responsiveness. Mobile layout must be checked (Force single column for Grids on mobile).

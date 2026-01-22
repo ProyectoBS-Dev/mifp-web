@@ -7,7 +7,6 @@ import {
   Link as LinkIcon,
   Headphones,
   Pencil,
-  Trash2,
   ArrowLeft,
   ExternalLink,
   CloudOff

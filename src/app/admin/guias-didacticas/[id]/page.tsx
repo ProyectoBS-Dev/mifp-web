@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { cn } from '@/lib/utils'
+
 import Link from 'next/link'
 import {
   ArrowLeft,

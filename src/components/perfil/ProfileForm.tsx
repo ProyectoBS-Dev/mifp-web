@@ -104,7 +104,7 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
         setIsEditing(false)
         router.refresh()
       }
-    } catch (err) {
+    } catch {
       setError('Error inesperado')
     } finally {
       setIsSaving(false)

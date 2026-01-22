@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Calendar, AlertCircle, Loader2, CheckCircle2, ChevronDown, Filter } from 'lucide-react'
+import { Calendar, AlertCircle, Loader2, CheckCircle2, ChevronDown, Filter, PartyPopper } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useDashboardPACs, useTogglePACCompletada } from '@/hooks'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -22,7 +22,7 @@ import {
 import type { PACItem } from '@/types/pacs'
 
 // Configuración de prioridad según documentación
-import { getPrioridad, prioridadConfig, type PrioridadPAC } from '@/types/pacs'
+import { getPrioridad, prioridadConfig } from '@/types/pacs'
 
 const PRIORIDAD_CONFIG = prioridadConfig
 
@@ -213,7 +213,11 @@ export function PacsWidget() {
             <p className="text-sm font-medium text-vt-green">
               {filtroAsignatura !== 'todas'
                 ? '¡Todas las PACs de esta asignatura completadas!'
-                : '¡Todas las PACs completadas! 🎉'}
+                : (
+                  <span className="flex items-center gap-1">
+                    ¡Todas las PACs completadas! <PartyPopper className="h-4 w-4" />
+                  </span>
+                )}
             </p>
             {completadas.length > 0 && (
               <p className="text-xs text-muted-foreground mt-1">

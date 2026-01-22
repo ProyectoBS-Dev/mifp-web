@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Video, Clock, ExternalLink, Loader2, CheckCircle2, ChevronDown, Filter } from 'lucide-react'
+import { Video, Clock, ExternalLink, Loader2, CheckCircle2, ChevronDown, Filter, PartyPopper } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatMinutes } from '@/lib/format'
 import { useDashboardVTs, useToggleVTVista } from '@/hooks'
@@ -235,7 +235,11 @@ export function VtsWidget() {
             <p className="text-sm font-medium text-vt-green">
               {filtroAsignatura !== 'todas'
                 ? '¡Todas las VTs de esta asignatura vistas!'
-                : '¡Todas las VTs vistas! 🎉'}
+                : (
+                  <span className="flex items-center gap-1">
+                    ¡Todas las VTs vistas! <PartyPopper className="h-4 w-4" />
+                  </span>
+                )}
             </p>
             {vistas.length > 0 && (
               <p className="text-xs text-muted-foreground mt-1">

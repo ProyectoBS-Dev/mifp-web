@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { ChevronLeft, ChevronRight, Plus, Trash2, Loader2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Trash2, Loader2, GraduationCap, Calendar as CalendarIcon, Clock, FileText, Pin, Video } from 'lucide-react'
 import { format, isSameDay } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
@@ -317,7 +317,11 @@ function EventDetailModal({ event, onClose }: EventDetailModalProps) {
               className="w-3 h-3 rounded-full" 
               style={{ backgroundColor: event.color }}
             />
-            {eventIcons[event.type]} {event.title}
+            {(() => {
+              const Icon = eventIcons[event.type]
+              return <Icon className="h-4 w-4" />
+            })()}
+            {event.title}
           </DialogTitle>
         </DialogHeader>
 
@@ -329,13 +333,15 @@ function EventDetailModal({ event, onClose }: EventDetailModalProps) {
 
           {event.asignatura && (
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">📚 Asignatura:</span>
+              <GraduationCap className="h-4 w-4 text-muted-foreground" />
+              <span className="text-muted-foreground">Asignatura:</span>
               <span className="font-medium">{event.asignatura.nombre}</span>
             </div>
           )}
           
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">📅 Fecha:</span>
+            <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+            <span className="text-muted-foreground">Fecha:</span>
             <span className="font-medium">
               {format(event.start, "EEEE, d 'de' MMMM yyyy", { locale: es })}
             </span>
@@ -343,7 +349,8 @@ function EventDetailModal({ event, onClose }: EventDetailModalProps) {
 
           {!event.allDay && (
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">🕐 Hora:</span>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span className="text-muted-foreground">Hora:</span>
               <span className="font-medium">
                 {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
               </span>
@@ -352,20 +359,25 @@ function EventDetailModal({ event, onClose }: EventDetailModalProps) {
 
           {event.descripcion && (
             <div className="text-sm">
-              <span className="text-muted-foreground">📝 Descripción:</span>
+              <div className="flex items-center gap-2 mb-1">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Descripción:</span>
+              </div>
               <p className="mt-1 text-foreground">{event.descripcion}</p>
             </div>
           )}
 
           {event.type === 'pac' && (
-            <p className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
-              📌 Fecha límite de entrega de la PAC
+            <p className="text-xs text-muted-foreground bg-muted/50 p-2 rounded flex items-center gap-2">
+              <Pin className="h-3 w-3" />
+              Fecha límite de entrega de la PAC
             </p>
           )}
 
           {event.type === 'vt' && (
-            <p className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
-              📹 Videotutoría en directo
+            <p className="text-xs text-muted-foreground bg-muted/50 p-2 rounded flex items-center gap-2">
+              <Video className="h-3 w-3" />
+              Videotutoría en directo
             </p>
           )}
         </div>
@@ -414,8 +426,9 @@ function DayEventsModal({ date, events, onSelectEvent, onCreateEvent, onClose, i
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
       <DialogContent className="sm:max-w-sm max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>
-            📅 {format(date, "d 'de' MMMM", { locale: es })}
+          <DialogTitle className="flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5" />
+            {format(date, "d 'de' MMMM", { locale: es })}
           </DialogTitle>
         </DialogHeader>
 
@@ -431,8 +444,12 @@ function DayEventsModal({ date, events, onSelectEvent, onCreateEvent, onClose, i
                 style={{ backgroundColor: event.color }}
               />
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm truncate">
-                  {eventIcons[event.type]} {event.title}
+                <p className="font-medium text-sm truncate flex items-center gap-1">
+                  {(() => {
+                    const Icon = eventIcons[event.type]
+                    return <Icon className="h-3.5 w-3.5 flex-shrink-0" />
+                  })()}
+                  {event.title}
                 </p>
                 {!event.allDay && (
                   <p className="text-xs text-muted-foreground">
@@ -530,7 +547,10 @@ function CreateEventModal({ isOpen, initialDate, onClose }: CreateEventModalProp
     <Dialog open={isOpen} onOpenChange={() => { resetForm(); onClose(); }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>📌 Nuevo evento</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Pin className="h-5 w-5" />
+            Nuevo evento
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 py-2">
@@ -555,10 +575,26 @@ function CreateEventModal({ isOpen, initialDate, onClose }: CreateEventModalProp
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="custom">📌 Personal</SelectItem>
-                <SelectItem value="examen">📚 Examen</SelectItem>
-                <SelectItem value="pac">📝 PAC (manual)</SelectItem>
-                <SelectItem value="vt">📹 VT (manual)</SelectItem>
+                <SelectItem value="custom">
+                  <div className="flex items-center gap-2">
+                    <Pin className="h-4 w-4" /> Personal
+                  </div>
+                </SelectItem>
+                <SelectItem value="examen">
+                  <div className="flex items-center gap-2">
+                    <GraduationCap className="h-4 w-4" /> Examen
+                  </div>
+                </SelectItem>
+                <SelectItem value="pac">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" /> PAC (manual)
+                  </div>
+                </SelectItem>
+                <SelectItem value="vt">
+                  <div className="flex items-center gap-2">
+                    <Video className="h-4 w-4" /> VT (manual)
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

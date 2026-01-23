@@ -1,38 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createAdminClient } from '@supabase/supabase-js'
-
-// Admin client con service_role para bypasear RLS
-function getAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-  return createAdminClient(supabaseUrl, serviceRoleKey)
-}
-
-// Verificar que el usuario es admin o editor
-// Usa service_role para evitar recursión en políticas RLS
-async function verifyAdminOrEditor() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
-    return { error: 'No autenticado', status: 401 }
-  }
-
-  // Usar admin client para consultar rol (evita recursión RLS)
-  const adminClient = getAdminClient()
-  const { data: userData } = await adminClient
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (!userData || !['admin', 'editor'].includes(userData.role)) {
-    return { error: 'No autorizado', status: 403 }
-  }
-
-  return { user, role: userData.role }
-}
+import { createAdminClient, verifyAdminOrEditor } from '@/lib/supabase/admin'
 
 // Extraer el path del archivo desde la URL de Supabase Storage
 function extractStoragePath(url: string | null): string | null {
@@ -62,10 +29,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Slug es requerido' }, { status: 400 })
     }
 
-    const adminClient = getAdminClient()
+    const adminClient = createAdminClient()
 
     // Verificar unicidad del slug
-    const { data: existingSlug } = await adminClient
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: existingSlug } = await (adminClient as any)
       .from('noticias')
       .select('id')
       .eq('slug', slug)
@@ -76,7 +44,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Ya existe una noticia con este slug. Por favor, elige otro.' }, { status: 400 })
     }
 
-    const { data: noticia, error: insertError } = await adminClient
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: noticia, error: insertError } = await (adminClient as any)
       .from('noticias')
       .insert({
         titulo,
@@ -119,10 +88,11 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json()
     const { titulo, slug, contenido, imagen_url, publicada } = body
 
-    const adminClient = getAdminClient()
+    const adminClient = createAdminClient()
 
     // Verificar que la noticia existe
-    const { data: existingNoticia, error: fetchError } = await adminClient
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: existingNoticia, error: fetchError } = await (adminClient as any)
       .from('noticias')
       .select('id, autor_id')
       .eq('id', id)
@@ -143,7 +113,8 @@ export async function PATCH(request: NextRequest) {
     if (titulo !== undefined) updateData.titulo = titulo
     if (slug !== undefined) {
       // Verificar unicidad del nuevo slug (excepto el actual)
-      const { data: existingSlug } = await adminClient
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: existingSlug } = await (adminClient as any)
         .from('noticias')
         .select('id')
         .eq('slug', slug)
@@ -160,7 +131,8 @@ export async function PATCH(request: NextRequest) {
     if (imagen_url !== undefined) updateData.imagen_url = imagen_url
     if (publicada !== undefined) updateData.publicada = publicada
 
-    const { data: noticia, error: updateError } = await adminClient
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: noticia, error: updateError } = await (adminClient as any)
       .from('noticias')
       .update(updateData)
       .eq('id', id)
@@ -194,10 +166,11 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'ID requerido' }, { status: 400 })
     }
 
-    const adminClient = getAdminClient()
+    const adminClient = createAdminClient()
 
     // Verificar que la noticia existe y obtener imagen_url
-    const { data: noticia, error: fetchError } = await adminClient
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: noticia, error: fetchError } = await (adminClient as any)
       .from('noticias')
       .select('id, autor_id, imagen_url')
       .eq('id', id)
@@ -226,7 +199,8 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Soft delete de la noticia
-    const { error: deleteError } = await adminClient
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: deleteError } = await (adminClient as any)
       .from('noticias')
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', id)

@@ -15,6 +15,7 @@ import {
   LogIn,
   Heart,
   Rocket,
+  BadgeCheck,
   TabletSmartphone,
   MonitorSmartphoneIcon,
 } from 'lucide-react'
@@ -77,7 +78,7 @@ export default async function LandingPage() {
               href="/blog"
               className="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/10 backdrop-blur-sm border border-black/20 hover:bg-black/15 transition-all mb-8"
             >
-              <span className="text-lg">🚀</span>
+              <span className="text-lg"><Rocket className="h-5 w-5 text-vt-green dark:text-vt-green" /></span>
               <span className="text-sm font-medium text-slate-800">
                 V1.0.0 - Presentamos MiFP
               </span>
@@ -119,7 +120,7 @@ export default async function LandingPage() {
                 <div className="text-sm text-slate-500 text-center">Web</div>
               </div>
               <div>
-                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-slate-900"><Rocket className="h-6 w-6" />100%</div>
+                <div className="flex items-center justify-center gap-2 text-3xl font-bold text-slate-900"><BadgeCheck className="h-6 w-6" />100%</div>
                 <div className="text-sm text-slate-500 text-center">Gratis</div>
               </div>
             </div>

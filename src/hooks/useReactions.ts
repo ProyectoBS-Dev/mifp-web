@@ -22,8 +22,7 @@ export function useReactions(noticiaId: string) {
   const { data: reactions = [], isLoading } = useQuery({
     queryKey: ['reactions', noticiaId],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('noticia_reacciones')
         .select('*')
         .eq('noticia_id', noticiaId)
@@ -73,8 +72,7 @@ export function useReactions(noticiaId: string) {
       if (existingReaction) {
         if (existingReaction.tipo_reaccion === type) {
           // Si es la misma reacción, eliminarla (toggle off)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { error } = await (supabase as any)
+          const { error } = await supabase
             .from('noticia_reacciones')
             .delete()
             .eq('id', existingReaction.id)
@@ -83,8 +81,7 @@ export function useReactions(noticiaId: string) {
           return { action: 'removed', type }
         } else {
           // Cambiar a otro tipo de reacción
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { error } = await (supabase as any)
+          const { error } = await supabase
             .from('noticia_reacciones')
             .update({ tipo_reaccion: type })
             .eq('id', existingReaction.id)
@@ -94,8 +91,7 @@ export function useReactions(noticiaId: string) {
         }
       } else {
         // Nueva reacción
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('noticia_reacciones')
           .insert({
             noticia_id: noticiaId,
@@ -138,8 +134,7 @@ export function useMultipleReactions(noticiaIds: string[]) {
     queryFn: async () => {
       if (noticiaIds.length === 0) return []
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('noticia_reacciones')
         .select('*')
         .in('noticia_id', noticiaIds)

@@ -56,8 +56,7 @@ async function getVTsData(): Promise<{
   const supabase = await createClient()
 
   // Obtener semestre activo
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: semestreActivo } = await (supabase as any)
+  const { data: semestreActivo } = await supabase
     .from('semestres')
     .select('id, nombre')
     .eq('activo', true)
@@ -72,8 +71,7 @@ async function getVTsData(): Promise<{
   }
 
   // Obtener VTs del semestre activo con grado
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: vts } = await (supabase as any)
+  const { data: vts } = await supabase
     .from('asignatura_vts')
     .select(`
       id,

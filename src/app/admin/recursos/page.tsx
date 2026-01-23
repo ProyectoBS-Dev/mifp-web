@@ -59,8 +59,7 @@ const TIPO_LABELS = {
 async function getRecursos(): Promise<Recurso[]> {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data } = await supabase
     .from('recursos')
     .select(`
       id, tipo, titulo, descripcion, url, archivo_path, duracion, created_at,
@@ -88,8 +87,7 @@ async function getRecursos(): Promise<Recurso[]> {
 async function getStats() {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: recursos } = await (supabase as any)
+  const { data: recursos } = await supabase
     .from('recursos')
     .select('tipo')
     .is('deleted_at', null) // Solo recursos no eliminados

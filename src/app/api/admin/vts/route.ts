@@ -1,32 +1,18 @@
-import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 
 // GET - Listar todas las VTs agrupadas por asignatura
 export async function GET() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
-    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-  }
-
-  // Verificar rol admin
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase as any)
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+  const auth = await verifyAdmin()
+  if ('error' in auth) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   try {
+    const adminClient = createAdminClient()
+
     // Obtener semestre activo
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: semestreActivo } = await (supabase as any)
+    const { data: semestreActivo } = await adminClient
       .from('semestres')
       .select('id, nombre')
       .eq('activo', true)
@@ -37,8 +23,7 @@ export async function GET() {
     }
 
     // Obtener VTs del semestre activo agrupadas por asignatura
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: vts, error } = await (supabase as any)
+    const { data: vts, error } = await adminClient
       .from('asignatura_vts')
       .select(`
         id,
@@ -94,23 +79,9 @@ export async function GET() {
 
 // POST - Crear una nueva VT
 export async function POST(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
-    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-  }
-
-  // Verificar rol admin
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase as any)
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+  const auth = await verifyAdmin()
+  if ('error' in auth) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   try {
@@ -137,8 +108,7 @@ export async function POST(request: NextRequest) {
     const horaInicioValue = (typeof hora_inicio === 'string' && hora_inicio.trim() !== '') ? hora_inicio : null
 
     // Crear la VT
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: newVT, error: insertError } = await (adminClient as any)
+    const { data: newVT, error: insertError } = await adminClient
       .from('asignatura_vts')
       .insert({
         asignatura_id: asignaturaId,
@@ -156,8 +126,7 @@ export async function POST(request: NextRequest) {
     if (insertError) throw insertError
 
     // Crear registros user_asignatura_vts para usuarios matriculados
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: userAsignaturas } = await (adminClient as any)
+    const { data: userAsignaturas } = await adminClient
       .from('user_asignaturas')
       .select('id')
       .eq('asignatura_id', asignaturaId)
@@ -169,8 +138,7 @@ export async function POST(request: NextRequest) {
         vt_id: newVT.id
       }))
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (adminClient as any)
+      await adminClient
         .from('user_asignatura_vts')
         .insert(userVtsToInsert)
     }
@@ -187,23 +155,9 @@ export async function POST(request: NextRequest) {
 
 // PUT - Actualizar una VT (enlace_grabacion principalmente)
 export async function PUT(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
-    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-  }
-
-  // Verificar rol admin
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase as any)
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+  const auth = await verifyAdmin()
+  if ('error' in auth) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   try {
@@ -216,8 +170,7 @@ export async function PUT(request: NextRequest) {
     const adminClient = createAdminClient()
 
     // Construir objeto de actualización
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updateData: Record<string, any> = {}
+    const updateData: Record<string, unknown> = {}
     
     if (enlace_grabacion !== undefined) updateData.enlace_grabacion = enlace_grabacion || null
     if (titulo !== undefined) updateData.titulo = titulo
@@ -228,8 +181,7 @@ export async function PUT(request: NextRequest) {
     }
     if (duracion_minutos !== undefined) updateData.duracion_minutos = duracion_minutos
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (adminClient as any)
+    const { data, error } = await adminClient
       .from('asignatura_vts')
       .update(updateData)
       .eq('id', vtId)
@@ -250,23 +202,9 @@ export async function PUT(request: NextRequest) {
 
 // DELETE - Eliminar una VT
 export async function DELETE(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
-    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-  }
-
-  // Verificar rol admin
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase as any)
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+  const auth = await verifyAdmin()
+  if ('error' in auth) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   try {
@@ -279,15 +217,13 @@ export async function DELETE(request: NextRequest) {
     const adminClient = createAdminClient()
 
     // Primero eliminar los user_asignatura_vts asociados
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (adminClient as any)
+    await adminClient
       .from('user_asignatura_vts')
       .delete()
       .eq('vt_id', vtId)
 
     // Luego eliminar la VT
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (adminClient as any)
+    const { error } = await adminClient
       .from('asignatura_vts')
       .delete()
       .eq('id', vtId)

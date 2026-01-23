@@ -76,8 +76,7 @@ export function EnlaceForm({ recurso, mode }: EnlaceFormProps) {
   useEffect(() => {
     async function loadAsignaturas() {
       const supabase = createClient()
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('asignaturas')
         .select('id, nombre, codigo, grado:grados(codigo)')
         .is('deleted_at', null)

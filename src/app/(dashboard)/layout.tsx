@@ -17,8 +17,7 @@ export default async function DashboardLayout({
   }
 
   // Get user profile with grado_id
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase as any)
+  const { data: profile } = await supabase
     .from('users')
     .select('full_name, avatar_url, role, grado_id')
     .eq('id', user.id)

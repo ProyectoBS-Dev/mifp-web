@@ -90,8 +90,7 @@ export function useMarkAsRead() {
   
   return useMutation({
     mutationFn: async (notificationId: string) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('notificaciones')
         .update({ leida: true })
         .eq('id', notificationId)
@@ -133,8 +132,7 @@ export function useMarkAllAsRead() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('No user')
       
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('notificaciones')
         .update({ leida: true })
         .eq('user_id', user.id)

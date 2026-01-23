@@ -14,8 +14,7 @@ export function useApuntes(includeArchived = false) {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('No autenticado')
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let query = (supabase as any)
+      let query = supabase
         .from('apuntes')
         .select('*')
         .eq('user_id', user.id)
@@ -50,8 +49,7 @@ export function useCreateApunte() {
       if (!user) throw new Error('No autenticado')
 
       // Obtener el siguiente orden
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: last } = await (supabase as any)
+      const { data: last } = await supabase
         .from('apuntes')
         .select('orden')
         .eq('user_id', user.id)
@@ -61,8 +59,7 @@ export function useCreateApunte() {
 
       const nextOrden = (last?.orden ?? 0) + 1
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any).from('apuntes').insert({
+      const { error } = await supabase.from('apuntes').insert({
         user_id: user.id,
         titulo: data.titulo || null,
         contenido: data.contenido || '',
@@ -86,8 +83,7 @@ export function useUpdateApunte() {
 
   return useMutation({
     mutationFn: async ({ id, ...data }: Partial<Apunte> & { id: string }) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('apuntes')
         .update({
           ...data,
@@ -109,8 +105,7 @@ export function useDeleteApunte() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('apuntes')
         .delete()
         .eq('id', id)

@@ -1,5 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import type { ExtractedGDData } from '@/types/gd'
@@ -109,23 +108,9 @@ Texto de la Guía Didáctica:
 
 export async function POST(request: NextRequest) {
   // Verificar autenticación y rol admin
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
-    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-  }
-
-  // Verificar rol admin
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase as any)
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+  const auth = await verifyAdmin()
+  if ('error' in auth) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   try {
@@ -145,8 +130,7 @@ export async function POST(request: NextRequest) {
     const adminClient = createAdminClient()
 
     // Obtener la GD
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: gd, error: gdError } = await (adminClient as any)
+    const { data: gd, error: gdError } = await adminClient
       .from('guias_didacticas')
       .select('id, archivo_path, estado, asignatura_id')
       .eq('id', gdId)
@@ -161,8 +145,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Actualizar estado a extrayendo
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (adminClient as any)
+    await adminClient
       .from('guias_didacticas')
       .update({ estado: 'extrayendo' })
       .eq('id', gdId)
@@ -238,8 +221,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Guardar datos extraídos en la GD
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (adminClient as any)
+    const { error: updateError } = await adminClient
       .from('guias_didacticas')
       .update({ 
         datos_extraidos: extractedData,

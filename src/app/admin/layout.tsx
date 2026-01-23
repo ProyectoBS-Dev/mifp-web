@@ -20,8 +20,7 @@ export default async function AdminLayout({
   }
 
   // Verificar rol admin
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase as any)
+  const { data: profile } = await supabase
     .from('users')
     .select('role, full_name, avatar_url')
     .eq('id', user.id)

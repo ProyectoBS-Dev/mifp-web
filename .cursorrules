@@ -3,13 +3,13 @@
 | Tarea | Acción Rápida |
 |-------|---------------|
 | 🔍 Crear feature nueva | Leer: `structure/01-proyecto/` → `03-database/schema/` + `logic/` → `06-componentes/wireframes/` |
-| 🛣️ Crear API route | Patrón: RLS Bypass (línea 200) + `structure/07-integraciones/api-routes.md` |
+| 🛣️ Crear API route | Usar: `verifyAdminOrEditor()` + `createAdminClient()` de `@/lib/supabase/admin` |
 | 🎨 Nuevo componente | Verificar: `structure/06-componentes/wireframes/` + usar primitivos de `ui/` |
 | 🗄️ Modificar BD | Verificar PRIMERO: `structure/03-database/schema/schema-actual.sql` + `schema-explicado.md` |
 | 🧮 Calcular notas | Leer: `structure/03-database/logic/calculo-notas.md` + usar `lib/grades.ts` |
 | 📅 Formatear fechas | Usar: `formatDate()` de `lib/format.ts` (línea 37) |
 | 🏷️ Badges de estado | Usar: `<Badge color={getGradeBadge(nota).color}>` |
-| 🔐 Verificar auth | Patrón: `verifyAdminOrEditor()` (línea 220) |
+| 🔐 Verificar auth | Usar: `verifyAdminOrEditor()` de `@/lib/supabase/admin` |
 
 📖 Para detalles completos, continúa leyendo las secciones abajo.
 
@@ -377,32 +377,11 @@ If a mutation needs to modify `users` table AND an RLS policy queries `users`, y
 ```typescript
 // In src/app/api/{resource}/route.ts
 
-import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
-
-// Verify auth & role
-async function verifyAdminOrEditor() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) return { error: 'No autenticado', status: 401 }
-
-  // Use admin client to check role (avoids RLS recursion)
-  const adminClient = createAdminClient()
-  const { data: userData } = await adminClient
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (!userData || !['admin', 'editor'].includes(userData.role)) {
-    return { error: 'No autorizado', status: 403 }
-  }
-
-  return { user, role: userData.role }
-}
+import { NextRequest, NextResponse } from 'next/server'
+import { createAdminClient, verifyAdminOrEditor } from '@/lib/supabase/admin'
 
 export async function POST(request: NextRequest) {
+  // Verify auth & role with centralized helper
   const auth = await verifyAdminOrEditor()
   if ('error' in auth) {
     return NextResponse.json({ error: auth.error }, { status: auth.status })
@@ -410,8 +389,29 @@ export async function POST(request: NextRequest) {
   
   // Use adminClient for operations that would trigger RLS recursion
   const adminClient = createAdminClient()
+  
+  // Now you have:
+  // - auth.user (authenticated user object)
+  // - auth.role ('admin' | 'editor')
+  // - adminClient (bypasses RLS)
+  
   // ... rest of implementation
 }
+```
+
+### Available Helpers in `@/lib/supabase/admin`
+
+- **`createAdminClient()`** - Returns Supabase client with service_role (bypasses RLS)
+- **`verifyAdminOrEditor()`** - Verifies user is authenticated AND has admin or editor role
+- **`verifyAdmin()`** - Verifies user is authenticated AND has admin role only
+
+### Return Types
+```typescript
+// Success
+{ user: User, role: 'admin' | 'editor' }
+
+// Error
+{ error: string, status: 401 | 403 }
 ```
 
 ### Security Checklist

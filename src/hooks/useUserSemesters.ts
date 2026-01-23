@@ -30,8 +30,7 @@ export function useUserSemesters() {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error('No autenticado')
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data, error } = await (supabase.rpc as any)('get_semestres_usuario', {
+            const { data, error } = await supabase.rpc('get_semestres_usuario', {
                 p_user_id: user.id
             })
 
@@ -126,8 +125,7 @@ export function useSemestresPosibles() {
     return useQuery({
         queryKey: ['semestres-posibles'],
         queryFn: async () => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data, error } = await (supabase.rpc as any)('generar_semestres_posibles')
+            const { data, error } = await supabase.rpc('generar_semestres_posibles')
 
             if (error) {
                 console.error('Error en generar_semestres_posibles:', error)

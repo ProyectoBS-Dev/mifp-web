@@ -78,8 +78,7 @@ export function useNoticias(filter?: NoticiaCategoria) {
   const { data: noticias = [], isLoading, error } = useQuery({
     queryKey: ['noticias', filter],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('noticias')
         .select(`
           *,
@@ -121,8 +120,7 @@ export function useNoticia(id: string) {
   const { data: noticia, isLoading, error } = useQuery({
     queryKey: ['noticia', id],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('noticias')
         .select(`
           *,

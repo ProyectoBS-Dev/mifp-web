@@ -24,8 +24,7 @@ export default async function DashboardPage() {
   }
 
   // Obtener layout guardado del usuario
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: layoutData } = await (supabase as any)
+  const { data: layoutData } = await supabase
     .from('user_grid_layout')
     .select('layout_config')
     .eq('user_id', user.id)

@@ -122,9 +122,8 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
 
     // Refrescar datos
     const refreshData = async () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data } = await (supabase
-            .from('semestres') as any)
+        const { data } = await supabase
+            .from('semestres')
             .select('*')
             .order('fecha_inicio', { ascending: false })
 
@@ -139,9 +138,8 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
         setError(null)
 
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error: insertError } = await (supabase
-                .from('semestres') as any)
+            const { error: insertError } = await supabase
+                .from('semestres')
                 .insert({
                     nombre: formData.nombre,
                     codigo: formData.codigo.toLowerCase(),
@@ -174,9 +172,8 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
         setError(null)
 
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error: updateError } = await (supabase
-                .from('semestres') as any)
+            const { error: updateError } = await supabase
+                .from('semestres')
                 .update({
                     nombre: formData.nombre,
                     codigo: formData.codigo.toLowerCase(),
@@ -208,16 +205,14 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
 
         try {
             // Desactivar todos los semestres
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await (supabase
-                .from('semestres') as any)
+            await supabase
+                .from('semestres')
                 .update({ activo: false })
                 .eq('activo', true)
 
             // Activar el seleccionado
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error: activateError } = await (supabase
-                .from('semestres') as any)
+            const { error: activateError } = await supabase
+                .from('semestres')
                 .update({ activo: true })
                 .eq('id', semestre.id)
 

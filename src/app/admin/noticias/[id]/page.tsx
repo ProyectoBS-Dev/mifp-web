@@ -15,8 +15,7 @@ export const metadata: Metadata = {
 async function getNoticia(id: string): Promise<Noticia | null> {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('noticias')
     .select('*')
     .eq('id', id)

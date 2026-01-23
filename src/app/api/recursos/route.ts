@@ -5,6 +5,7 @@
 
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 import type { RecursoTipo } from '@/types/recursos'
 
 /**
@@ -18,8 +19,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const tipo = searchParams.get('tipo') as RecursoTipo | null
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let query = (supabase as any)
+    let query = supabase
       .from('recursos')
       .select(`
         id,
@@ -82,30 +82,10 @@ export async function GET(request: Request) {
  */
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
-
-    // Verificar autenticación
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'No autenticado' },
-        { status: 401 }
-      )
-    }
-
-    // Verificar rol admin
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: profile } = await (supabase as any)
-      .from('users')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'No autorizado' },
-        { status: 403 }
-      )
+    // Verificar autenticación y rol admin
+    const auth = await verifyAdmin()
+    if ('error' in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
     }
 
     const body = await request.json()
@@ -127,16 +107,17 @@ export async function POST(request: Request) {
       )
     }
 
+    const adminClient = createAdminClient()
+
     // Insertar recurso
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await adminClient
       .from('recursos')
       .insert({
         tipo,
         titulo,
         descripcion: descripcion || null,
         url: url || null,
-        created_by: user.id,
+        created_by: auth.user.id,
       })
       .select('id')
       .single()
@@ -156,8 +137,7 @@ export async function POST(request: Request) {
         asignatura_id: asignaturaId,
       }))
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error: relationError } = await (supabase as any)
+      const { error: relationError } = await adminClient
         .from('recursos_asignaturas')
         .insert(relations)
 

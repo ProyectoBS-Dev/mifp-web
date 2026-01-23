@@ -54,8 +54,7 @@ export function ProfileCard({ user, profile, grado }: ProfileCardProps) {
         const supabase = createClient()
 
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data, error: updateError } = await (supabase as any)
+            const { data, error: updateError } = await supabase
                 .from('users')
                 .update({
                     full_name: fullName || null,
@@ -67,8 +66,7 @@ export function ProfileCard({ user, profile, grado }: ProfileCardProps) {
             if (updateError) {
                 setError('Error al guardar los cambios')
             } else if (!data || data.length === 0) {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                await (supabase as any)
+                await supabase
                     .from('users')
                     .insert({
                         id: user.id,

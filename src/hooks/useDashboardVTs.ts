@@ -14,8 +14,7 @@ export function useDashboardVTs() {
       if (!user) throw new Error('No autenticado')
 
       // Obtener VTs del usuario agrupadas por asignatura
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('user_asignaturas')
         .select(`
           id,
@@ -94,8 +93,7 @@ export function useToggleVTVista() {
       // Crear cliente dentro de la mutación para asegurar que las cookies están disponibles
       const supabase = createClient()
       
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('user_asignatura_vts')
         .update({ vista })
         .eq('id', userVtId)

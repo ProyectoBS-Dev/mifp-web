@@ -24,8 +24,7 @@ export function useCalendarEvents(currentDate: Date) {
       const events: CalendarEvent[] = []
 
       // 1. PACs del usuario (semestre activo)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: pacs } = await (supabase as any)
+      const { data: pacs } = await supabase
         .from('user_asignatura_pacs')
         .select(`
           id,
@@ -69,8 +68,7 @@ export function useCalendarEvents(currentDate: Date) {
       })
 
       // 2. VTs del usuario (semestre activo)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: vts } = await (supabase as any)
+      const { data: vts } = await supabase
         .from('user_asignatura_vts')
         .select(`
           id,
@@ -122,8 +120,7 @@ export function useCalendarEvents(currentDate: Date) {
       })
 
       // 3. Eventos personales del usuario
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: eventosPersonales } = await (supabase as any)
+      const { data: eventosPersonales } = await supabase
         .from('eventos_calendario')
         .select(`
           id, titulo, descripcion, tipo, 
@@ -182,8 +179,7 @@ export function useCreateCalendarEvent() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('No autenticado')
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('eventos_calendario')
         .insert({
           user_id: user.id,
@@ -218,8 +214,7 @@ export function useDeleteCalendarEvent() {
 
   return useMutation({
     mutationFn: async (eventId: string) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('eventos_calendario')
         .delete()
         .eq('id', eventId)

@@ -32,8 +32,7 @@ export async function POST(request: NextRequest) {
     const adminClient = createAdminClient()
 
     // Verificar unicidad del slug
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: existingSlug } = await (adminClient as any)
+    const { data: existingSlug } = await adminClient
       .from('noticias')
       .select('id')
       .eq('slug', slug)
@@ -44,8 +43,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Ya existe una noticia con este slug. Por favor, elige otro.' }, { status: 400 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: noticia, error: insertError } = await (adminClient as any)
+    const { data: noticia, error: insertError } = await adminClient
       .from('noticias')
       .insert({
         titulo,
@@ -91,8 +89,7 @@ export async function PATCH(request: NextRequest) {
     const adminClient = createAdminClient()
 
     // Verificar que la noticia existe
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: existingNoticia, error: fetchError } = await (adminClient as any)
+    const { data: existingNoticia, error: fetchError } = await adminClient
       .from('noticias')
       .select('id, autor_id')
       .eq('id', id)
@@ -113,8 +110,7 @@ export async function PATCH(request: NextRequest) {
     if (titulo !== undefined) updateData.titulo = titulo
     if (slug !== undefined) {
       // Verificar unicidad del nuevo slug (excepto el actual)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: existingSlug } = await (adminClient as any)
+      const { data: existingSlug } = await adminClient
         .from('noticias')
         .select('id')
         .eq('slug', slug)
@@ -131,8 +127,7 @@ export async function PATCH(request: NextRequest) {
     if (imagen_url !== undefined) updateData.imagen_url = imagen_url
     if (publicada !== undefined) updateData.publicada = publicada
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: noticia, error: updateError } = await (adminClient as any)
+    const { data: noticia, error: updateError } = await adminClient
       .from('noticias')
       .update(updateData)
       .eq('id', id)
@@ -169,8 +164,7 @@ export async function DELETE(request: NextRequest) {
     const adminClient = createAdminClient()
 
     // Verificar que la noticia existe y obtener imagen_url
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: noticia, error: fetchError } = await (adminClient as any)
+    const { data: noticia, error: fetchError } = await adminClient
       .from('noticias')
       .select('id, autor_id, imagen_url')
       .eq('id', id)
@@ -199,8 +193,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Soft delete de la noticia
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: deleteError } = await (adminClient as any)
+    const { error: deleteError } = await adminClient
       .from('noticias')
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', id)

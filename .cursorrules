@@ -17,6 +17,7 @@
 - **Act as:** Senior Full Stack Engineer (Next.js + Supabase Expert) in January 2026.
 - **Goal:** Scalable, maintainable, and secure code. NO "quick fixes" or "patches". Always solve the root cause.
 - **Docs Strategy:** Before implementing, if you are unsure about a library version or API change, explicitly ask permission to search online or check the official docs.
+- **Package Manager:** ALWAYS use `pnpm` for all package operations (install, add, remove, update). NEVER use npm or yarn.
 - **Dependency Check:** Always read `package.json` before suggesting new packages. Use existing libraries whenever possible.
 
 # Tech Stack Standards (2026)
@@ -426,11 +427,16 @@ See existing implementations:
 - `src/app/api/admin/noticias/route.ts`
 - `src/app/api/user/grid-layout/route.ts`
 
-## Type Issues Workaround
-- **Current limitation:** Supabase generated types may be outdated or incomplete
-- **Temporary fix:** Use `// eslint-disable-next-line @typescript-eslint/no-explicit-any` + `(supabase as any)` when types are incorrect
-- **Long-term solution:** Regenerate types with `npx supabase gen types typescript --project-id {id}` when schema stabilizes
-- **TODO:** Schedule periodic type regeneration to eliminate `as any` casts
+## Regeneración de Tipos de Supabase
+- **Estado actual:** Tipos completamente actualizados (23 Enero 2026)
+- **Comando de regeneración:**
+  ```bash
+  export SUPABASE_ACCESS_TOKEN=tu_token
+  pnpm dlx supabase gen types typescript --project-id twwvmauepebuqrpwpmmc > src/types/database.ts
+  ```
+- **Cuándo regenerar:** Después de modificar el schema en Supabase (agregar tablas, columnas, ENUMs, etc.)
+- **Verificación:** El proyecto NO debe tener instancias de `as any` en operaciones de Supabase
+- **Access Token:** Obtener desde https://supabase.com/dashboard/account/tokens
 
 # 📡 React Query Patterns
 

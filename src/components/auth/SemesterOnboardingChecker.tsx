@@ -38,8 +38,7 @@ export function SemesterOnboardingChecker({ userId, gradoId }: SemesterOnboardin
             const supabase = createClient()
 
             // Verificar si tiene asignaturas en el semestre activo
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { count, error } = await (supabase as any)
+            const { count, error } = await supabase
                 .from('user_asignaturas')
                 .select('*', { count: 'exact', head: true })
                 .eq('user_id', userId)
@@ -55,8 +54,7 @@ export function SemesterOnboardingChecker({ userId, gradoId }: SemesterOnboardin
 
             // Si no tiene asignaturas, cargar las del grado
             if (count === 0) {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const { data: asignaturas } = await (supabase as any)
+                const { data: asignaturas } = await supabase
                     .from('asignaturas')
                     .select('id, nombre, codigo, semestre_recomendado')
                     .eq('grado_id', gradoId)

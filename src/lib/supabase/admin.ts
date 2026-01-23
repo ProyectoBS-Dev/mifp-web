@@ -60,14 +60,13 @@ export async function verifyAdminOrEditor() {
 
   // Usar admin client para consultar rol (evita recursión RLS)
   const adminClient = createAdminClient()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: userData } = await (adminClient as any)
+  const { data: userData } = await adminClient
     .from('users')
     .select('role')
     .eq('id', user.id)
     .single()
 
-  if (!userData || !['admin', 'editor'].includes(userData.role)) {
+  if (!userData || !userData.role || !['admin', 'editor'].includes(userData.role)) {
     return { error: 'No autorizado', status: 403 as const }
   }
 
@@ -88,8 +87,7 @@ export async function verifyAdmin() {
   }
 
   const adminClient = createAdminClient()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: userData } = await (adminClient as any)
+  const { data: userData } = await adminClient
     .from('users')
     .select('role')
     .eq('id', user.id)

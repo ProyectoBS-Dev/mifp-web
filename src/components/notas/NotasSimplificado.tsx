@@ -43,8 +43,7 @@ export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplific
 
         try {
             // Upsert en user_notas_examen con nota_final_calculada para backfill
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error: upsertError } = await (supabase.from('user_notas_examen') as any)
+            const { error: upsertError } = await supabase.from('user_notas_examen')
                 .upsert({
                     user_asignatura_id: userAsignaturaId,
                     nota_examen: nota,

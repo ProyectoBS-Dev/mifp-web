@@ -53,8 +53,7 @@ export function SemesterGeneratorModal({
         setError(null)
 
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data: semestreId, error: rpcError } = await (supabase.rpc as any)(
+            const { data: semestreId, error: rpcError } = await supabase.rpc(
                 'crear_semestre_si_no_existe',
                 {
                     p_codigo: selected.codigo,

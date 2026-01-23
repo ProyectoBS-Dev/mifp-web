@@ -61,8 +61,7 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
 
     try {
       // Usar .select() para obtener la fila actualizada y verificar si el update funcionó
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error: updateError } = await (supabase as any)
+      const { data, error: updateError } = await supabase
         .from('users')
         .update({
           full_name: fullName || null,
@@ -82,8 +81,7 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
         // El update no afectó ninguna fila - el usuario no existe en la tabla
         // Intentamos crear el registro del perfil
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error: insertError } = await (supabase as any)
+        const { error: insertError } = await supabase
           .from('users')
           .insert({
             id: user.id,

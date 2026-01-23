@@ -82,8 +82,7 @@ export function GDValidationForm({ gdId, asignaturaId, semestreId }: GDValidatio
       const supabase = createClient()
 
       // Marcar como validada
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error: updateError } = await (supabase as any)
+      const { error: updateError } = await supabase
         .from('guias_didacticas')
         .update({
           estado: 'validada',
@@ -112,8 +111,7 @@ export function GDValidationForm({ gdId, asignaturaId, semestreId }: GDValidatio
       const motivo = rechazoMotivo === 'Otro motivo' ? rechazoOtro : rechazoMotivo
 
       // Marcar como rechazada
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error: updateError } = await (supabase as any)
+      const { error: updateError } = await supabase
         .from('guias_didacticas')
         .update({
           estado: 'rechazada',

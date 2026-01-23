@@ -20,8 +20,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     const { id } = await params
     const supabase = await createClient()
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('recursos')
       .select(`
         id,
@@ -80,34 +79,17 @@ export async function GET(request: Request, { params }: RouteParams) {
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params
-    const supabase = await createClient()
-
-    // Verificar autenticación
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'No autenticado' },
-        { status: 401 }
-      )
-    }
-
-    // Verificar rol admin
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: profile } = await (supabase as any)
-      .from('users')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'No autorizado' },
-        { status: 403 }
-      )
+    
+    // Verificar autenticación y rol admin
+    const auth = await verifyAdmin()
+    if ('error' in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
     }
 
     const body = await request.json()
     const { titulo, descripcion, url, asignatura_ids } = body
+
+    const adminClient = createAdminClient()
 
     // Actualizar solo los campos proporcionados del recurso
     const updateData: Record<string, unknown> = {}
@@ -117,8 +99,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
     // Actualizar recurso si hay campos
     if (Object.keys(updateData).length > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await adminClient
         .from('recursos')
         .update(updateData)
         .eq('id', id)
@@ -141,8 +122,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     // Actualizar asignaturas si se proporcionaron
     if (asignatura_ids !== undefined) {
       // Eliminar relaciones existentes
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase as any)
+      await adminClient
         .from('recursos_asignaturas')
         .delete()
         .eq('recurso_id', id)
@@ -154,8 +134,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
           asignatura_id: asignaturaId,
         }))
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error: relationError } = await (supabase as any)
+        const { error: relationError } = await adminClient
           .from('recursos_asignaturas')
           .insert(relations)
 
@@ -183,38 +162,18 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params
-    const supabase = await createClient()
-
-    // Verificar autenticación
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'No autenticado' },
-        { status: 401 }
-      )
-    }
-
-    // Verificar rol admin
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: profile } = await (supabase as any)
-      .from('users')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'No autorizado' },
-        { status: 403 }
-      )
+    
+    // Verificar autenticación y rol admin
+    const auth = await verifyAdmin()
+    if ('error' in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
     }
 
     // Soft delete: marcar con deleted_at en lugar de eliminar
     // Usamos admin client para bypass RLS ya que verificamos permisos manualmente
     const adminClient = createAdminClient()
     
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (adminClient as any)
+    const { data, error } = await adminClient
       .from('recursos')
       .update({ deleted_at: new Date().toISOString() })
       .eq('id', id)

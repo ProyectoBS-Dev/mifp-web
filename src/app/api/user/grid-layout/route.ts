@@ -18,8 +18,7 @@ export async function GET() {
     // Usar admin client para bypass RLS
     const adminClient = createAdminClient()
     
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (adminClient as any)
+    const { data, error } = await adminClient
       .from('user_grid_layout')
       .select('layout_config, updated_at')
       .eq('user_id', user.id)
@@ -62,8 +61,7 @@ export async function PUT(request: NextRequest) {
 
     const adminClient = createAdminClient()
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (adminClient as any)
+    const { error } = await adminClient
       .from('user_grid_layout')
       .update({ 
         layout_config: layout_config,

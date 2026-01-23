@@ -21,8 +21,7 @@ export function useMissingGDs() {
       }
 
       // 1. Obtener semestre activo
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: semestreActivo, error: semestreError } = await (supabase as any)
+      const { data: semestreActivo, error: semestreError } = await supabase
         .from('semestres')
         .select('id, nombre')
         .eq('activo', true)
@@ -33,8 +32,7 @@ export function useMissingGDs() {
       }
 
       // 2. Obtener asignaturas del usuario en el semestre activo
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: userAsignaturas, error: uaError } = await (supabase as any)
+      const { data: userAsignaturas, error: uaError } = await supabase
         .from('user_asignaturas')
         .select(`
           asignatura_id,
@@ -50,8 +48,7 @@ export function useMissingGDs() {
       // 3. Obtener GDs existentes para estas asignaturas
       const asignaturaIds = userAsignaturas.map((ua: { asignatura_id: string }) => ua.asignatura_id)
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: existingGDs } = await (supabase as any)
+      const { data: existingGDs } = await supabase
         .from('guias_didacticas')
         .select('asignatura_id')
         .in('asignatura_id', asignaturaIds)
@@ -60,7 +57,7 @@ export function useMissingGDs() {
         .in('estado', ['pendiente', 'extrayendo', 'extraida', 'validada']) // GDs en proceso o validadas
 
       const gdsAsignaturaIds = new Set(
-        (existingGDs || []).map((gd: { asignatura_id: string }) => gd.asignatura_id)
+        existingGDs?.map((gd: { asignatura_id: string }) => gd.asignatura_id) || []
       )
 
       // 4. Filtrar asignaturas sin GD

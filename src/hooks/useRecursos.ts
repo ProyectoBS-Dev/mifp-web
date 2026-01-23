@@ -28,17 +28,15 @@ export function useRecursos() {
       }
 
       // 2. Obtener asignaturas del usuario
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: userAsignaturas } = await (supabase as any)
+      const { data: userAsignaturas } = await supabase
         .from('user_asignaturas')
         .select('asignatura_id')
         .eq('user_id', user.id)
 
-      const userAsignaturaIds = (userAsignaturas as { asignatura_id: string }[] | null)?.map(ua => ua.asignatura_id) || []
+      const userAsignaturaIds = userAsignaturas?.map(ua => ua.asignatura_id) || []
 
       // 3. Obtener todos los recursos con sus asignaturas
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: recursos, error } = await (supabase as any)
+      const { data: recursos, error } = await supabase
         .from('recursos')
         .select(`
           id,
@@ -122,8 +120,7 @@ export function useRecursosByTipo(tipo: RecursoTipo) {
   return useQuery({
     queryKey: ['recursos', tipo],
     queryFn: async (): Promise<Recurso[]> => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('recursos')
         .select(`
           id,

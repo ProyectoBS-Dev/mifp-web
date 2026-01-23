@@ -152,9 +152,8 @@ export function AsignaturasCRUD({
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error('No autenticado')
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error: insertError } = await (supabase
-                .from('user_asignaturas') as any)
+            const { error: insertError } = await supabase
+                .from('user_asignaturas')
                 .insert({
                     user_id: user.id,
                     asignatura_id: selectedAsignaturaId,
@@ -188,9 +187,8 @@ export function AsignaturasCRUD({
         setError(null)
 
         try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error: deleteError } = await (supabase
-                .from('user_asignaturas') as any)
+            const { error: deleteError } = await supabase
+                .from('user_asignaturas')
                 .delete()
                 .eq('id', asignaturaToDelete.id)
 

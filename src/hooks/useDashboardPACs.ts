@@ -14,8 +14,7 @@ export function useDashboardPACs() {
       if (!user) throw new Error('No autenticado')
 
       // Obtener PACs del usuario para el semestre activo
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('user_asignatura_pacs')
         .select(`
           id, completada, nota,
@@ -71,8 +70,7 @@ export function useTogglePACCompletada() {
 
   return useMutation({
     mutationFn: async ({ userPacId, completada }: { userPacId: string; completada: boolean }) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('user_asignatura_pacs')
         .update({ completada, updated_at: new Date().toISOString() })
         .eq('id', userPacId)

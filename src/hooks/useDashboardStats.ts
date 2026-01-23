@@ -41,8 +41,7 @@ export function useDashboardStats() {
       if (!user) throw new Error('No autenticado')
 
       // Contar asignaturas del usuario en semestre activo
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: userAsignaturas } = await (supabase as any)
+      const { data: userAsignaturas } = await supabase
         .from('user_asignaturas')
         .select(`
           id,
@@ -54,8 +53,7 @@ export function useDashboardStats() {
       const asignaturasCount = userAsignaturas?.length || 0
 
       // Obtener PACs del usuario
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: pacs } = await (supabase as any)
+      const { data: pacs } = await supabase
         .from('user_asignatura_pacs')
         .select(`
           id, completada,
@@ -69,8 +67,7 @@ export function useDashboardStats() {
       const pacsCompletadas = pacsData.filter((p: { completada: boolean }) => p.completada).length
 
       // Obtener VTs del usuario
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: vts } = await (supabase as any)
+      const { data: vts } = await supabase
         .from('user_asignatura_vts')
         .select(`
           id, vista,

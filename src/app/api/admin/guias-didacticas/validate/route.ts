@@ -1,27 +1,12 @@
-import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 import type { ExtractedGDData } from '@/types/gd'
 
 export async function POST(request: NextRequest) {
   // Verificar autenticación y rol admin
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
-    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-  }
-
-  // Verificar rol admin
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase as any)
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+  const auth = await verifyAdmin()
+  if ('error' in auth) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   try {
@@ -37,8 +22,7 @@ export async function POST(request: NextRequest) {
     const adminClient = createAdminClient()
 
     // Obtener info de la GD
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: gd, error: gdError } = await (adminClient as any)
+    const { data: gd, error: gdError } = await adminClient
       .from('guias_didacticas')
       .select('id, asignatura_id, semestre_id')
       .eq('id', gdId)
@@ -49,8 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Usar la función SQL para insertar todos los datos
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: result, error: rpcError } = await (adminClient as any).rpc('insert_gd_data', {
+    const { data: result, error: rpcError } = await adminClient.rpc('insert_gd_data', {
       p_gd_id: gdId,
       p_asignatura_id: gd.asignatura_id,
       p_semestre_id: gd.semestre_id,
@@ -88,9 +71,8 @@ export async function POST(request: NextRequest) {
 }
 
 // Inserción manual si la función SQL no existe
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function insertDataManually(
-  adminClient: any, 
+  adminClient: ReturnType<typeof createAdminClient>, 
   gdId: string, 
   gd: { asignatura_id: string; semestre_id: string }, 
   datos: ExtractedGDData

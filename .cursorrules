@@ -2,11 +2,11 @@
 
 | Tarea | Acción Rápida |
 |-------|---------------|
-| 🔍 Crear feature nueva | Leer: `structure/01-proyecto/` → `03-database/schema/` + `logic/` → `06-componentes/wireframes/` |
+| 🔍 Crear feature nueva | Leer: `./structure/01-proyecto/` → `03-database/schema/` + `logic/` → `06-componentes/wireframes/` |
 | 🛣️ Crear API route | Usar: `verifyAdminOrEditor()` + `createAdminClient()` de `@/lib/supabase/admin` |
-| 🎨 Nuevo componente | Verificar: `structure/06-componentes/wireframes/` + usar primitivos de `ui/` |
-| 🗄️ Modificar BD | Verificar PRIMERO: `structure/03-database/schema/schema-actual.sql` + `schema-explicado.md` |
-| 🧮 Calcular notas | Leer: `structure/03-database/logic/calculo-notas.md` + usar `lib/grades.ts` |
+| 🎨 Nuevo componente | Verificar: `./structure/06-componentes/wireframes/` + usar primitivos de `ui/` |
+| 🗄️ Modificar BD | Verificar PRIMERO: `./structure/03-database/schema/schema-actual.sql` + `schema-explicado.md` |
+| 🧮 Calcular notas | Leer: `./structure/03-database/logic/calculo-notas.md` + usar `lib/grades.ts` |
 | 📅 Formatear fechas | Usar: `formatDate()` de `lib/format.ts` (línea 37) |
 | 🏷️ Badges de estado | Usar: `<Badge color={getGradeBadge(nota).color}>` |
 | 🔐 Verificar auth | Usar: `verifyAdminOrEditor()` de `@/lib/supabase/admin` |
@@ -20,87 +20,19 @@
 - **Package Manager:** ALWAYS use `pnpm` for all package operations (install, add, remove, update). NEVER use npm or yarn.
 - **Dependency Check:** Always read `package.json` before suggesting new packages. Use existing libraries whenever possible.
 
-# 📄 Metadata & SEO (IMPORTANTE)
+# 📄 Metadata & SEO
 
-## Title Template en Root Layout
-El archivo `src/app/layout.tsx` tiene configurado un **title template** (línea 17):
+## ⚠️ REGLA CRÍTICA: Title Template
 
-```typescript
-title: {
-  default: 'MiFP - Tu compañero de estudios de FP',
-  template: '%s | MiFP',  // Agrega " | MiFP" automáticamente
-}
-```
+Root layout tiene `title: { template: '%s | MiFP' }` → **NO duplicar "MiFP"** en páginas
 
-Este template **automáticamente agrega** ` | MiFP` al final de TODOS los títulos de páginas.
+❌ MAL: `title: 'Blog | MiFP'` → "Blog | MiFP | MiFP"  
+✅ BIEN: `title: 'Blog'` → "Blog | MiFP"
 
-## ⚠️ REGLA CRÍTICA: NO duplicar "MiFP" en títulos
+**Excepción:** OpenGraph/Twitter SÍ incluyen "MiFP" completo (no usan template)
 
-❌ **MAL** (duplicará MiFP):
-```typescript
-export const metadata: Metadata = {
-  title: 'Blog | MiFP',  // Resultado: "Blog | MiFP | MiFP" ❌
-}
-```
-
-✅ **BIEN** (el template agrega MiFP automáticamente):
-```typescript
-export const metadata: Metadata = {
-  title: 'Blog',  // Resultado: "Blog | MiFP" ✅
-}
-```
-
-## Ejemplos Correctos
-
-```typescript
-// Página 404
-title: '404 - Página no encontrada'  // → "404 - Página no encontrada | MiFP"
-
-// Blog
-title: 'Blog - Noticias y Recursos'  // → "Blog - Noticias y Recursos | MiFP"
-
-// Post individual
-title: `${post.titulo} - Blog`  // → "{Título del post} - Blog | MiFP"
-
-// Dashboard
-title: 'Dashboard'  // → "Dashboard | MiFP"
-```
-
-## Excepción: OpenGraph y Twitter
-Para OpenGraph y Twitter Cards, SÍ puedes incluir "MiFP" completo porque NO usan el template:
-
-```typescript
-openGraph: {
-  title: 'Blog | MiFP - Noticias y Recursos',  // ✅ OK aquí
-  // ...
-},
-twitter: {
-  title: 'Blog | MiFP - Noticias y Recursos',  // ✅ OK aquí
-  // ...
-}
-```
-
-## Checklist de Metadata Completo
-
-### ✅ Elementos Implementados (Best Practices 2026)
-1. **Title Template** - `%s | MiFP` en root layout
-2. **metadataBase** - URL base configurada
-3. **Canonical URLs** - En páginas principales
-4. **OpenGraph Images** - Configurado (crear `/public/images/og-image.png` 1200x630px)
-5. **robots.txt** - Bloquea rutas privadas
-6. **sitemap.xml** - Dinámico con blog posts
-7. **GoogleBot directives** - max-snippet, max-image-preview configurados
-
-### 📋 Por Implementar (Ver docs/SEO-MEJORAS.md)
-1. **JSON-LD Structured Data** - Organization & Article schemas
-2. **Canonical URLs** - En todas las páginas públicas
-3. **Favicons** - icon.png, apple-icon.png, manifest.json
-
-### 🎯 Prioridad Inmediata
-Crear imagen Open Graph por defecto: `/public/images/og-image.png` (1200x630px) con:
-- Logo MiFP
-- Texto: "MiFP - Tu compañero de estudios de FP"
-- Colores VT (vt-green, vt-blue)
+**Ver documentación completa:** `./structure/11-config/seo-metadatos.md`  
+**Ejemplos:** `src/app/blog/page.tsx`, `src/app/dashboard/page.tsx`
 
 # Tech Stack Standards (2026)
 - **Framework:** Next.js 16 (App Router). Use Server Components (RSC) by default.
@@ -143,20 +75,19 @@ Crear imagen Open Graph por defecto: `/public/images/og-image.png` (1200x630px) 
 - **Grid layouts:** Force single column on mobile (see `DashboardGrid.tsx` for reference)
 - **Testing:** Always verify mobile layout before considering a UI task complete
 
-# 📚 Knowledge Base: `structure/` (CRÍTICO)
+# 📚 Knowledge Base: `./structure/` (CRÍTICO)
 
 ## Contexto
-- **Ubicación:** `structure/` en la raíz del workspace (git-ignored pero siempre presente localmente)
-- **Ruta Relativa:** `./structure/` (relativa a la raíz del proyecto `mifp-web/`)
+- **Ubicación:** `./structure/` en la raíz del workspace (git-ignored pero siempre presente localmente)
 - **Sincronización:** Carpeta local compartida manualmente entre el equipo. **SIEMPRE está actualizada.**
 - **Propósito:** Documentación técnica completa del proyecto (arquitectura, decisiones, wireframes, schemas)
 - **Crecimiento:** La estructura puede crecer con el tiempo. Si no encuentras información en las carpetas documentadas abajo, explora nuevas carpetas antes de asumir que no existe documentación.
 
 ## 🎯 Archivos Clave (Leer PRIMERO)
 Antes de cualquier tarea compleja, SIEMPRE lee:
-1. **`structure/README.md`** - Índice completo de la documentación
-2. **`structure/decisions.md`** - Decisiones técnicas actuales y su impacto
-3. **`structure/changelog.md`** - Historial de cambios importantes
+1. **`./structure/README.md`** - Índice completo de la documentación
+2. **`./structure/decisions.md`** - Decisiones técnicas actuales y su impacto
+3. **`./structure/changelog.md`** - Historial de cambios importantes
 
 ## 📁 Estructura de Carpetas (Enero 2026)
 
@@ -260,16 +191,16 @@ Antes de cualquier tarea compleja, SIEMPRE lee:
 
 Si no encuentras la información buscada en las carpetas documentadas arriba:
 
-1. **Listar contenido de `structure/`:**
+1. **Listar contenido de `./structure/`:**
    ```
-   LS structure/
+   LS ./structure/
    ```
    
 2. **Identificar carpetas nuevas o no documentadas** (ej. carpetas con nombres como `13-*`, `feature-x/`, `spike-y/`, etc.)
 
 3. **Explorar carpetas candidatas:**
    - Buscar por nombre semántico (ej. si buscas info de emails, revisar carpetas como `emails/`, `notificaciones-email/`, etc.)
-   - Leer READMEs si existen: `structure/{nueva-carpeta}/README.md`
+   - Leer READMEs si existen: `./structure/{nueva-carpeta}/README.md`
 
 4. **Si encuentras documentación útil:**
    - Usarla para la implementación
@@ -293,37 +224,37 @@ Si no encuentras la información buscada en las carpetas documentadas arriba:
 | **Auth/Roles** | `04-auth/flujo-auth.md` → `04-auth/roles-permisos.md` → `03-database/security/rls-policies.md` |
 | **Agregar componente** | `06-componentes/wireframes/` (ver si existe) → `06-componentes/implementacion/react/README.md` |
 | **Subir archivos (GDs)** | `07-integraciones/cloudflare-r2.md` → `06-componentes/implementacion/react/upload-gd.md` |
-| **Feature compleja nueva** | Buscar carpeta tipo `{feature}-plan/` → **[Explorar structure/]** → `01-proyecto/objetivos-mvp.md` |
+| **Feature compleja nueva** | Buscar carpeta tipo `{feature}-plan/` → **[Explorar ./structure/]** → `01-proyecto/objetivos-mvp.md` |
 
 ## 📝 Actualización de Documentación (RESPONSABILIDAD DEL MODELO)
 
-**IMPORTANTE:** Cuando implementes cambios que afecten la arquitectura o lógica de negocio, TÚ (el modelo) DEBES actualizar los archivos correspondientes en `structure/`. No delegar esto al usuario.
+**IMPORTANTE:** Cuando implementes cambios que afecten la arquitectura o lógica de negocio, TÚ (el modelo) DEBES actualizar los archivos correspondientes en `./structure/`. No delegar esto al usuario.
 
 ### Cambios que Requieren Actualización:
 
 | Cambio Realizado | Archivos a Actualizar |
 |------------------|-----------------------|
-| Agregar/modificar tabla o columna en BD | `structure/03-database/schema/schema-explicado.md` + `schema/schema-actual.sql` |
-| Crear/modificar política RLS | `structure/03-database/security/rls-policies.md` + `security/rls-policies.sql` |
-| Agregar trigger o función SQL | `structure/03-database/logic/triggers-functions.md` + `logic/functions.sql` o `logic/triggers.sql` |
-| Crear nueva ruta o página | `structure/05-vistas/rutas.md` |
-| Modificar lógica de cálculo de notas | `structure/03-database/logic/calculo-notas.md` |
-| Agregar nueva integración externa | `structure/07-integraciones/{servicio}.md` (crear si no existe) |
-| Cambiar decisión de stack | `structure/decisions.md` + `structure/changelog.md` |
-| Crear componente complejo nuevo | Considerar documentar en `structure/06-componentes/implementacion/react/` |
-| Agregar/modificar API route importante | Documentar en `structure/07-integraciones/api-routes.md` |
-| **CUALQUIER cambio significativo** | **`structure/changelog.md`** (SIEMPRE) |
+| Agregar/modificar tabla o columna en BD | `./structure/03-database/schema/schema-explicado.md` + `schema/schema-actual.sql` |
+| Crear/modificar política RLS | `./structure/03-database/security/rls-policies.md` + `security/rls-policies.sql` |
+| Agregar trigger o función SQL | `./structure/03-database/logic/triggers-functions.md` + `logic/functions.sql` o `logic/triggers.sql` |
+| Crear nueva ruta o página | `./structure/05-vistas/rutas.md` |
+| Modificar lógica de cálculo de notas | `./structure/03-database/logic/calculo-notas.md` |
+| Agregar nueva integración externa | `./structure/07-integraciones/{servicio}.md` (crear si no existe) |
+| Cambiar decisión de stack | `./structure/decisions.md` + `./structure/changelog.md` |
+| Crear componente complejo nuevo | Considerar documentar en `./structure/06-componentes/implementacion/react/` |
+| Agregar/modificar API route importante | Documentar en `./structure/07-integraciones/api-routes.md` |
+| **CUALQUIER cambio significativo** | **`./structure/changelog.md`** (SIEMPRE) |
 
 ### Protocolo de Actualización:
 
 1. **Después de implementar un cambio:**
-   - Lee el archivo correspondiente en `structure/` (si existe)
+   - Lee el archivo correspondiente en `./structure/` (si existe)
    - Actualiza la sección relevante con los cambios
    - Mantén el formato y estilo del documento original
    - Agrega timestamp si el documento lo usa
 
 2. **Actualizar changelog:**
-   - Siempre agregar entrada en `structure/changelog.md`
+   - Siempre agregar entrada en `./structure/changelog.md`
    - Formato: `## [Fecha] - {Título del cambio}`
    - Incluir: qué cambió, por qué, y archivos afectados
 
@@ -342,22 +273,22 @@ Implementación:
 3. Crear migración
 
 Después de implementar:
-1. Read structure/03-database/schema/schema-explicado.md
+1. Read ./structure/03-database/schema/schema-explicado.md
 2. StrReplace: Agregar descripción del nuevo campo en la sección de tabla users
-3. Read structure/changelog.md
+3. Read ./structure/changelog.md
 4. StrReplace: Agregar entrada:
    ## [2026-01-22] - Campo email_verified en users
    - Agregado campo boolean email_verified a tabla users
    - Permite validar emails antes de otorgar permisos completos
-   - Archivos afectados: src/types/database.ts, structure/03-database/schema/schema-explicado.md
+   - Archivos afectados: src/types/database.ts, ./structure/03-database/schema/schema-explicado.md
 ```
 
 ## 🚨 Protocolo de Inconsistencias
 
-Si durante la lectura de `structure/` encuentras información **contradictoria o desactualizada**:
+Si durante la lectura de `./structure/` encuentras información **contradictoria o desactualizada**:
 
 1. **Identificar la inconsistencia:**
-   - Ejemplo: `structure/02-stack/backend.md` dice usar Firebase, pero `package.json` tiene Supabase
+   - Ejemplo: `./structure/02-stack/backend.md` dice usar Firebase, pero `package.json` tiene Supabase
 
 2. **NO actuar automáticamente:** Detén la implementación
 
@@ -366,29 +297,29 @@ Si durante la lectura de `structure/` encuentras información **contradictoria o
    ⚠️ INCONSISTENCIA DETECTADA:
    
    Encontré contradicción entre:
-   - structure/02-stack/backend.md: Especifica Firebase como BaaS
+   - ./structure/02-stack/backend.md: Especifica Firebase como BaaS
    - package.json + código actual: Usa Supabase
    
    ¿Qué debo hacer?
-   A) Actualizar structure/02-stack/backend.md para reflejar Supabase (realidad actual)
+   A) Actualizar ./structure/02-stack/backend.md para reflejar Supabase (realidad actual)
    B) Migrar de Supabase a Firebase (seguir documentación)
    C) Otra acción
    ```
 
 4. **Esperar instrucción del usuario** antes de proceder
 
-5. **Una vez resuelto:** Actualizar `structure/changelog.md` con la resolución de la inconsistencia
+5. **Una vez resuelto:** Actualizar `./structure/changelog.md` con la resolución de la inconsistencia
 
 ## 🚫 Anti-Patrones (NO hacer)
-- ❌ Asumir el schema sin leer `03-database/schema/schema-actual.sql` y `schema/schema-explicado.md`
-- ❌ Crear componentes nuevos sin revisar `06-componentes/wireframes/`
-- ❌ Modificar lógica de cálculo de notas sin leer `03-database/logic/calculo-notas.md`
-- ❌ Cambiar decisiones de stack sin consultar `decisions.md`
-- ❌ Implementar API routes sin revisar `03-database/security/rls-policies.md`
+- ❌ Asumir el schema sin leer `./structure/03-database/schema/schema-actual.sql` y `schema-explicado.md`
+- ❌ Crear componentes nuevos sin revisar `./structure/06-componentes/wireframes/`
+- ❌ Modificar lógica de cálculo de notas sin leer `./structure/03-database/logic/calculo-notas.md`
+- ❌ Cambiar decisiones de stack sin consultar `./structure/decisions.md`
+- ❌ Implementar API routes sin revisar `./structure/03-database/security/rls-policies.md`
 - ❌ Asumir que no hay documentación sin aplicar Protocolo de Exploración Dinámica
-- ❌ Implementar cambios significativos sin actualizar `structure/changelog.md`
+- ❌ Implementar cambios significativos sin actualizar `./structure/changelog.md`
 - ❌ Ignorar inconsistencias en la documentación
-- ❌ Usar scripts de extracción sin consultar primero `03-database/_scripts/README.md`
+- ❌ Usar scripts de extracción sin consultar primero `./structure/03-database/_scripts/README.md`
 
 # 📁 Project Structure
 
@@ -424,8 +355,8 @@ Before writing any SQL or Supabase query for a new feature:
 
 1. **Check documentation first:**
    ```
-   Read: structure/03-database/schema/schema-actual.sql
-   Read: structure/03-database/schema/schema-explicado.md
+   Read: ./structure/03-database/schema/schema-actual.sql
+   Read: ./structure/03-database/schema/schema-explicado.md
    ```
 
 2. **If documentation is unclear or potentially outdated:**
@@ -440,9 +371,9 @@ Before writing any SQL or Supabase query for a new feature:
 
 3. **Base implementation ONLY on verified schema**
 
-4. **After implementing:** Update `structure/03-database/schema/schema-explicado.md` if you found discrepancies
+4. **After implementing:** Update `./structure/03-database/schema/schema-explicado.md` if you found discrepancies
 
-5. **Update extraction scripts if needed:** If schema changes significantly, update or run relevant scripts in `structure/03-database/_scripts/`
+5. **Update extraction scripts if needed:** If schema changes significantly, update or run relevant scripts in `./structure/03-database/_scripts/`
 
 # 🔐 Supabase & RLS Patterns
 
@@ -524,7 +455,7 @@ See existing implementations:
   - Después de agregar/modificar tablas o columnas en Supabase
   - Después de crear/modificar tipos ENUM
   - Después de cambios en funciones PostgreSQL que retornen tipos específicos
-  - Después de ejecutar migraciones importantes en `structure/03-database/migrations/`
+  - Después de ejecutar migraciones importantes en `./structure/03-database/migrations/`
   - Si encuentras discrepancias entre tipos TypeScript y la BD real
 - **Verificación post-regeneración:**
   - El proyecto NO debe tener instancias de `as any` en operaciones de Supabase
@@ -756,4 +687,4 @@ const badge = getGradeBadge(nota)
 
 ## Testing (Future)
 - When tests are added, update this section with testing conventions
-- Consider documenting in `structure/07-integraciones/tests-interactivos.md`
+- Consider documenting in `./structure/07-integraciones/tests-interactivos.md`

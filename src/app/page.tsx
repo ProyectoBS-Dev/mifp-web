@@ -354,7 +354,7 @@ export default async function LandingPage() {
                 <div className="w-48 h-48 bg-vt-green/30 rounded-full blur-3xl" />
               </div>
               <Image
-                src="/images/owl_mascot_nobg.png"
+                src="/images/owl_landing.png"
                 alt="MiFP Mascot"
                 width={200}
                 height={200}

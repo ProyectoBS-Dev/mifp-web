@@ -17,35 +17,35 @@ const tabs = [
     id: 'dashboard', 
     label: 'Dashboard', 
     icon: GraduationCap,
-    image: '/images/dashboard_preview.png',
+    image: '/images/dashboard_tab_preview.webp',
     alt: 'Dashboard de MiFP'
   },
   { 
     id: 'pacs', 
-    label: 'PACs', 
+    label: 'PACs/VTs', 
     icon: FileText,
-    image: '/images/dashboard_preview.png',
+    image: '/images/pacs_vts_tab_preview.webp',
     alt: 'Gestión de PACs'
   },
   { 
     id: 'calendario', 
     label: 'Calendario', 
     icon: Calendar,
-    image: '/images/dashboard_preview.png', // TODO: Create calendario_preview.png
+    image: '/images/calendario_tab_preview.webp',
     alt: 'Calendario de eventos'
   },
   { 
     id: 'notas', 
     label: 'Notas', 
     icon: BarChart3,
-    image: '/images/dashboard_preview.png', // Using asignaturas which shows grades
+    image: '/images/notas_tab_preview.webp',
     alt: 'Seguimiento de notas'
   },
   { 
     id: 'recursos', 
     label: 'Recursos', 
     icon: BookOpen,
-    image: '/images/dashboard_preview.png',
+    image: '/images/recursos_tab_preview.webp',
     alt: 'Recursos de estudio'
   },
 ]
@@ -58,12 +58,12 @@ export function HeroTabs() {
     <div className="mt-16 max-w-4xl mx-auto">
       {/* Dashboard Preview Image */}
       <div className="relative">
-        <div className="relative rounded-xl overflow-hidden shadow-2xl border border-white/10">
+        <div className="relative rounded-xl overflow-hidden">
           <Image
             src={activeTabData.image}
             alt={activeTabData.alt}
-            width={1200}
-            height={700}
+            width={900}
+            height={350}
             className="w-full transition-opacity duration-300"
             priority
           />

@@ -28,7 +28,7 @@ export default function NotFound() {
             {/* Content */}
             <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 -mt-16">
                 {/* Owl mascot with glow */}
-                <div className="relative">
+                <div className="relative w-[280px] h-[280px] mb-8">
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-48 h-48 bg-vt-green/30 rounded-full blur-3xl" />
                     </div>

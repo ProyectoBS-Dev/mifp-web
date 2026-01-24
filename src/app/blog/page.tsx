@@ -4,14 +4,14 @@ import { NewsFeed } from '@/components/blog'
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.app'
 
 export const metadata: Metadata = {
-  title: 'Blog | MiFP - Noticias y Recursos para estudiantes de FP',
+  title: 'Blog - Noticias y Recursos para estudiantes de FP',
   description: 'Últimas noticias, comunicados, recursos y guías para estudiantes de Formación Profesional en ILERNA. Mantente al día con todo lo relacionado con DAM, DAW y más ciclos formativos.',
   keywords: ['FP', 'ILERNA', 'DAM', 'DAW', 'formación profesional', 'noticias FP', 'recursos estudiantes', 'ciclos formativos'],
   alternates: {
     canonical: `${baseUrl}/blog`,
   },
   openGraph: {
-    title: 'Blog | MiFP - Noticias y Recursos para estudiantes de FP',
+    title: 'Blog - Noticias y Recursos para estudiantes de FP',
     description: 'Últimas noticias, comunicados, recursos y guías para estudiantes de Formación Profesional en ILERNA.',
     url: `${baseUrl}/blog`,
     siteName: 'MiFP',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Blog | MiFP - Noticias y Recursos para estudiantes de FP',
+    title: 'Blog - Noticias y Recursos para estudiantes de FP',
     description: 'Últimas noticias, comunicados, recursos y guías para estudiantes de FP en ILERNA.',
   },
   robots: {

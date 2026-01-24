@@ -20,6 +20,88 @@
 - **Package Manager:** ALWAYS use `pnpm` for all package operations (install, add, remove, update). NEVER use npm or yarn.
 - **Dependency Check:** Always read `package.json` before suggesting new packages. Use existing libraries whenever possible.
 
+# 📄 Metadata & SEO (IMPORTANTE)
+
+## Title Template en Root Layout
+El archivo `src/app/layout.tsx` tiene configurado un **title template** (línea 17):
+
+```typescript
+title: {
+  default: 'MiFP - Tu compañero de estudios de FP',
+  template: '%s | MiFP',  // Agrega " | MiFP" automáticamente
+}
+```
+
+Este template **automáticamente agrega** ` | MiFP` al final de TODOS los títulos de páginas.
+
+## ⚠️ REGLA CRÍTICA: NO duplicar "MiFP" en títulos
+
+❌ **MAL** (duplicará MiFP):
+```typescript
+export const metadata: Metadata = {
+  title: 'Blog | MiFP',  // Resultado: "Blog | MiFP | MiFP" ❌
+}
+```
+
+✅ **BIEN** (el template agrega MiFP automáticamente):
+```typescript
+export const metadata: Metadata = {
+  title: 'Blog',  // Resultado: "Blog | MiFP" ✅
+}
+```
+
+## Ejemplos Correctos
+
+```typescript
+// Página 404
+title: '404 - Página no encontrada'  // → "404 - Página no encontrada | MiFP"
+
+// Blog
+title: 'Blog - Noticias y Recursos'  // → "Blog - Noticias y Recursos | MiFP"
+
+// Post individual
+title: `${post.titulo} - Blog`  // → "{Título del post} - Blog | MiFP"
+
+// Dashboard
+title: 'Dashboard'  // → "Dashboard | MiFP"
+```
+
+## Excepción: OpenGraph y Twitter
+Para OpenGraph y Twitter Cards, SÍ puedes incluir "MiFP" completo porque NO usan el template:
+
+```typescript
+openGraph: {
+  title: 'Blog | MiFP - Noticias y Recursos',  // ✅ OK aquí
+  // ...
+},
+twitter: {
+  title: 'Blog | MiFP - Noticias y Recursos',  // ✅ OK aquí
+  // ...
+}
+```
+
+## Checklist de Metadata Completo
+
+### ✅ Elementos Implementados (Best Practices 2026)
+1. **Title Template** - `%s | MiFP` en root layout
+2. **metadataBase** - URL base configurada
+3. **Canonical URLs** - En páginas principales
+4. **OpenGraph Images** - Configurado (crear `/public/images/og-image.png` 1200x630px)
+5. **robots.txt** - Bloquea rutas privadas
+6. **sitemap.xml** - Dinámico con blog posts
+7. **GoogleBot directives** - max-snippet, max-image-preview configurados
+
+### 📋 Por Implementar (Ver docs/SEO-MEJORAS.md)
+1. **JSON-LD Structured Data** - Organization & Article schemas
+2. **Canonical URLs** - En todas las páginas públicas
+3. **Favicons** - icon.png, apple-icon.png, manifest.json
+
+### 🎯 Prioridad Inmediata
+Crear imagen Open Graph por defecto: `/public/images/og-image.png` (1200x630px) con:
+- Logo MiFP
+- Texto: "MiFP - Tu compañero de estudios de FP"
+- Colores VT (vt-green, vt-blue)
+
 # Tech Stack Standards (2026)
 - **Framework:** Next.js 16 (App Router). Use Server Components (RSC) by default.
 - **State Management:** 

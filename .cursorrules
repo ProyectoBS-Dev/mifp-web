@@ -429,14 +429,26 @@ See existing implementations:
 
 ## Regeneración de Tipos de Supabase
 - **Estado actual:** Tipos completamente actualizados (23 Enero 2026)
-- **Comando de regeneración:**
+- **Proceso de regeneración:**
+  1. **Generar token temporal:** Ir a https://supabase.com/dashboard/account/tokens
+     - Crear nuevo token con expiración automática (recomendado: 1 hora)
+  2. **Ejecutar comando:**
   ```bash
-  export SUPABASE_ACCESS_TOKEN=tu_token
+  export SUPABASE_ACCESS_TOKEN=tu_token_temporal
   pnpm dlx supabase gen types typescript --project-id twwvmauepebuqrpwpmmc > src/types/database.ts
   ```
-- **Cuándo regenerar:** Después de modificar el schema en Supabase (agregar tablas, columnas, ENUMs, etc.)
-- **Verificación:** El proyecto NO debe tener instancias de `as any` en operaciones de Supabase
-- **Access Token:** Obtener desde https://supabase.com/dashboard/account/tokens
+  3. El token se eliminará automáticamente según la expiración configurada
+- **Cuándo regenerar:**
+  - Después de agregar/modificar tablas o columnas en Supabase
+  - Después de crear/modificar tipos ENUM
+  - Después de cambios en funciones PostgreSQL que retornen tipos específicos
+  - Después de ejecutar migraciones importantes en `structure/03-database/migrations/`
+  - Si encuentras discrepancias entre tipos TypeScript y la BD real
+- **Verificación post-regeneración:**
+  - El proyecto NO debe tener instancias de `as any` en operaciones de Supabase
+  - Ejecutar `pnpm type-check` para verificar que no hay errores de tipos
+  - Revisar archivos que usen las tablas/columnas modificadas
+- **Regla de oro:** SIEMPRE usar los tipos generados. NUNCA usar `as any` en operaciones de Supabase
 
 # 📡 React Query Patterns
 

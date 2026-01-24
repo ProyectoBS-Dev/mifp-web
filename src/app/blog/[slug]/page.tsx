@@ -107,13 +107,13 @@ export async function generateMetadata({
   const post = await getPostBySlug(slug)
   
   if (!post) {
-    return { title: 'Post no encontrado | MiFP' }
+    return { title: 'Post no encontrado' }
   }
 
   const autorNombre = post.autor?.full_name || post.autor?.email?.split('@')[0] || 'MiFP'
 
   return {
-    title: `${post.titulo} | MiFP Blog`,
+    title: `${post.titulo} - Blog`,
     description: post.extracto,
     keywords: ['FP', 'ILERNA', 'formación profesional', post.categoria],
     authors: [{ name: autorNombre }],

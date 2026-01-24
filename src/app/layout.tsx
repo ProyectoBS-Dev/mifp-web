@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'MiFP Team' }],
   creator: 'MiFP',
   publisher: 'MiFP',
+  alternates: {
+    canonical: baseUrl,
+  },
   openGraph: {
     title: 'MiFP - Tu compañero de estudios de FP',
     description: 'Plataforma de gestión académica para estudiantes de Formación Profesional en ILERNA',
@@ -28,15 +31,31 @@ export const metadata: Metadata = {
     siteName: 'MiFP',
     locale: 'es_ES',
     type: 'website',
+    images: [
+      {
+        url: `${baseUrl}/images/og-image.png`, // Crear esta imagen: 1200x630px
+        width: 1200,
+        height: 630,
+        alt: 'MiFP - Tu compañero de estudios de FP',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'MiFP - Tu compañero de estudios de FP',
     description: 'Plataforma de gestión académica para estudiantes de FP en ILERNA',
+    images: [`${baseUrl}/images/og-image.png`],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   verification: {
     // Añadir verificación de Google Search Console cuando esté disponible

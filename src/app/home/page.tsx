@@ -462,12 +462,12 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="border-t mt-8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="flex items-center gap-2 text-sm text-muted-foreground">
-              ~/Dev desarrollado por estudiantes de FP - © MiFP.
+          <div className="border-t mt-8 pt-8 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12">
+            <p className="flex items-center gap-2 text-sm text-muted-foreground md:pr-12">
+              ~/Dev desarrollado por estudiantes de FP.
             </p>
             <TooltipProvider>
-              <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center justify-center gap-3 md:pl-8">
                 <span className="text-sm text-muted-foreground font-medium">Hecho con</span>
                 <Heart className="h-4 w-4 text-vt-red" />
                 <span className="text-sm text-muted-foreground font-medium">por:</span>

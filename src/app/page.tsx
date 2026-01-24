@@ -76,7 +76,7 @@ export default async function LandingPage() {
             {/* Notice Banner */}
             <Link
               href="/blog"
-              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/10 backdrop-blur-sm border border-black/20 hover:bg-black/15 transition-all mb-8"
+              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full backdrop-blur-sm border border-black/20 hover:bg-black/15 transition-all mb-8"
             >
               <span className="text-lg"><Rocket className="h-5 w-5 text-vt-green dark:text-vt-green" /></span>
               <span className="text-sm font-medium text-slate-800">
@@ -337,7 +337,7 @@ export default async function LandingPage() {
 
       {/* CTA Section - Premium */}
       <ScrollReveal delay={0.2}>
-        <section className="py-24 sm:py-32 relative overflow-hidden">
+        <section className="py-24 sm:py-30 relative overflow-hidden">
           {/* Background gradient layers */}
           <div className="absolute inset-0 bg-gradient-to-br from-vt-green/10 via-transparent to-vt-blue/10" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background" />
@@ -422,12 +422,12 @@ export default async function LandingPage() {
             </div>
           </div>
 
-          <div className="border-t mt-8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="flex items-center gap-2 text-sm text-muted-foreground">
-              ~/Dev desarrollado por estudiantes de FP - © MiFP.
+          <div className="border-t mt-8 pt-8 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12">
+            <p className="flex items-center gap-2 text-sm text-muted-foreground md:pr-12">
+              ~/Dev desarrollado por estudiantes de FP.
             </p>
             <TooltipProvider>
-              <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center justify-center gap-3 md:pl-8">
                 <span className="text-sm text-muted-foreground font-medium">Hecho con</span>
                 <Heart className="h-4 w-4 text-vt-red" />
                 <span className="text-sm text-muted-foreground font-medium">por:</span>

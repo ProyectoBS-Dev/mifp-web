@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { verifyAdmin } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Validar Magic Bytes del PDF
@@ -9,11 +10,10 @@ function isPDF(buffer: ArrayBuffer): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+  // Verificar autenticación y rol admin
+  const auth = await verifyAdmin()
+  if ('error' in auth) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   try {
@@ -36,9 +36,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'El archivo no es un PDF válido' }, { status: 400 })
     }
 
+    const supabase = await createClient()
+
     // Obtener semestre activo
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: semestre } = await (supabase as any)
+    const { data: semestre } = await supabase
       .from('semestres')
       .select('id')
       .eq('activo', true)
@@ -48,15 +49,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No hay semestre activo' }, { status: 400 })
     }
 
-    const semestreId = (semestre as { id: string }).id
-
     // Verificar que no exista GD para esta asignatura/semestre
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: existingGD } = await (supabase as any)
+    const { data: existingGD } = await supabase
       .from('guias_didacticas')
       .select('id')
       .eq('asignatura_id', asignaturaId)
-      .eq('semestre_id', semestreId)
+      .eq('semestre_id', semestre.id)
       .is('deleted_at', null)
       .single()
 
@@ -67,7 +65,7 @@ export async function POST(request: NextRequest) {
     // Generar nombre único para el archivo
     const timestamp = Date.now()
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
-    const fileName = `${asignaturaId}_${semestreId}_${timestamp}_${sanitizedName}`
+    const fileName = `${asignaturaId}_${semestre.id}_${timestamp}_${sanitizedName}`
 
     // Subir a Storage
     const { error: uploadError } = await supabase.storage
@@ -83,13 +81,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Crear registro en BD
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: insertError } = await (supabase as any)
+    const { error: insertError } = await supabase
       .from('guias_didacticas')
       .insert({
         asignatura_id: asignaturaId,
-        semestre_id: semestreId,
-        subido_por: user.id,
+        semestre_id: semestre.id,
+        subido_por: auth.user.id,
         archivo_path: fileName,
         estado: 'pendiente',
         procesada: false

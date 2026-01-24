@@ -129,8 +129,7 @@ export function useNotas(semestreId?: string) {
       if (!user) throw new Error('No autenticado')
 
       // Usar RPC optimizada que hace todo en una query
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase.rpc as any)('get_notas_completas', {
+      const { data, error } = await supabase.rpc('get_notas_completas', {
         p_user_id: user.id,
         p_semestre_id: semestreId ?? null
       })
@@ -140,8 +139,7 @@ export function useNotas(semestreId?: string) {
         throw error
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result = data as any
+      const result = data
 
       if (result?.error) {
         return {
@@ -265,8 +263,7 @@ export function useSavePACNota() {
         throw new Error('La nota debe estar entre 0 y 10')
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase.from('user_asignatura_pacs') as any)
+      const { error } = await supabase.from('user_asignatura_pacs')
         .upsert({
           user_asignatura_id: userAsignaturaId,
           pac_id: pacId,
@@ -310,8 +307,7 @@ export function useSaveExamenNota() {
         throw new Error('La nota debe estar entre 0 y 10')
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase.from('user_notas_examen') as any)
+      const { error } = await supabase.from('user_notas_examen')
         .upsert({
           user_asignatura_id: userAsignaturaId,
           nota_examen: nota !== null ? Math.round(nota * 100) / 100 : null,
@@ -352,8 +348,7 @@ export function useSaveFCTNota() {
         throw new Error('La nota debe estar entre 0 y 10')
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase.from('user_fct') as any)
+      const { error } = await supabase.from('user_fct')
         .upsert({
           user_id: user.id,
           nota: nota !== null ? Math.round(nota * 100) / 100 : null,

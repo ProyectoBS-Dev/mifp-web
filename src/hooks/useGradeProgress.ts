@@ -40,8 +40,7 @@ export function useGradeProgress() {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error('No autenticado')
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data, error } = await (supabase.rpc as any)('calcular_nota_grado', {
+            const { data, error } = await supabase.rpc('calcular_nota_grado', {
                 p_user_id: user.id
             })
 

@@ -1,38 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createAdminClient } from '@supabase/supabase-js'
-
-// Admin client con service_role para bypasear RLS
-function getAdminClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-  return createAdminClient(supabaseUrl, serviceRoleKey)
-}
-
-// Verificar que el usuario es admin o editor
-// Usa service_role para evitar recursión en políticas RLS
-async function verifyAdminOrEditor() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
-    return { error: 'No autenticado', status: 401 }
-  }
-
-  // Usar admin client para consultar rol (evita recursión RLS)
-  const adminClient = getAdminClient()
-  const { data: userData } = await adminClient
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (!userData || !['admin', 'editor'].includes(userData.role)) {
-    return { error: 'No autorizado', status: 403 }
-  }
-
-  return { user, role: userData.role }
-}
+import { createAdminClient, verifyAdminOrEditor } from '@/lib/supabase/admin'
 
 // Extraer el path del archivo desde la URL de Supabase Storage
 function extractStoragePath(url: string | null): string | null {
@@ -62,7 +29,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Slug es requerido' }, { status: 400 })
     }
 
-    const adminClient = getAdminClient()
+    const adminClient = createAdminClient()
 
     // Verificar unicidad del slug
     const { data: existingSlug } = await adminClient
@@ -119,7 +86,7 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json()
     const { titulo, slug, contenido, imagen_url, publicada } = body
 
-    const adminClient = getAdminClient()
+    const adminClient = createAdminClient()
 
     // Verificar que la noticia existe
     const { data: existingNoticia, error: fetchError } = await adminClient
@@ -194,7 +161,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'ID requerido' }, { status: 400 })
     }
 
-    const adminClient = getAdminClient()
+    const adminClient = createAdminClient()
 
     // Verificar que la noticia existe y obtener imagen_url
     const { data: noticia, error: fetchError } = await adminClient

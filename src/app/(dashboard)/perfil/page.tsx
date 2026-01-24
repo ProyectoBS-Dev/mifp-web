@@ -19,8 +19,7 @@ export default async function PerfilPage() {
   }
 
   // Obtener perfil del usuario
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: profile } = await (supabase as any)
+  const { data: profile } = await supabase
     .from('users')
     .select('*')
     .eq('id', user.id)
@@ -38,8 +37,7 @@ export default async function PerfilPage() {
   }
 
   // Obtener asignaturas del usuario con info de semestre
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: userAsignaturas } = await (supabase as any)
+  const { data: userAsignaturas } = await supabase
     .from('user_asignaturas')
     .select(`
       id,
@@ -54,14 +52,13 @@ export default async function PerfilPage() {
   // Obtener todas las asignaturas del grado para el selector
   let availableAsignaturas: { id: string; nombre: string; codigo: string }[] = []
   if (grado) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: gradoAsignaturas } = await (supabase as any)
+    const { data: gradoAsignaturas } = await supabase
       .from('asignaturas')
       .select('id, nombre, codigo')
       .eq('grado_id', (grado as { id: string }).id)
       .order('nombre')
 
-    availableAsignaturas = (gradoAsignaturas || []) as { id: string; nombre: string; codigo: string }[]
+    availableAsignaturas = gradoAsignaturas || []
   }
 
   return (

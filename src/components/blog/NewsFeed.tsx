@@ -156,8 +156,7 @@ export function NewsFeed() {
       if (!user) throw new Error('No autenticado')
 
       // Verificar si ya tiene una reacción
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: existing } = await (supabase as any)
+      const { data: existing } = await supabase
         .from('noticia_reacciones')
         .select('id, tipo_reaccion')
         .eq('noticia_id', noticiaId)
@@ -167,23 +166,20 @@ export function NewsFeed() {
       if (existing) {
         if (existing.tipo_reaccion === type) {
           // Toggle off
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (supabase as any)
+          await supabase
             .from('noticia_reacciones')
             .delete()
             .eq('id', existing.id)
         } else {
           // Cambiar tipo
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (supabase as any)
+          await supabase
             .from('noticia_reacciones')
             .update({ tipo_reaccion: type })
             .eq('id', existing.id)
         }
       } else {
         // Nueva reacción
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabase as any)
+        await supabase
           .from('noticia_reacciones')
           .insert({
             noticia_id: noticiaId,

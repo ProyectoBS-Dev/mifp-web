@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { cn } from '@/lib/utils'
+
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -56,8 +56,7 @@ interface GDDetail {
 async function getGD(id: string): Promise<GDDetail | null> {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data } = await supabase
     .from('guias_didacticas')
     .select(`
       id, created_at, estado, procesada, archivo_path, motivo_rechazo, datos_extraidos,

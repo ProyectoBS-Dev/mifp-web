@@ -7,7 +7,6 @@ import {
   Eye,
   EyeOff,
   Pencil,
-  Trash2,
   ArrowLeft
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -38,8 +37,7 @@ interface Noticia {
 async function getNoticias(): Promise<Noticia[]> {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data } = await supabase
     .from('noticias')
     .select(`
       id, slug, titulo, contenido, imagen_url, publicada, created_at,
@@ -54,14 +52,12 @@ async function getNoticias(): Promise<Noticia[]> {
 async function getStats() {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { count: total } = await (supabase as any)
+  const { count: total } = await supabase
     .from('noticias')
     .select('*', { count: 'exact', head: true })
     .is('deleted_at', null)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { count: publicadas } = await (supabase as any)
+  const { count: publicadas } = await supabase
     .from('noticias')
     .select('*', { count: 'exact', head: true })
     .eq('publicada', true)

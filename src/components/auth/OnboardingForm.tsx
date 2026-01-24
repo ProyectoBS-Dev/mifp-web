@@ -130,8 +130,7 @@ export function OnboardingForm() {
 
     // Llamar a la función RPC para completar el onboarding
     // Esta función tiene SECURITY DEFINER y puede hacer INSERT/UPDATE
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error: rpcError } = await (supabase as any).rpc('complete_onboarding', {
+    const { data, error: rpcError } = await supabase.rpc('complete_onboarding', {
       p_grado_id: selectedGrado.id,
       p_asignatura_ids: selectedAsignaturas,
       p_semestre_id: semestreActivo,

@@ -82,7 +82,7 @@ export function GradesWidget() {
       // Calcular nota de cada RA y media EC
       const notasMap = new Map<string, number>()
       let todosRAsAprobados = true
-      let examenAprobado = asig.notaExamen !== null && asig.notaExamen >= 5
+      const examenAprobado = asig.notaExamen !== null && asig.notaExamen >= 5
       let sumaMediaEC = 0
       let countMediaEC = 0
 

@@ -29,8 +29,7 @@ function extractExtracto(contenido: string, maxLength = 150): string {
 async function getPostBySlug(slug: string): Promise<NoticiaConMeta | null> {
   const supabase = await createClient()
   
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('noticias')
     .select(`
       *,
@@ -59,8 +58,7 @@ async function getAdjacentPosts(currentSlug: string): Promise<{
   const supabase = await createClient()
   
   // Obtener la fecha del post actual
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: current } = await (supabase as any)
+  const { data: current } = await supabase
     .from('noticias')
     .select('created_at')
     .eq('slug', currentSlug)
@@ -71,8 +69,7 @@ async function getAdjacentPosts(currentSlug: string): Promise<{
   }
 
   // Post anterior (más antiguo)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: prevData } = await (supabase as any)
+  const { data: prevData } = await supabase
     .from('noticias')
     .select('slug, titulo')
     .eq('publicada', true)
@@ -83,8 +80,7 @@ async function getAdjacentPosts(currentSlug: string): Promise<{
     .single()
 
   // Post siguiente (más reciente)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: nextData } = await (supabase as any)
+  const { data: nextData } = await supabase
     .from('noticias')
     .select('slug, titulo')
     .eq('publicada', true)

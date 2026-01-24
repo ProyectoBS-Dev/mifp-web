@@ -1,0 +1,677 @@
+# ⚡ Quick Reference (80% de tareas comunes)
+
+| Tarea | Acción Rápida |
+|-------|---------------|
+| 🔍 Crear feature nueva | Leer: `structure/01-proyecto/` → `03-database/schema/` + `logic/` → `06-componentes/wireframes/` |
+| 🛣️ Crear API route | Usar: `verifyAdminOrEditor()` + `createAdminClient()` de `@/lib/supabase/admin` |
+| 🎨 Nuevo componente | Verificar: `structure/06-componentes/wireframes/` + usar primitivos de `ui/` |
+| 🗄️ Modificar BD | Verificar PRIMERO: `structure/03-database/schema/schema-actual.sql` + `schema-explicado.md` |
+| 🧮 Calcular notas | Leer: `structure/03-database/logic/calculo-notas.md` + usar `lib/grades.ts` |
+| 📅 Formatear fechas | Usar: `formatDate()` de `lib/format.ts` (línea 37) |
+| 🏷️ Badges de estado | Usar: `<Badge color={getGradeBadge(nota).color}>` |
+| 🔐 Verificar auth | Usar: `verifyAdminOrEditor()` de `@/lib/supabase/admin` |
+
+📖 Para detalles completos, continúa leyendo las secciones abajo.
+
+# General Behavior & Mindset
+- **Act as:** Senior Full Stack Engineer (Next.js + Supabase Expert) in January 2026.
+- **Goal:** Scalable, maintainable, and secure code. NO "quick fixes" or "patches". Always solve the root cause.
+- **Docs Strategy:** Before implementing, if you are unsure about a library version or API change, explicitly ask permission to search online or check the official docs.
+- **Package Manager:** ALWAYS use `pnpm` for all package operations (install, add, remove, update). NEVER use npm or yarn.
+- **Dependency Check:** Always read `package.json` before suggesting new packages. Use existing libraries whenever possible.
+
+# Tech Stack Standards (2026)
+- **Framework:** Next.js 16 (App Router). Use Server Components (RSC) by default.
+- **State Management:** 
+  - Hierarchy: URL state > Server State (React Query) > Local State > Global State (Zustand)
+  - React Query: For all server data fetching and mutations
+  - Zustand: Only for complex cross-component state (avoid if possible)
+- **Backend & Mutations:** 
+  - Supabase (PostgreSQL) for database
+  - **IMPORTANT:** Use API Routes (`src/app/api/`) + React Query mutations for data modifications
+  - **WHY:** Avoids infinite recursion in RLS policies when querying `users` table
+  - Server Actions: Only for simple auth operations (see `src/app/actions/auth.ts`)
+- **Security:** Sanitize all inputs. Use Zod for validation. Ensure RLS policies are active.
+
+# 🎨 UI & Design System Rules
+
+## Color System - VT (Vue Theme) Palette
+- **Source of Truth:** `tailwind.config.ts` lines 56-123 contains official Vue Theme colors
+- **Primary palette:** `vt-green`, `vt-blue`, `vt-yellow`, `vt-red`, `vt-purple`
+- **Neutrals:** `vt-white`, `vt-black`, `vt-gray-{light|dark}-{1-5}`, `vt-indigo`
+- **Semantic colors:** `background`, `foreground`, `primary`, `secondary`, `muted`, `accent`, `destructive`, `border`, `card`, `popover` (use CSS variables via `hsl(var(--primary))`)
+- **Usage Rules:**
+  - ✅ ALWAYS use VT color classes: `bg-vt-green`, `text-vt-blue-light`, `border-vt-red`
+  - ✅ For semantic UI: `bg-background`, `text-foreground`, `border-border`
+  - ❌ NEVER add arbitrary hex codes in component files (e.g., `bg-[#42b883]`)
+  - ❌ NEVER use inline styles with colors
+- **If color missing:** Extend `tailwind.config.ts` `theme.extend.colors` section, don't hardcode in components
+
+## Components
+- **Before creating:** Check if similar component exists in `src/components/`
+- **Badge component:** Use `<Badge color="green" colorStyle="soft">` from `ui/badge.tsx`
+  - Available colors: green, blue, yellow, red, purple, gray
+  - Available styles: solid, soft (default), outline
+  - Helper: `getGradeBadge(nota)` from `lib/grades.ts` returns `{ label, color }`
+- **Reusability:** Extract reusable logic into generic components with props
+- **DRY Principle:** If logic appears twice, abstract to hook (`src/hooks/`) or utility (`src/lib/`)
+
+## Responsive Design
+- **Mobile First:** Start with mobile layout, add breakpoints with `md:`, `lg:` as needed
+- **Grid layouts:** Force single column on mobile (see `DashboardGrid.tsx` for reference)
+- **Testing:** Always verify mobile layout before considering a UI task complete
+
+# 📚 Knowledge Base: `structure/` (CRÍTICO)
+
+## Contexto
+- **Ubicación:** `structure/` en la raíz del workspace (git-ignored pero siempre presente localmente)
+- **Ruta Relativa:** `./structure/` (relativa a la raíz del proyecto `mifp-web/`)
+- **Sincronización:** Carpeta local compartida manualmente entre el equipo. **SIEMPRE está actualizada.**
+- **Propósito:** Documentación técnica completa del proyecto (arquitectura, decisiones, wireframes, schemas)
+- **Crecimiento:** La estructura puede crecer con el tiempo. Si no encuentras información en las carpetas documentadas abajo, explora nuevas carpetas antes de asumir que no existe documentación.
+
+## 🎯 Archivos Clave (Leer PRIMERO)
+Antes de cualquier tarea compleja, SIEMPRE lee:
+1. **`structure/README.md`** - Índice completo de la documentación
+2. **`structure/decisions.md`** - Decisiones técnicas actuales y su impacto
+3. **`structure/changelog.md`** - Historial de cambios importantes
+
+## 📁 Estructura de Carpetas (Enero 2026)
+
+> ⚠️ **IMPORTANTE:** Esta lista refleja la estructura conocida a enero 2026. Si no encuentras lo que buscas en estas carpetas, usa el **Protocolo de Exploración Dinámica** (ver abajo) antes de asumir que la documentación no existe.
+
+### 01-proyecto/ ⚪ Inmutable
+- **Contenido:** Lógica de negocio ILERNA, objetivos MVP, contexto del proyecto
+- **Archivos clave:** `info-proyecto.md`, `logica-negocio-ilerna.md`, `objetivos-mvp.md`
+- **Consultar para:** Entender reglas de negocio, validaciones de dominio
+
+### 02-stack/ 🔴 Crítico
+- **Contenido:** Backend, frontend, hosting, seguridad, versiones de dependencias
+- **Archivos clave:** `backend.md`, `frontend.md`, `hosting.md`, `seguridad.md`
+- **Consultar para:** Cambios de stack, configuraciones de servidor, decisiones de arquitectura
+
+### 03-database/ 🔴 Crítico
+- **Contenido:** 
+  - `_scripts/`: Scripts SQL para extraer información actualizada de Supabase (01-extract-tables-detailed.sql hasta 10-extract-full-ddl.sql)
+  - `schema/`: Esquema de la base de datos
+    - `schema-actual.sql`: DDL completo extraído de producción
+    - `schema-explicado.md`: Documentación legible de tablas y relaciones
+    - `enums.sql`, `indexes.sql`, `foreign-keys.csv`, `tables-info.csv`
+  - `security/`: Políticas de seguridad
+    - `rls-policies.sql`: Políticas RLS activas en formato SQL ejecutable
+    - `rls-policies.md`: Documentación de políticas RLS
+    - `storage-policies.sql`: Buckets y políticas de Storage
+  - `logic/`: Lógica de negocio en BD
+    - `calculo-notas.md`: Lógica de cálculo de calificaciones
+    - `functions.sql`: Funciones de PostgreSQL
+    - `triggers.sql`: Triggers activos
+    - `triggers-functions.md`: Documentación de triggers y funciones
+  - `migrations/`: Migraciones SQL ejecutadas (README.md)
+  - `seeds/`: Datos iniciales (seeds.sql)
+- **Consultar para:** 
+  - Cualquier query o mutación de BD
+  - Entender estructura de tablas (schema/)
+  - Verificar RLS antes de crear API routes (security/)
+  - Implementar lógica de notas (logic/calculo-notas.md)
+  - Extraer información actualizada de Supabase (_scripts/)
+
+### 04-auth/ 🟡 Media
+- **Contenido:** Flujo de autenticación, roles, permisos, proxy Next.js 16
+- **Archivos clave:** `flujo-auth.md`, `roles-permisos.md`, `proxy-nextjs16.md`, `rutas-landing.md`
+- **Consultar para:** Implementar protección de rutas, verificar roles, OAuth
+
+### 05-vistas/ 🟢 Baja
+- **Contenido:** Rutas del sistema, wireframes de vistas, panel admin
+- **Archivos clave:** `rutas.md`, `layout-principal.md`, `landing.md`, `admin/`
+- **Consultar para:** Crear nuevas páginas, entender navegación
+
+### 06-componentes/ 🟡 Media
+- **Estructura:**
+  - `wireframes/`: Diseño UI agnóstico (QUÉ mostrar)
+  - `implementacion/react/`: Código React específico (CÓMO implementar)
+  - `README.md`: Índice de componentes documentados
+- **Consultar para:**
+  - Antes de crear nuevos componentes (ver wireframes)
+  - Entender estado y props de componentes existentes
+  - Ver patrones de hooks customizados (`implementacion/react/hooks.md`)
+
+### 07-integraciones/ 🟡 Media
+- **Contenido:** API routes, Cloudflare R2, OpenAI prompts, cálculo de notas
+- **Archivos clave:** `api-routes.md`, `cloudflare-r2.md`, `prompt-openai.md`, `datos-extraidos.md`
+- **Consultar para:** 
+  - Implementar nuevas API routes
+  - Integrar servicios externos
+  - Procesamiento de PDFs (GDs)
+
+### 08-notificaciones/ 🟢 Baja
+- **Contenido:** Sistema de notificaciones in-app
+- **Archivos clave:** `centro-notificaciones.md`
+- **Consultar para:** Crear/modificar notificaciones
+
+### 09-diseno/ 🟢 Baja
+- **Contenido:** Paleta VT, tipografía, Tailwind config, tema oscuro
+- **Archivos clave:** `tailwind-shadcn.md`, `tema-oscuro.md`, `logicaDeThemes.md`, `refactorizacion-tailwind/`
+- **Consultar para:** Decisiones de diseño, colores, iconos
+
+### 10-deployment/ 🟢 Baja
+- **Contenido:** CI/CD, GitHub Actions
+- **Archivos clave:** `github-actions.yml`
+- **Consultar para:** Configurar despliegues
+
+### 11-config/ 🟢 Baja
+- **Contenido:** Variables de entorno, SEO
+- **Archivos clave:** `env-vars.md`, `seo-metadatos.md`
+- **Consultar para:** Configuración de env vars
+
+### 12-estructura-proyecto/ 🔴 Crítico
+- **Contenido:** Árbol de carpetas del proyecto
+- **Archivos clave:** `arbol-carpetas.md`
+- **Consultar para:** Ubicación correcta de nuevos archivos
+
+### Carpetas adicionales conocidas
+- **`rules/`**: Prompts y reglas para el modelo (este archivo, auditorías)
+- **`optimizacion/`**: Plans de refactorización y optimización
+- **`rediseños/`**: Documentos de rediseño de componentes específicos
+- **`cambio-semestre-antigravity-plan/`**: Documentación de features complejas (patrón para futuras features grandes)
+
+## 🔍 Protocolo de Exploración Dinámica
+
+Si no encuentras la información buscada en las carpetas documentadas arriba:
+
+1. **Listar contenido de `structure/`:**
+   ```
+   LS structure/
+   ```
+   
+2. **Identificar carpetas nuevas o no documentadas** (ej. carpetas con nombres como `13-*`, `feature-x/`, `spike-y/`, etc.)
+
+3. **Explorar carpetas candidatas:**
+   - Buscar por nombre semántico (ej. si buscas info de emails, revisar carpetas como `emails/`, `notificaciones-email/`, etc.)
+   - Leer READMEs si existen: `structure/{nueva-carpeta}/README.md`
+
+4. **Si encuentras documentación útil:**
+   - Usarla para la implementación
+   - Mencionar al usuario que encontraste documentación en una carpeta no listada en las reglas
+
+5. **Si no existe documentación después de explorar:**
+   - Avisar al usuario que no hay documentación específica
+   - Proceder con best practices generales
+
+## 🎯 Matriz de Consulta por Tipo de Tarea
+
+| Tarea | Carpetas a Consultar (en orden) |
+|-------|----------------------------------|
+| **Crear nueva feature** | `01-proyecto/` → `03-database/schema/` → `06-componentes/wireframes/` → `05-vistas/` → **[Explorar si no existe]** |
+| **Modificar BD/Schema** | `03-database/schema/schema-actual.sql` → `schema/schema-explicado.md` → `security/rls-policies.md` |
+| **Implementar UI** | `06-componentes/wireframes/{feature}.md` → `06-componentes/implementacion/react/{feature}.md` → `09-diseno/` |
+| **Crear API route** | `07-integraciones/api-routes.md` → `03-database/security/rls-policies.md` → `04-auth/roles-permisos.md` |
+| **Debugging RLS** | `03-database/security/rls-policies.md` → `03-database/security/rls-policies.sql` (ejecutar queries de test) |
+| **Calcular notas** | `03-database/logic/calculo-notas.md` → `07-integraciones/calculo-notas.md` |
+| **Cambiar stack** | `decisions.md` → `02-stack/` → `12-estructura-proyecto/` |
+| **Auth/Roles** | `04-auth/flujo-auth.md` → `04-auth/roles-permisos.md` → `03-database/security/rls-policies.md` |
+| **Agregar componente** | `06-componentes/wireframes/` (ver si existe) → `06-componentes/implementacion/react/README.md` |
+| **Subir archivos (GDs)** | `07-integraciones/cloudflare-r2.md` → `06-componentes/implementacion/react/upload-gd.md` |
+| **Feature compleja nueva** | Buscar carpeta tipo `{feature}-plan/` → **[Explorar structure/]** → `01-proyecto/objetivos-mvp.md` |
+
+## 📝 Actualización de Documentación (RESPONSABILIDAD DEL MODELO)
+
+**IMPORTANTE:** Cuando implementes cambios que afecten la arquitectura o lógica de negocio, TÚ (el modelo) DEBES actualizar los archivos correspondientes en `structure/`. No delegar esto al usuario.
+
+### Cambios que Requieren Actualización:
+
+| Cambio Realizado | Archivos a Actualizar |
+|------------------|-----------------------|
+| Agregar/modificar tabla o columna en BD | `structure/03-database/schema/schema-explicado.md` + `schema/schema-actual.sql` |
+| Crear/modificar política RLS | `structure/03-database/security/rls-policies.md` + `security/rls-policies.sql` |
+| Agregar trigger o función SQL | `structure/03-database/logic/triggers-functions.md` + `logic/functions.sql` o `logic/triggers.sql` |
+| Crear nueva ruta o página | `structure/05-vistas/rutas.md` |
+| Modificar lógica de cálculo de notas | `structure/03-database/logic/calculo-notas.md` |
+| Agregar nueva integración externa | `structure/07-integraciones/{servicio}.md` (crear si no existe) |
+| Cambiar decisión de stack | `structure/decisions.md` + `structure/changelog.md` |
+| Crear componente complejo nuevo | Considerar documentar en `structure/06-componentes/implementacion/react/` |
+| Agregar/modificar API route importante | Documentar en `structure/07-integraciones/api-routes.md` |
+| **CUALQUIER cambio significativo** | **`structure/changelog.md`** (SIEMPRE) |
+
+### Protocolo de Actualización:
+
+1. **Después de implementar un cambio:**
+   - Lee el archivo correspondiente en `structure/` (si existe)
+   - Actualiza la sección relevante con los cambios
+   - Mantén el formato y estilo del documento original
+   - Agrega timestamp si el documento lo usa
+
+2. **Actualizar changelog:**
+   - Siempre agregar entrada en `structure/changelog.md`
+   - Formato: `## [Fecha] - {Título del cambio}`
+   - Incluir: qué cambió, por qué, y archivos afectados
+
+3. **Si documento no existe:**
+   - Preguntar al usuario si desea que lo crees
+   - Si es un cambio menor, documentar en `changelog.md`
+
+### Ejemplo de Actualización:
+
+```
+Usuario: "Agrega campo email_verified a la tabla users"
+
+Implementación:
+1. Modificar schema SQL
+2. Actualizar tipos TypeScript
+3. Crear migración
+
+Después de implementar:
+1. Read structure/03-database/schema/schema-explicado.md
+2. StrReplace: Agregar descripción del nuevo campo en la sección de tabla users
+3. Read structure/changelog.md
+4. StrReplace: Agregar entrada:
+   ## [2026-01-22] - Campo email_verified en users
+   - Agregado campo boolean email_verified a tabla users
+   - Permite validar emails antes de otorgar permisos completos
+   - Archivos afectados: src/types/database.ts, structure/03-database/schema/schema-explicado.md
+```
+
+## 🚨 Protocolo de Inconsistencias
+
+Si durante la lectura de `structure/` encuentras información **contradictoria o desactualizada**:
+
+1. **Identificar la inconsistencia:**
+   - Ejemplo: `structure/02-stack/backend.md` dice usar Firebase, pero `package.json` tiene Supabase
+
+2. **NO actuar automáticamente:** Detén la implementación
+
+3. **Preguntar al usuario:**
+   ```
+   ⚠️ INCONSISTENCIA DETECTADA:
+   
+   Encontré contradicción entre:
+   - structure/02-stack/backend.md: Especifica Firebase como BaaS
+   - package.json + código actual: Usa Supabase
+   
+   ¿Qué debo hacer?
+   A) Actualizar structure/02-stack/backend.md para reflejar Supabase (realidad actual)
+   B) Migrar de Supabase a Firebase (seguir documentación)
+   C) Otra acción
+   ```
+
+4. **Esperar instrucción del usuario** antes de proceder
+
+5. **Una vez resuelto:** Actualizar `structure/changelog.md` con la resolución de la inconsistencia
+
+## 🚫 Anti-Patrones (NO hacer)
+- ❌ Asumir el schema sin leer `03-database/schema/schema-actual.sql` y `schema/schema-explicado.md`
+- ❌ Crear componentes nuevos sin revisar `06-componentes/wireframes/`
+- ❌ Modificar lógica de cálculo de notas sin leer `03-database/logic/calculo-notas.md`
+- ❌ Cambiar decisiones de stack sin consultar `decisions.md`
+- ❌ Implementar API routes sin revisar `03-database/security/rls-policies.md`
+- ❌ Asumir que no hay documentación sin aplicar Protocolo de Exploración Dinámica
+- ❌ Implementar cambios significativos sin actualizar `structure/changelog.md`
+- ❌ Ignorar inconsistencias en la documentación
+- ❌ Usar scripts de extracción sin consultar primero `03-database/_scripts/README.md`
+
+# 📁 Project Structure
+
+## File Organization
+- **Components:** `src/components/{feature}/` (auth, admin, dashboard, blog, notas, perfil, etc.)
+  - Each feature folder MUST have `index.ts` for barrel exports
+  - Primitives go in `ui/`, layout components in `layout/`
+- **API Routes:** `src/app/api/`
+  - Admin: `api/admin/{resource}/` (requires admin/editor role)
+  - User: `api/user/{resource}/` (requires authentication)
+  - Public: `api/{resource}/` (public with optional auth)
+  - Naming: Use plural nouns (e.g., `/api/noticias`, not `/api/noticia`)
+- **Hooks:** `src/hooks/use{Entity}.ts` (useNoticias, useApuntes, useNotas, etc.)
+- **Lib utilities:** `src/lib/{domain}.ts`
+  - `format.ts`: Date/time formatting (formatMinutes, formatSeconds, formatDate, formatTimeAgo)
+  - `grades.ts`: Grade logic (getGradeBadge, getGradeColor)
+  - `slugify.ts`: URL-safe slug generation
+  - `utils.ts`: General utilities (cn for class merging)
+  - `supabase/`: Client instances (client, server, admin, proxy)
+  - `cloudflare/`: R2 storage helpers
+- **Types:** `src/types/{entity}.ts` with barrel export in `index.ts`
+  - `database.ts`: Supabase generated types
+- **Providers:** `src/providers/` (QueryProvider for React Query)
+
+# 🗄️ Database & Schema Verification (CRITICAL)
+
+## Anti-Hallucination Protocol
+- **Context:** The database schema in production often differs from local migrations due to manual changes.
+- **NEVER assume the schema.** Always verify before implementing database-related features.
+
+## Verification Protocol
+Before writing any SQL or Supabase query for a new feature:
+
+1. **Check documentation first:**
+   ```
+   Read: structure/03-database/schema/schema-actual.sql
+   Read: structure/03-database/schema/schema-explicado.md
+   ```
+
+2. **If documentation is unclear or potentially outdated:**
+   - Generate SQL query to inspect `information_schema`:
+     ```sql
+     SELECT column_name, data_type, is_nullable, column_default
+     FROM information_schema.columns
+     WHERE table_name = 'your_table'
+     ORDER BY ordinal_position;
+     ```
+   - Ask user to run it or run it yourself if connected
+
+3. **Base implementation ONLY on verified schema**
+
+4. **After implementing:** Update `structure/03-database/schema/schema-explicado.md` if you found discrepancies
+
+5. **Update extraction scripts if needed:** If schema changes significantly, update or run relevant scripts in `structure/03-database/_scripts/`
+
+# 🔐 Supabase & RLS Patterns
+
+## Client Selection
+- **Client-side components:** `createClient()` from `@/lib/supabase/client`
+- **Server Components/Actions:** `await createClient()` from `@/lib/supabase/server` (async)
+- **Admin operations (bypass RLS):** `createAdminClient()` from `@/lib/supabase/admin`
+
+## RLS Bypass Pattern (API Routes)
+
+### When to Use
+If a mutation needs to modify `users` table AND an RLS policy queries `users`, you'll get infinite recursion. Solution: Use API Route with admin client.
+
+### Implementation Pattern
+```typescript
+// In src/app/api/{resource}/route.ts
+
+import { NextRequest, NextResponse } from 'next/server'
+import { createAdminClient, verifyAdminOrEditor } from '@/lib/supabase/admin'
+
+export async function POST(request: NextRequest) {
+  // Verify auth & role with centralized helper
+  const auth = await verifyAdminOrEditor()
+  if ('error' in auth) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status })
+  }
+  
+  // Use adminClient for operations that would trigger RLS recursion
+  const adminClient = createAdminClient()
+  
+  // Now you have:
+  // - auth.user (authenticated user object)
+  // - auth.role ('admin' | 'editor')
+  // - adminClient (bypasses RLS)
+  
+  // ... rest of implementation
+}
+```
+
+### Available Helpers in `@/lib/supabase/admin`
+
+- **`createAdminClient()`** - Returns Supabase client with service_role (bypasses RLS)
+- **`verifyAdminOrEditor()`** - Verifies user is authenticated AND has admin or editor role
+- **`verifyAdmin()`** - Verifies user is authenticated AND has admin role only
+
+### Return Types
+```typescript
+// Success
+{ user: User, role: 'admin' | 'editor' }
+
+// Error
+{ error: string, status: 401 | 403 }
+```
+
+### Security Checklist
+- ✅ ALWAYS verify authentication before using admin client
+- ✅ ALWAYS verify role/permissions
+- ✅ Add comment explaining why bypass is needed
+- ✅ Never expose admin client to client-side code
+- ✅ Log admin operations for audit trail (if applicable)
+
+### Reference
+See existing implementations:
+- `src/app/api/admin/noticias/route.ts`
+- `src/app/api/user/grid-layout/route.ts`
+
+## Regeneración de Tipos de Supabase
+- **Estado actual:** Tipos completamente actualizados (23 Enero 2026)
+- **Proceso de regeneración:**
+  1. **Generar token temporal:** Ir a https://supabase.com/dashboard/account/tokens
+     - Crear nuevo token con expiración automática (recomendado: 1 hora)
+  2. **Ejecutar comando:**
+  ```bash
+  export SUPABASE_ACCESS_TOKEN=tu_token_temporal
+  pnpm dlx supabase gen types typescript --project-id twwvmauepebuqrpwpmmc > src/types/database.ts
+  ```
+  3. El token se eliminará automáticamente según la expiración configurada
+- **Cuándo regenerar:**
+  - Después de agregar/modificar tablas o columnas en Supabase
+  - Después de crear/modificar tipos ENUM
+  - Después de cambios en funciones PostgreSQL que retornen tipos específicos
+  - Después de ejecutar migraciones importantes en `structure/03-database/migrations/`
+  - Si encuentras discrepancias entre tipos TypeScript y la BD real
+- **Verificación post-regeneración:**
+  - El proyecto NO debe tener instancias de `as any` en operaciones de Supabase
+  - Ejecutar `pnpm type-check` para verificar que no hay errores de tipos
+  - Revisar archivos que usen las tablas/columnas modificadas
+- **Regla de oro:** SIEMPRE usar los tipos generados. NUNCA usar `as any` en operaciones de Supabase
+
+# 📡 React Query Patterns
+
+## Hook Structure Convention
+
+### Query Hook (GET operations)
+```typescript
+// src/hooks/useEntity.ts
+import { useQuery } from '@tanstack/react-query'
+import { createClient } from '@/lib/supabase/client'
+
+export function useEntity(id?: string) {
+  const supabase = createClient()
+  
+  return useQuery({
+    queryKey: id ? ['entity', id] : ['entities'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('entities')
+        .select('*')
+        .eq(id ? 'id' : undefined, id)
+      
+      if (error) throw error
+      return data
+    }
+  })
+}
+```
+
+### Mutation Hook (POST/PATCH/DELETE operations)
+```typescript
+// src/hooks/useEntity.ts
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+
+export function useEntityMutation() {
+  const queryClient = useQueryClient()
+  
+  const create = useMutation({
+    mutationFn: async (data: EntityData) => {
+      const res = await fetch('/api/entities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      
+      if (!res.ok) {
+        const error = await res.json()
+        throw new Error(error.message || 'Error creating entity')
+      }
+      
+      return res.json()
+    },
+    onSuccess: () => {
+      // Always invalidate related queries
+      queryClient.invalidateQueries({ queryKey: ['entities'] })
+    }
+  })
+  
+  const update = useMutation({
+    mutationFn: async ({ id, ...data }: { id: string } & Partial<EntityData>) => {
+      const res = await fetch(`/api/entities?id=${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      
+      if (!res.ok) throw new Error('Error updating entity')
+      return res.json()
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['entities'] })
+      queryClient.invalidateQueries({ queryKey: ['entity', variables.id] })
+    }
+  })
+  
+  return {
+    create: create.mutate,
+    isCreating: create.isPending,
+    update: update.mutate,
+    isUpdating: update.isPending
+  }
+}
+```
+
+## Query Key Conventions
+- List: `['entities']`
+- Detail: `['entity', id]`
+- Filtered: `['entities', { filter: 'value' }]`
+- Related: `['entity', id, 'relations']`
+
+## Optimistic Updates Pattern
+Use for UI-critical actions (likes, toggles, inline edits):
+
+```typescript
+const mutation = useMutation({
+  mutationFn: async (newData) => {
+    // API call
+  },
+  onMutate: async (newData) => {
+    // Cancel in-flight queries
+    await queryClient.cancelQueries({ queryKey: ['entity'] })
+    
+    // Save previous state
+    const previous = queryClient.getQueryData(['entity'])
+    
+    // Optimistically update
+    queryClient.setQueryData(['entity'], newData)
+    
+    return { previous }
+  },
+  onError: (_err, _newData, context) => {
+    // Rollback on error
+    queryClient.setQueryData(['entity'], context?.previous)
+  },
+  onSuccess: () => {
+    // Optionally refetch to confirm
+    queryClient.invalidateQueries({ queryKey: ['entity'] })
+  }
+})
+```
+
+**Reference:** `src/hooks/useReactions.ts`, `src/hooks/useNotificationSettings.ts`
+
+# 🛠️ Utilities & Helpers
+
+## Formatting Helpers (`lib/format.ts`)
+Before creating custom formatters, use existing helpers (all use Spanish locale):
+
+- **`formatMinutes(minutes: number | null): string`**
+  - Example: `formatMinutes(90)` → `"1h 30min"`
+  - Use for: VTs duration display
+
+- **`formatSeconds(seconds: number | null): string`**
+  - Example: `formatSeconds(332)` → `"5:32"`
+  - Use for: Podcast player timestamps
+
+- **`formatDate(dateString: string, style: 'short' | 'long' | 'day-month' | 'full'): string`**
+  - Uses date-fns with Spanish locale
+  - Example: `formatDate('2026-01-22', 'short')` → `"22 ene 2026"`
+
+- **`formatTimeAgo(dateString: string): string`**
+  - Example: `formatTimeAgo('2026-01-17')` → `"hace 5 días"`
+  - Use for: Relative timestamps (news feed, comments)
+
+## Grade Helpers (`lib/grades.ts`)
+
+- **`getGradeBadge(nota: number | null): { label: string, color: BadgeColor }`**
+  - Returns badge props for grade display
+  - Example: `getGradeBadge(8.5)` → `{ label: "Notable", color: "green" }`
+  - Use with: `<Badge {...getGradeBadge(nota)} />`
+
+- **`getGradeColor(nota: number | null): string`**
+  - Returns Tailwind color classes
+  - Example: `getGradeColor(9.5)` → `"text-vt-green dark:text-vt-green-light"`
+
+## Other Utilities
+
+- **`slugify(text: string): string`** (`lib/slugify.ts`)
+  - Converts text to URL-safe slug
+  - Example: `slugify("Guía Didáctica")` → `"guia-didactica"`
+
+- **`cn(...classes): string`** (`lib/utils.ts`)
+  - Merges class names with tailwind-merge
+  - Use for: Conditional classes in components
+  - Example: `cn("base-class", condition && "conditional-class")`
+
+# 🎨 Component Guidelines
+
+## Form Components
+- **Library:** Use `react-hook-form` with `@hookform/resolvers/zod`
+- **Validation:** Define Zod schemas for all forms
+- **UI Components:** Use primitives from `components/ui/` (Input, Label, Button, etc.)
+- **Error Display:** Show validation errors inline with form fields
+- **Async Actions:** Show loading states, disable submit during submission
+
+## Badge Component Usage
+```tsx
+import { Badge } from '@/components/ui/badge'
+
+// Basic usage
+<Badge color="green" colorStyle="soft" size="md">Aprobado</Badge>
+
+// With grade helper
+const badge = getGradeBadge(nota)
+<Badge color={badge.color}>{badge.label}</Badge>
+
+// Available options:
+// Colors: green, blue, yellow, red, purple, gray
+// Styles: solid, soft (default), outline
+// Sizes: sm, md (default), lg, adjusted
+// Rounded: default, lg, full
+```
+
+## Naming Conventions
+- **Components:** PascalCase (e.g., `NotasCalculator.tsx`)
+- **Hooks:** camelCase starting with `use` (e.g., `useNoticias.ts`)
+- **Utilities:** camelCase (e.g., `formatDate.ts`)
+- **Types:** PascalCase (e.g., `NotaData`)
+- **API routes:** lowercase with hyphens (e.g., `grid-layout/`)
+- **Folders:** kebab-case (e.g., `guias-didacticas/`)
+
+# Code Quality & Best Practices
+
+## General
+- **Refactoring:** When modifying a file, auto-fix linting errors and improve readability
+- **Comments:** Add JSDoc comments to exported functions/components explaining purpose and parameters
+- **TypeScript:** Avoid `any` except for known Supabase type issues (use `// eslint-disable-next-line` with explanation)
+- **Error Handling:** Always handle errors gracefully, show user-friendly messages
+- **Loading States:** Always show loading indicators for async operations
+
+## Performance
+- **Server Components:** Use by default, only add `'use client'` when necessary (hooks, interactivity)
+- **Memoization:** Use `useMemo` and `useCallback` for expensive computations and callback props
+- **Images:** Use Next.js `<Image>` component with proper sizing
+- **Code Splitting:** Keep components modular to benefit from automatic code splitting
+
+## Security
+- **Input Sanitization:** Sanitize all user inputs, especially before database operations
+- **XSS Prevention:** Never use `dangerouslySetInnerHTML` without sanitization
+- **SQL Injection:** Use parameterized queries (Supabase client handles this)
+- **Authentication:** Always verify auth state before protected operations
+- **RLS:** Rely on RLS policies, but verify they're working as expected
+
+## Testing (Future)
+- When tests are added, update this section with testing conventions
+- Consider documenting in `structure/07-integraciones/tests-interactivos.md`

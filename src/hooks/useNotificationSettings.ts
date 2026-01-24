@@ -40,8 +40,7 @@ export function useNotificationSettings() {
       }
 
       // Merge con defaults para asegurar que todas las keys existen
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const settings = (data as any)?.notification_settings as Partial<NotificationSettings> | null
+      const settings = data?.notification_settings as Partial<NotificationSettings> | null
       return {
         ...DEFAULT_SETTINGS,
         ...(settings || {}),
@@ -59,8 +58,7 @@ export function useNotificationSettings() {
       const current = query.data || DEFAULT_SETTINGS
       const newSettings = { ...current, ...settings }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('users')
         .update({ notification_settings: newSettings })
         .eq('id', user.id)

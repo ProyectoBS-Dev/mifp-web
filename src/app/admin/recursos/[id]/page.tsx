@@ -27,8 +27,7 @@ interface RecursoData {
 async function getRecurso(id: string): Promise<RecursoData | null> {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabase
     .from('recursos')
     .select(`
       id, tipo, titulo, descripcion, url,

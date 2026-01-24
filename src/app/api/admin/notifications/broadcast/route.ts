@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 
 /**
  * API Route para enviar notificaciones broadcast a todos los usuarios
@@ -9,30 +8,10 @@ import { createAdminClient } from '@/lib/supabase/admin'
  */
 export async function POST(request: NextRequest) {
     try {
-        const supabase = await createClient()
-
-        // Verificar autenticación
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) {
-            return NextResponse.json(
-                { error: 'No autenticado' },
-                { status: 401 }
-            )
-        }
-
-        // Verificar que es admin
-        const { data: profile } = await supabase
-            .from('users')
-            .select('role')
-            .eq('id', user.id)
-            .single()
-
-        const userProfile = profile as { role: string } | null
-        if (userProfile?.role !== 'admin') {
-            return NextResponse.json(
-                { error: 'No autorizado. Solo administradores pueden enviar notificaciones broadcast.' },
-                { status: 403 }
-            )
+        // Verificar autenticación y rol admin
+        const auth = await verifyAdmin()
+        if ('error' in auth) {
+            return NextResponse.json({ error: auth.error }, { status: auth.status })
         }
 
         // Obtener datos del body
@@ -47,12 +26,11 @@ export async function POST(request: NextRequest) {
         }
 
         // Usar cliente admin para bypass de RLS
-        const supabaseAdmin = createAdminClient()
+        const adminClient = createAdminClient()
 
         // Obtener todos los usuarios
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: users, error: usersError } = await (supabaseAdmin
-            .from('users') as any)
+        const { data: users, error: usersError } = await adminClient
+            .from('users')
             .select('id')
 
         if (usersError) {
@@ -60,8 +38,7 @@ export async function POST(request: NextRequest) {
             throw usersError
         }
 
-        const usersList = users as Array<{ id: string }> | null
-        if (!usersList || usersList.length === 0) {
+        if (!users || users.length === 0) {
             return NextResponse.json({
                 success: true,
                 count: 0,
@@ -70,7 +47,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Crear notificaciones para todos los usuarios
-        const notifications = usersList.map(u => ({
+        const notifications = users.map(u => ({
             user_id: u.id,
             tipo: tipo || 'sistema',
             titulo,
@@ -79,9 +56,8 @@ export async function POST(request: NextRequest) {
             data: null
         }))
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error: insertError } = await (supabaseAdmin
-            .from('notificaciones') as any)
+        const { error: insertError } = await adminClient
+            .from('notificaciones')
             .insert(notifications)
 
         if (insertError) {

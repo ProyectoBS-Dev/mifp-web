@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react'
+import { X, Loader2, Image as ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
@@ -69,7 +69,6 @@ export function ImageDropzone({ value, onChange, className }: ImageDropzoneProps
     return (
       <div className={cn('relative', className)}>
         <div className="relative aspect-video rounded-lg overflow-hidden bg-muted border">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={value}
             alt="Imagen destacada"

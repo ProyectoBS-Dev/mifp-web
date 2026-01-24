@@ -34,8 +34,7 @@ interface PendingGD {
 async function getPendingGDs(): Promise<PendingGD[]> {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data } = await supabase
     .from('guias_didacticas')
     .select(`
       id, created_at,
@@ -53,17 +52,16 @@ async function getPendingGDs(): Promise<PendingGD[]> {
 async function getStats() {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [gdsResult, usersResult, asignaturasResult] = await Promise.all([
-    (supabase as any)
+    supabase
       .from('guias_didacticas')
       .select('id, estado', { count: 'exact' })
       .is('deleted_at', null),
-    (supabase as any)
+    supabase
       .from('users')
       .select('id', { count: 'exact' })
       .is('deleted_at', null),
-    (supabase as any)
+    supabase
       .from('asignaturas')
       .select('id', { count: 'exact' })
       .is('deleted_at', null),

@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, verifyAdminOrEditor } from '@/lib/supabase/admin'
+import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
+import { 
+  createNoticiaSchema, 
+  updateNoticiaSchema, 
+  uuidSchema,
+  formatZodErrors 
+} from '@/lib/validation/schemas'
+import { z } from 'zod'
 
 // Extraer el path del archivo desde la URL de Supabase Storage
 function extractStoragePath(url: string | null): string | null {
@@ -12,6 +20,10 @@ function extractStoragePath(url: string | null): string | null {
 
 // POST - Crear nueva noticia
 export async function POST(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
+  if (rateLimitError) return rateLimitError
+
   try {
     const auth = await verifyAdminOrEditor()
     if ('error' in auth) {
@@ -19,15 +31,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { titulo, slug, contenido, imagen_url, publicada } = body
-
-    if (!titulo || !contenido) {
-      return NextResponse.json({ error: 'Título y contenido son requeridos' }, { status: 400 })
+    
+    // ✅ Validación estricta con Zod
+    const parseResult = createNoticiaSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json(formatZodErrors(parseResult.error), { status: 400 })
     }
 
-    if (!slug) {
-      return NextResponse.json({ error: 'Slug es requerido' }, { status: 400 })
-    }
+    const { titulo, slug, contenido, imagen_url, publicada } = parseResult.data
 
     const adminClient = createAdminClient()
 
@@ -63,13 +74,23 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(noticia)
   } catch (error) {
-    console.error('Create noticia error:', error)
-    return NextResponse.json({ error: 'Error interno' }, { status: 500 })
+    // ✅ NO exponer detalles internos
+    console.error('[Noticias POST] Error:', error)
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(formatZodErrors(error), { status: 400 })
+    }
+    
+    return NextResponse.json({ error: 'Error al crear la noticia' }, { status: 500 })
   }
 }
 
 // PATCH - Actualizar noticia existente
 export async function PATCH(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
+  if (rateLimitError) return rateLimitError
+
   try {
     const auth = await verifyAdminOrEditor()
     if ('error' in auth) {
@@ -77,14 +98,24 @@ export async function PATCH(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const id = searchParams.get('id')
+    const rawId = searchParams.get('id')
 
-    if (!id) {
-      return NextResponse.json({ error: 'ID requerido' }, { status: 400 })
+    // ✅ Validar UUID
+    const idParseResult = uuidSchema.safeParse(rawId)
+    if (!idParseResult.success) {
+      return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
     }
+    const id = idParseResult.data
 
     const body = await request.json()
-    const { titulo, slug, contenido, imagen_url, publicada } = body
+    
+    // ✅ Validación estricta
+    const parseResult = updateNoticiaSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json(formatZodErrors(parseResult.error), { status: 400 })
+    }
+
+    const { titulo, slug, contenido, imagen_url, publicada } = parseResult.data
 
     const adminClient = createAdminClient()
 
@@ -141,13 +172,23 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json(noticia)
   } catch (error) {
-    console.error('Update noticia error:', error)
-    return NextResponse.json({ error: 'Error interno' }, { status: 500 })
+    // ✅ NO exponer detalles internos
+    console.error('[Noticias PATCH] Error:', error)
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(formatZodErrors(error), { status: 400 })
+    }
+    
+    return NextResponse.json({ error: 'Error al actualizar la noticia' }, { status: 500 })
   }
 }
 
 // DELETE - Soft delete de noticia + eliminar imagen
 export async function DELETE(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
+  if (rateLimitError) return rateLimitError
+
   try {
     const auth = await verifyAdminOrEditor()
     if ('error' in auth) {
@@ -155,11 +196,14 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const id = searchParams.get('id')
+    const rawId = searchParams.get('id')
 
-    if (!id) {
-      return NextResponse.json({ error: 'ID requerido' }, { status: 400 })
+    // ✅ Validar UUID
+    const idParseResult = uuidSchema.safeParse(rawId)
+    if (!idParseResult.success) {
+      return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
     }
+    const id = idParseResult.data
 
     const adminClient = createAdminClient()
 
@@ -205,7 +249,8 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Delete noticia error:', error)
-    return NextResponse.json({ error: 'Error interno' }, { status: 500 })
+    // ✅ NO exponer detalles internos
+    console.error('[Noticias DELETE] Error:', error)
+    return NextResponse.json({ error: 'Error al eliminar la noticia' }, { status: 500 })
   }
 }

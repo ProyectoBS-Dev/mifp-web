@@ -5,12 +5,19 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
+import { addFavoritoSchema, uuidSchema, formatZodErrors } from '@/lib/validation/schemas'
+import { z } from 'zod'
 
 /**
  * GET /api/user/favoritos
  * Obtiene todos los recursos marcados como favoritos por el usuario actual
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.user || null)
+  if (rateLimitError) return rateLimitError
+
   try {
     const supabase = await createClient()
 
@@ -104,6 +111,10 @@ export async function GET() {
  * Body: { recurso_id: string }
  */
 export async function POST(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.user || null)
+  if (rateLimitError) return rateLimitError
+
   try {
     const supabase = await createClient()
 
@@ -118,14 +129,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { recurso_id } = body
-
-    if (!recurso_id) {
-      return NextResponse.json(
-        { error: 'recurso_id es requerido' },
-        { status: 400 }
-      )
+    
+    // ✅ Validación estricta con Zod
+    const parseResult = addFavoritoSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json(formatZodErrors(parseResult.error), { status: 400 })
     }
+
+    const { recurso_id } = parseResult.data
 
     // Insertar favorito
     const { data, error } = await supabase
@@ -168,6 +179,10 @@ export async function POST(request: NextRequest) {
  * Elimina un recurso de favoritos
  */
 export async function DELETE(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.user || null)
+  if (rateLimitError) return rateLimitError
+
   try {
     const supabase = await createClient()
 
@@ -182,14 +197,14 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const recurso_id = searchParams.get('recurso_id')
+    const rawRecursoId = searchParams.get('recurso_id')
 
-    if (!recurso_id) {
-      return NextResponse.json(
-        { error: 'recurso_id es requerido' },
-        { status: 400 }
-      )
+    // ✅ Validar UUID
+    const parseResult = uuidSchema.safeParse(rawRecursoId)
+    if (!parseResult.success) {
+      return NextResponse.json({ error: 'ID inválido' }, { status: 400 })
     }
+    const recurso_id = parseResult.data
 
     // Eliminar favorito
     const { error } = await supabase

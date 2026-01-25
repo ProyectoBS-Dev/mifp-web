@@ -313,11 +313,17 @@ export function NotesWidget() {
       const currentChecked = taskItems[checkboxIndex].getAttribute('data-checked') === 'true'
       taskItems[checkboxIndex].setAttribute('data-checked', String(!currentChecked))
 
-      // Serializar de vuelta a HTML
-      const newContent = doc.body.innerHTML
+      // ✅ Serializar y SANITIZAR antes de guardar (prevención XSS)
+      const rawHTML = doc.body.innerHTML
+      const sanitizedHTML = DOMPurify.sanitize(rawHTML, {
+        ALLOWED_TAGS: ['p', 'strong', 'em', 'code', 'ul', 'li', 'div', 'label', 'input'],
+        ALLOWED_ATTR: ['data-type', 'data-checked', 'type', 'checked'],
+        ALLOW_DATA_ATTR: true, // Permitir data-* para Tiptap task lists
+      })
+      
       await updateApunte.mutateAsync({
         id: note.id,
-        contenido: newContent,
+        contenido: sanitizedHTML,
       })
     }
   }

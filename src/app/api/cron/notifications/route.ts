@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
 
 /**
  * API Route para generar notificaciones automáticas
@@ -30,20 +31,43 @@ function createServiceClient() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Verificar autorización
-    // En desarrollo: permitir sin auth
-    // En producción: verificar CRON_SECRET o similar
+    // ✅ SIEMPRE verificar autenticación (no solo en producción)
     const authHeader = request.headers.get('authorization')
     const cronSecret = process.env.CRON_SECRET
     
-    if (process.env.NODE_ENV === 'production' && cronSecret) {
-      if (authHeader !== `Bearer ${cronSecret}`) {
-        return NextResponse.json(
-          { error: 'Unauthorized' },
-          { status: 401 }
-        )
-      }
+    // ✅ CRON_SECRET es OBLIGATORIO
+    if (!cronSecret) {
+      console.error('[CRON] CRON_SECRET no configurado')
+      return NextResponse.json(
+        { error: 'Servicio no disponible' },
+        { status: 503 }
+      )
     }
+    
+    // ✅ SIEMPRE verificar token (desarrollo Y producción)
+    if (authHeader !== `Bearer ${cronSecret}`) {
+      const forwardedFor = request.headers.get('x-forwarded-for')
+      const realIp = request.headers.get('x-real-ip')
+      const requestIp = forwardedFor?.split(',')[0] || realIp || 'unknown'
+      
+      console.warn('[CRON] Intento de acceso no autorizado:', {
+        ip: requestIp,
+        timestamp: new Date().toISOString(),
+        hasHeader: !!authHeader,
+      })
+      return NextResponse.json(
+        { error: 'No autorizado' },
+        { status: 401 }
+      )
+    }
+    
+    // ✅ Rate limit CRÍTICO (5 req/min)
+    const rateLimitError = await withRateLimit(
+      request,
+      rateLimiters?.critical || null,
+      'cron-notifications'
+    )
+    if (rateLimitError) return rateLimitError
     
     const supabase = createServiceClient()
     
@@ -62,11 +86,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data)
     
   } catch (error) {
-    console.error('Cron notifications error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
+    // ✅ NO exponer detalles internos
+    console.error('[CRON] Error:', error)
+    return NextResponse.json({ error: 'Error al generar notificaciones' }, { status: 500 })
   }
 }
 

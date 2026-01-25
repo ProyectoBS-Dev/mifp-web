@@ -25,9 +25,9 @@ type GDEstado = 'pendiente' | 'extrayendo' | 'extraida' | 'validada' | 'rechazad
 
 interface GD {
     id: string
-    created_at: string
-    estado: GDEstado
-    procesada: boolean
+    created_at: string | null
+    estado: GDEstado | null
+    procesada: boolean | null
     archivo_path: string | null
     asignatura: {
         nombre: string
@@ -165,7 +165,7 @@ export function GDsAdminList({ gds, showPendientes = false }: GDsAdminListProps)
 }
 
 function GDCard({ gd }: { gd: GD }) {
-    const config = estadoConfig[gd.estado]
+    const config = estadoConfig[gd.estado ?? 'pendiente']
     const IconComponent = config.icon
 
     return (
@@ -203,7 +203,7 @@ function GDCard({ gd }: { gd: GD }) {
 
             <div className="flex items-center gap-4">
                 <div className="text-right text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(gd.created_at), {
+                    {formatDistanceToNow(new Date(gd.created_at ?? Date.now()), {
                         addSuffix: true,
                         locale: es,
                     })}

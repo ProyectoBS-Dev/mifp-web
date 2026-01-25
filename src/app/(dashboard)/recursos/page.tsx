@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Menu } from 'lucide-react'
-import type { RecursoTipo } from '@/types/recursos'
+import type { RecursoTipoUI } from '@/types/recursos'
 
 // ============================================
 // TIPOS
@@ -48,7 +48,7 @@ export default function RecursosPage() {
   
   // Estado de filtros
   const [selectedAsignaturaId, setSelectedAsignaturaId] = useState<string | null>(null)
-  const [selectedTipo, setSelectedTipo] = useState<RecursoTipo | 'todos' | 'favoritos' | null>(null)
+  const [selectedTipo, setSelectedTipo] = useState<RecursoTipoUI | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('recientes')
   

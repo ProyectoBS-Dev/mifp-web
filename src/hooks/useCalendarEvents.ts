@@ -43,7 +43,7 @@ export function useCalendarEvents(currentDate: Date) {
         pac: {
           id: string
           titulo: string
-          fecha_limite: string
+          fecha_limite: string | null
           asignatura: { nombre: string; codigo: string }
         }
       }) => {
@@ -87,9 +87,9 @@ export function useCalendarEvents(currentDate: Date) {
         vt: {
           id: string
           titulo: string
-          fecha_programada: string
-          hora_inicio: string
-          duracion_minutos: number
+          fecha_programada: string | null
+          hora_inicio: string | null
+          duracion_minutos: number | null
           asignatura: { nombre: string; codigo: string }
         }
       }) => {
@@ -138,7 +138,7 @@ export function useCalendarEvents(currentDate: Date) {
         tipo: 'pac' | 'vt' | 'examen' | 'custom'
         fecha_inicio: string
         fecha_fin: string | null
-        todo_el_dia: boolean
+        todo_el_dia: boolean | null
         color: string | null
         asignatura: { nombre: string; codigo: string } | null
       }) => {
@@ -150,7 +150,7 @@ export function useCalendarEvents(currentDate: Date) {
           title: evento.titulo,
           start,
           end,
-          allDay: evento.todo_el_dia,
+          allDay: evento.todo_el_dia ?? true,
           type: evento.tipo,
           color: evento.color || eventColors[evento.tipo] || eventColors.custom,
           asignatura: evento.asignatura || undefined,

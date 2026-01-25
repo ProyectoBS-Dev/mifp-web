@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { getAsignaturaAlias } from '@/lib/asignatura-alias'
 import { useRecursosFavoritos } from '@/hooks/useRecursosFavoritos'
-import type { RecursoTipo } from '@/types/recursos'
+import type { RecursoTipo, RecursoTipoUI } from '@/types/recursos'
 
 // ============================================
 // TIPOS
@@ -27,9 +27,9 @@ interface AsignaturaWithCounts {
 interface RecursosSidebarProps {
   asignaturas: AsignaturaWithCounts[]
   selectedAsignaturaId: string | null
-  selectedTipo: RecursoTipo | 'todos' | 'favoritos' | null
+  selectedTipo: RecursoTipoUI | null
   onSelectAsignatura: (id: string | null) => void
-  onSelectTipo: (tipo: RecursoTipo | 'todos' | 'favoritos' | null) => void
+  onSelectTipo: (tipo: RecursoTipoUI | null) => void
   counts: {
     pdf: number
     enlace: number
@@ -44,7 +44,7 @@ interface RecursosSidebarProps {
 // CONSTANTES
 // ============================================
 
-const TIPO_CONFIG: Record<RecursoTipo | 'video' | 'test', {
+const TIPO_CONFIG: Record<Exclude<RecursoTipoUI, 'todos' | 'favoritos'>, {
   icon: typeof FileText
   label: string
   color: string
@@ -138,7 +138,7 @@ export function RecursosSidebar({
                 <FolderOpen className="h-4 w-4" />
                 Todos los recursos
               </span>
-              <Badge variant="secondary" className="text-xs">
+              <Badge color="gray" colorStyle="soft" className="text-xs">
                 {counts.total}
               </Badge>
             </Button>
@@ -169,7 +169,7 @@ export function RecursosSidebar({
                     />
                     {grado}
                   </span>
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge color="gray" colorStyle="soft" className="text-xs">
                     {asigs.reduce((sum, a) => sum + a.count, 0)}
                   </Badge>
                 </Button>
@@ -198,7 +198,7 @@ export function RecursosSidebar({
                             {alias}
                           </span>
                           {asig.count > 0 && (
-                            <Badge variant="secondary" className="text-xs ml-1">
+                            <Badge color="gray" colorStyle="soft" className="text-xs ml-1">
                               {asig.count}
                             </Badge>
                           )}
@@ -244,7 +244,7 @@ export function RecursosSidebar({
                   <Icon className={cn('h-4 w-4', config.color)} />
                   {config.label}
                 </span>
-                <Badge variant="secondary" className="text-xs">
+                <Badge color="gray" colorStyle="soft" className="text-xs">
                   {count}
                 </Badge>
               </Button>
@@ -274,7 +274,7 @@ export function RecursosSidebar({
                 <Star className="h-4 w-4 text-vt-yellow fill-current" />
                 Mis Favoritos
               </span>
-              <Badge variant="secondary" className="text-xs">
+              <Badge color="gray" colorStyle="soft" className="text-xs">
                 {favoritos.length}
               </Badge>
             </Button>

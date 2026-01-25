@@ -43,10 +43,11 @@ async function getRecurso(id: string): Promise<RecursoData | null> {
     return null
   }
 
-  // Transformar datos
-  const asignaturas = data.recursos_asignaturas
-    ?.map((ra: { asignatura: { id: string; nombre: string; codigo: string } | null }) => ra.asignatura)
-    .filter(Boolean) || []
+  // Transformar datos - filtrar nulls con type guard
+  type Asignatura = { id: string; nombre: string; codigo: string }
+  const asignaturas: Asignatura[] = (data.recursos_asignaturas || [])
+    .map((ra: { asignatura: Asignatura | null }) => ra.asignatura)
+    .filter((a): a is Asignatura => a !== null)
 
   return {
     id: data.id,

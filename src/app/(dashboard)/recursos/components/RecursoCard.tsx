@@ -117,7 +117,7 @@ export function RecursoCard({ recurso }: RecursoCardProps) {
               
               {/* Metadata a la derecha (duración, etc) */}
               {recurso.tipo === 'podcast' && recurso.duracion && (
-                <Badge variant="secondary" className="flex-shrink-0">
+                <Badge color="gray" colorStyle="soft" className="flex-shrink-0">
                   {formatSeconds(recurso.duracion)}
                 </Badge>
               )}

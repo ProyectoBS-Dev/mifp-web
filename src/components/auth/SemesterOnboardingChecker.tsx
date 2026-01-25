@@ -97,7 +97,7 @@ export function SemesterOnboardingChecker({ userId, gradoId }: SemesterOnboardin
             <div className="mb-8">
                 <NewSemesterOnboarding
                     userId={userId}
-                    gradoId={gradoId}
+                    _gradoId={gradoId}
                     asignaturas={gradoAsignaturas}
                     onComplete={() => {
                         setShowOnboarding(false)

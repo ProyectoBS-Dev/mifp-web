@@ -64,7 +64,7 @@ export function useDashboardStats() {
         .eq('user_asignatura.semestre.activo', true)
 
       const pacsData = pacs || []
-      const pacsCompletadas = pacsData.filter((p: { completada: boolean }) => p.completada).length
+      const pacsCompletadas = pacsData.filter((p: { completada: boolean | null }) => p.completada === true).length
 
       // Obtener VTs del usuario
       const { data: vts } = await supabase
@@ -78,7 +78,7 @@ export function useDashboardStats() {
         .eq('user_asignatura.semestre.activo', true)
 
       const vtsData = vts || []
-      const vtsVistas = vtsData.filter((v: { vista: boolean }) => v.vista).length
+      const vtsVistas = vtsData.filter((v: { vista: boolean | null }) => v.vista === true).length
 
       // Calcular porcentaje total para nivel de gamificación
       const vtsPercent = vtsData.length > 0 ? (vtsVistas / vtsData.length) * 100 : 0

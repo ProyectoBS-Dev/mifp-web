@@ -5,7 +5,7 @@ import { RecursoCard } from './RecursoCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
 import { FileText } from 'lucide-react'
-import type { Recurso, RecursoTipo } from '@/types/recursos'
+import type { Recurso, RecursoTipoUI } from '@/types/recursos'
 import type { SortOption } from './RecursosFilters'
 
 // ============================================
@@ -18,7 +18,7 @@ interface RecursosGridProps {
   hasError: boolean
   searchQuery: string
   selectedAsignaturaId: string | null
-  selectedTipo: RecursoTipo | 'todos' | 'favoritos' | null
+  selectedTipo: RecursoTipoUI | null
   sortBy: SortOption
   favoritosIds?: string[]
 }

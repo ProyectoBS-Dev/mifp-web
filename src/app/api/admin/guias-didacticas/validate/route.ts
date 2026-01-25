@@ -37,9 +37,9 @@ export async function POST(request: NextRequest) {
       p_gd_id: gdId,
       p_asignatura_id: gd.asignatura_id,
       p_semestre_id: gd.semestre_id,
-      p_ras: datos.ras,
-      p_pacs: datos.pacs,
-      p_vts: datos.vts
+      p_ras: datos.ras as unknown as never,
+      p_pacs: datos.pacs as unknown as never,
+      p_vts: datos.vts as unknown as never
     })
 
     if (rpcError) {
@@ -51,15 +51,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: rpcError.message }, { status: 500 })
     }
 
-    if (result && !result.success) {
-      return NextResponse.json({ error: result.error }, { status: 500 })
+    // Cast del resultado de la RPC
+    const rpcResult = result as unknown as { 
+      success: boolean
+      error?: string
+      inserted_ras?: number
+      inserted_pacs?: number
+      inserted_vts?: number
+    }
+
+    if (rpcResult && !rpcResult.success) {
+      return NextResponse.json({ error: rpcResult.error }, { status: 500 })
     }
 
     return NextResponse.json({ 
       success: true,
-      insertedRAs: result?.inserted_ras || 0,
-      insertedPACs: result?.inserted_pacs || 0,
-      insertedVTs: result?.inserted_vts || 0
+      insertedRAs: rpcResult?.inserted_ras || 0,
+      insertedPACs: rpcResult?.inserted_pacs || 0,
+      insertedVTs: rpcResult?.inserted_vts || 0
     })
 
   } catch (error) {

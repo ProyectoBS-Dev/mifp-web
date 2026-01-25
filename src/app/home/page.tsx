@@ -94,7 +94,7 @@ export default async function HomePage() {
             {/* Notice Banner */}
             <Link
               href="/blog"
-              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/10 backdrop-blur-sm border border-black/20 hover:bg-black/15 transition-all mb-8"
+              className="group inline-flex items-center gap-3 px-4 py-2 rounded-full backdrop-blur-sm border border-black/20 hover:bg-black/15 transition-all mb-8"
             >
               <span className="text-lg"><Rocket className="h-5 w-5 text-vt-green dark:text-vt-green" /></span>
               <span className="text-sm font-medium text-slate-800">
@@ -383,10 +383,10 @@ export default async function HomePage() {
                 <div className="w-48 h-48 bg-vt-green/30 rounded-full blur-3xl" />
               </div>
               <Image
-                src="/images/owl_landing.png"
+                src="/images/owl_cta.webp"
                 alt="MiFP Mascot"
-                width={200}
-                height={200}
+                width={400}
+                height={400}
                 className="object-contain drop-shadow-2xl relative z-10"
               />
             </div>

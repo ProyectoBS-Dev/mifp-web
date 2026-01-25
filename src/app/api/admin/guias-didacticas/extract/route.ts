@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
     const { error: updateError } = await adminClient
       .from('guias_didacticas')
       .update({ 
-        datos_extraidos: extractedData,
+        datos_extraidos: extractedData as unknown as never,
         estado: 'extraida', // Datos extraídos, listo para revisar
         updated_at: new Date().toISOString()
       })

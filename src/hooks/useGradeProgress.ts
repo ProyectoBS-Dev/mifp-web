@@ -26,6 +26,9 @@ export interface AsignaturaDetalle {
     aprobada: boolean
 }
 
+// Tipo para la respuesta de la RPC
+type RpcGradeProgressResponse = GradeProgressData | { error?: string } | null
+
 // ============================================
 // HOOK: useGradeProgress
 // Calcula el progreso global del grado del usuario
@@ -49,12 +52,15 @@ export function useGradeProgress() {
                 throw error
             }
 
-            if (data?.error) {
-                console.warn('calcular_nota_grado:', data.error)
+            // Cast desde Json
+            const result = data as unknown as RpcGradeProgressResponse
+            
+            if (result && typeof result === 'object' && 'error' in result) {
+                console.warn('calcular_nota_grado:', result.error)
                 return null
             }
 
-            return data as GradeProgressData
+            return result as GradeProgressData
         },
         staleTime: 1000 * 60 * 5, // 5 minutos
     })

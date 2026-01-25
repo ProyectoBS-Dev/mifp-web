@@ -49,8 +49,8 @@ interface Semestre {
     fecha_inicio: string
     fecha_fin: string
     año_academico: string
-    activo: boolean
-    created_at: string
+    activo: boolean | null
+    created_at: string | null
 }
 
 interface SemesterManagementProps {

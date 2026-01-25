@@ -1,0 +1,7 @@
+export { RecursosSidebar } from './RecursosSidebar'
+export { RecursosHeader } from './RecursosHeader'
+export { RecursosFilters } from './RecursosFilters'
+export { RecursoCard } from './RecursoCard'
+export { RecursosGrid } from './RecursosGrid'
+export { FavoritoButton } from './FavoritoButton'
+export type { SortOption } from './RecursosFilters'

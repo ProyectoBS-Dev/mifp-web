@@ -9,12 +9,14 @@
 // - Podcasts: Reproductor inline custom
 
 import { useState } from 'react'
+import Link from 'next/link'
 import {
   FileText,
   Link as LinkIcon,
   Headphones,
   ExternalLink,
-  Eye
+  Eye,
+  Package
 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
@@ -261,9 +263,9 @@ export function ResourcesWidget() {
   }
 
   return (
-    <>
-      <Tabs defaultValue="pdf" className="w-full h-full flex flex-col">
-        <TabsList className="grid w-full grid-cols-3 h-8">
+    <div className="w-full h-full flex flex-col">
+      <Tabs defaultValue="pdf" className="w-full flex-1 flex flex-col min-h-0">
+        <TabsList className="grid w-full grid-cols-3 h-8 shrink-0">
           <TabsTrigger value="pdf" className="text-xs gap-1 px-2">
             <FileText className="h-3 w-3" />
             <span className="hidden sm:inline">PDFs</span>
@@ -331,11 +333,22 @@ export function ResourcesWidget() {
         </TabsContent>
       </Tabs>
 
+      {/* Footer: Link a recursos completos */}
+      <div className="pt-2 mt-2 border-t shrink-0">
+        <Link
+          href="/recursos"
+          className="flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+        >
+          <Package className="h-3 w-3" />
+          Ver todos los recursos
+        </Link>
+      </div>
+
       {/* Modal de preview de PDF */}
       <PDFPreviewModal
         recurso={previewPDF}
         onClose={() => setPreviewPDF(null)}
       />
-    </>
+    </div>
   )
 }

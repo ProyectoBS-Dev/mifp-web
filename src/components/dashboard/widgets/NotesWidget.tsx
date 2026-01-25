@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react'
 import { Plus, X, Loader2, StickyNote, Search, Pencil, Trash2, Pin, Copy, Check, Archive, ArchiveRestore, LayoutList, LayoutGrid, Download } from 'lucide-react'
+import DOMPurify from 'dompurify'
 import { cn } from '@/lib/utils'
 import { formatTimeAgo } from '@/lib/format'
 import { useApuntes, useCreateApunte, useDeleteApunte, useUpdateApunte } from '@/hooks'
@@ -596,7 +597,12 @@ export function NotesWidget() {
                     'p-3 rounded-lg border prose prose-sm dark:prose-invert max-w-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-primary prose-code:font-mono prose-code:text-xs prose-code:before:content-none prose-code:after:content-none text-muted-foreground',
                     getColorClasses(selectedNote?.color || '#FBBF24')
                   )}
-                  dangerouslySetInnerHTML={{ __html: selectedNote?.contenido || '' }}
+                  dangerouslySetInnerHTML={{ 
+                    __html: DOMPurify.sanitize(selectedNote?.contenido || '', {
+                      ALLOWED_TAGS: ['p', 'strong', 'em', 'code', 'ul', 'li', 'div', 'label', 'input'],
+                      ALLOWED_ATTR: ['data-type', 'data-checked', 'type', 'checked'],
+                    }) 
+                  }}
                 />
               )}
 

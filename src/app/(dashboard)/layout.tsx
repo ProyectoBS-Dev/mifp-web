@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getUser } from '@/lib/supabase/cached'
 import { Navbar } from '@/components/layout'
 import { SemesterOnboardingChecker } from '@/components/auth/SemesterOnboardingChecker'
 
@@ -8,15 +9,16 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
+  // Usar versión cacheada de getUser (se ejecuta 1 sola vez por request)
+  const user = await getUser()
 
-  const { data: { user }, error } = await supabase.auth.getUser()
-
-  if (error || !user) {
+  if (!user) {
     redirect('/login')
   }
 
   // Get user profile with grado_id
+  // Nota: Esta query es diferente, no se cachea
+  const supabase = await createClient()
   const { data: profile } = await supabase
     .from('users')
     .select('full_name, avatar_url, role, grado_id')

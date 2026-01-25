@@ -40,44 +40,44 @@ export function useDashboardStats() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('No autenticado')
 
-      // Contar asignaturas del usuario en semestre activo
-      const { data: userAsignaturas } = await supabase
-        .from('user_asignaturas')
-        .select(`
-          id,
-          semestre:semestres!inner(activo)
-        `)
-        .eq('user_id', user.id)
-        .eq('semestre.activo', true)
-
-      const asignaturasCount = userAsignaturas?.length || 0
-
-      // Obtener PACs del usuario
-      const { data: pacs } = await supabase
-        .from('user_asignatura_pacs')
-        .select(`
-          id, completada,
-          user_asignatura:user_asignaturas!inner(
+      // Optimización: Ejecutar las 3 queries en paralelo con Promise.all
+      // Las queries NO dependen entre sí (solo necesitan el token de sesión via RLS)
+      const [asignaturasRes, pacsRes, vtsRes] = await Promise.all([
+        supabase
+          .from('user_asignaturas')
+          .select(`
+            id,
             semestre:semestres!inner(activo)
-          )
-        `)
-        .eq('user_asignatura.semestre.activo', true)
+          `)
+          .eq('user_id', user.id)
+          .eq('semestre.activo', true),
+        supabase
+          .from('user_asignatura_pacs')
+          .select(`
+            id, completada,
+            user_asignatura:user_asignaturas!inner(
+              semestre:semestres!inner(activo)
+            )
+          `)
+          .eq('user_asignatura.semestre.activo', true),
+        supabase
+          .from('user_asignatura_vts')
+          .select(`
+            id, vista,
+            user_asignatura:user_asignaturas!inner(
+              semestre:semestres!inner(activo)
+            )
+          `)
+          .eq('user_asignatura.semestre.activo', true),
+      ])
 
-      const pacsData = pacs || []
+      const userAsignaturas = asignaturasRes.data || []
+      const asignaturasCount = userAsignaturas.length
+
+      const pacsData = pacsRes.data || []
       const pacsCompletadas = pacsData.filter((p: { completada: boolean | null }) => p.completada === true).length
 
-      // Obtener VTs del usuario
-      const { data: vts } = await supabase
-        .from('user_asignatura_vts')
-        .select(`
-          id, vista,
-          user_asignatura:user_asignaturas!inner(
-            semestre:semestres!inner(activo)
-          )
-        `)
-        .eq('user_asignatura.semestre.activo', true)
-
-      const vtsData = vts || []
+      const vtsData = vtsRes.data || []
       const vtsVistas = vtsData.filter((v: { vista: boolean | null }) => v.vista === true).length
 
       // Calcular porcentaje total para nivel de gamificación

@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+import { getUser } from '@/lib/supabase/cached'
 import { redirect } from 'next/navigation'
 import { DashboardGrid } from '@/components/dashboard'
 import { GDMissingBanner } from '@/components/guias-didacticas'
@@ -14,14 +15,14 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
-
-  // Obtener usuario autenticado
-  const { data: { user } } = await supabase.auth.getUser()
+  // Usar versión cacheada de getUser (reutiliza resultado del layout)
+  const user = await getUser()
 
   if (!user) {
     redirect('/login')
   }
+
+  const supabase = await createClient()
 
   // Obtener layout guardado del usuario
   const { data: layoutData } = await supabase

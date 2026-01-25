@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getUser } from '@/lib/supabase/cached'
 import { SettingsPanel } from '@/components/ajustes'
 
 export const metadata: Metadata = {
@@ -9,9 +9,8 @@ export const metadata: Metadata = {
 }
 
 export default async function AjustesPage() {
-  const supabase = await createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
+  // Usar versión cacheada de getUser (reutiliza resultado del layout)
+  const user = await getUser()
 
   if (!user) {
     redirect('/login')

@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getUser } from '@/lib/supabase/cached'
 import { ProfileCard } from '@/components/perfil/ProfileCard'
 import { AsignaturasCRUD } from '@/components/perfil/AsignaturasCRUD'
 
@@ -10,13 +11,14 @@ export const metadata: Metadata = {
 }
 
 export default async function PerfilPage() {
-  const supabase = await createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
+  // Usar versión cacheada de getUser (reutiliza resultado del layout)
+  const user = await getUser()
 
   if (!user) {
     redirect('/login')
   }
+
+  const supabase = await createClient()
 
   // Obtener perfil del usuario
   const { data: profile } = await supabase

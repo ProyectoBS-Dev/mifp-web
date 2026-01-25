@@ -21,24 +21,51 @@ export function useCalendarEvents(currentDate: Date) {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('No autenticado')
 
+      // Optimización: Ejecutar las 3 queries en paralelo con Promise.all
+      // Las queries NO dependen entre sí (solo necesitan el token de sesión via RLS)
+      const [pacsRes, vtsRes, eventosRes] = await Promise.all([
+        supabase
+          .from('user_asignatura_pacs')
+          .select(`
+            id,
+            pac:asignatura_pacs(
+              id, titulo, fecha_limite,
+              asignatura:asignaturas(nombre, codigo)
+            ),
+            user_asignatura:user_asignaturas!inner(
+              semestre:semestres!inner(activo)
+            )
+          `)
+          .eq('user_asignatura.semestre.activo', true),
+        supabase
+          .from('user_asignatura_vts')
+          .select(`
+            id,
+            vt:asignatura_vts(
+              id, titulo, fecha_programada, hora_inicio, duracion_minutos,
+              asignatura:asignaturas(nombre, codigo)
+            ),
+            user_asignatura:user_asignaturas!inner(
+              semestre:semestres!inner(activo)
+            )
+          `)
+          .eq('user_asignatura.semestre.activo', true),
+        supabase
+          .from('eventos_calendario')
+          .select(`
+            id, titulo, descripcion, tipo, 
+            fecha_inicio, fecha_fin, todo_el_dia, color,
+            asignatura:asignaturas(nombre, codigo)
+          `)
+          .eq('user_id', user.id)
+          .gte('fecha_inicio', monthStart.toISOString())
+          .lte('fecha_inicio', monthEnd.toISOString()),
+      ])
+
       const events: CalendarEvent[] = []
 
-      // 1. PACs del usuario (semestre activo)
-      const { data: pacs } = await supabase
-        .from('user_asignatura_pacs')
-        .select(`
-          id,
-          pac:asignatura_pacs(
-            id, titulo, fecha_limite,
-            asignatura:asignaturas(nombre, codigo)
-          ),
-          user_asignatura:user_asignaturas!inner(
-            semestre:semestres!inner(activo)
-          )
-        `)
-        .eq('user_asignatura.semestre.activo', true)
-
-      pacs?.forEach((item: {
+      // Procesar PACs
+      pacsRes.data?.forEach((item: {
         id: string
         pac: {
           id: string
@@ -67,22 +94,8 @@ export function useCalendarEvents(currentDate: Date) {
         })
       })
 
-      // 2. VTs del usuario (semestre activo)
-      const { data: vts } = await supabase
-        .from('user_asignatura_vts')
-        .select(`
-          id,
-          vt:asignatura_vts(
-            id, titulo, fecha_programada, hora_inicio, duracion_minutos,
-            asignatura:asignaturas(nombre, codigo)
-          ),
-          user_asignatura:user_asignaturas!inner(
-            semestre:semestres!inner(activo)
-          )
-        `)
-        .eq('user_asignatura.semestre.activo', true)
-
-      vts?.forEach((item: {
+      // Procesar VTs
+      vtsRes.data?.forEach((item: {
         id: string
         vt: {
           id: string
@@ -119,19 +132,8 @@ export function useCalendarEvents(currentDate: Date) {
         })
       })
 
-      // 3. Eventos personales del usuario
-      const { data: eventosPersonales } = await supabase
-        .from('eventos_calendario')
-        .select(`
-          id, titulo, descripcion, tipo, 
-          fecha_inicio, fecha_fin, todo_el_dia, color,
-          asignatura:asignaturas(nombre, codigo)
-        `)
-        .eq('user_id', user.id)
-        .gte('fecha_inicio', monthStart.toISOString())
-        .lte('fecha_inicio', monthEnd.toISOString())
-
-      eventosPersonales?.forEach((evento: {
+      // Procesar eventos personales
+      eventosRes.data?.forEach((evento: {
         id: string
         titulo: string
         descripcion: string | null

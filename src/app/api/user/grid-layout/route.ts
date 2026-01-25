@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
+import { gridLayoutSchema, formatZodErrors } from '@/lib/validation/schemas'
+import { z } from 'zod'
 
 /**
  * GET /api/user/grid-layout
  * Obtiene el layout del grid del usuario autenticado
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.user || null)
+  if (rateLimitError) return rateLimitError
+
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -44,6 +51,10 @@ export async function GET() {
  * Actualiza el layout del grid del usuario autenticado
  */
 export async function PUT(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.user || null)
+  if (rateLimitError) return rateLimitError
+
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -53,11 +64,14 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { layout_config } = body
-
-    if (!Array.isArray(layout_config)) {
-      return NextResponse.json({ error: 'layout_config debe ser un array' }, { status: 400 })
+    
+    // ✅ Validación estricta con Zod (máximo 50 widgets)
+    const parseResult = gridLayoutSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json(formatZodErrors(parseResult.error), { status: 400 })
     }
+
+    const { layout_config } = parseResult.data
 
     const adminClient = createAdminClient()
 
@@ -74,8 +88,15 @@ export async function PUT(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true })
-  } catch {
-    return NextResponse.json({ error: 'Error interno' }, { status: 500 })
+  } catch (error) {
+    // ✅ NO exponer detalles internos
+    console.error('[Grid Layout] Error:', error)
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(formatZodErrors(error), { status: 400 })
+    }
+    
+    return NextResponse.json({ error: 'Error al guardar configuración' }, { status: 500 })
   }
 }
 

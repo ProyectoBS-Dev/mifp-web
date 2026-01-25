@@ -3,17 +3,24 @@
 // ============================================
 // Endpoints para gestionar recursos
 
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 import type { RecursoTipo } from '@/types/recursos'
+import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
+import { createRecursoSchema, formatZodErrors } from '@/lib/validation/schemas'
+import { z } from 'zod'
 
 /**
  * GET /api/recursos
  * Obtiene todos los recursos
  * Query params: ?tipo=pdf|enlace|podcast
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.user || null)
+  if (rateLimitError) return rateLimitError
+
   try {
     const supabase = await createClient()
     const { searchParams } = new URL(request.url)
@@ -80,7 +87,11 @@ export async function GET(request: Request) {
  * Crea un nuevo recurso (solo enlaces, los PDF/podcast vienen de sync)
  * Solo para admins
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
+  if (rateLimitError) return rateLimitError
+
   try {
     // Verificar autenticación y rol admin
     const auth = await verifyAdmin()
@@ -89,17 +100,16 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { tipo, titulo, descripcion, url, asignatura_ids } = body
-
-    // Validar campos requeridos
-    if (!tipo || !titulo) {
-      return NextResponse.json(
-        { error: 'Faltan campos requeridos: tipo, titulo' },
-        { status: 400 }
-      )
+    
+    // ✅ Validación estricta con Zod
+    const parseResult = createRecursoSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json(formatZodErrors(parseResult.error), { status: 400 })
     }
 
-    // Para enlaces, url es requerido
+    const { tipo, titulo, descripcion, url, asignatura_ids } = parseResult.data
+
+    // Validación adicional: enlaces requieren URL
     if (tipo === 'enlace' && !url) {
       return NextResponse.json(
         { error: 'URL es requerido para enlaces' },
@@ -149,11 +159,14 @@ export async function POST(request: Request) {
 
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
-    console.error('Error en POST /api/recursos:', error)
-    return NextResponse.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    // ✅ NO exponer detalles internos
+    console.error('[Recursos POST] Error:', error)
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(formatZodErrors(error), { status: 400 })
+    }
+    
+    return NextResponse.json({ error: 'Error al crear recurso' }, { status: 500 })
   }
 }
 

@@ -13,13 +13,33 @@ import { useReactions } from '@/hooks/useReactions'
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import type { NoticiaConMeta } from '@/hooks/useNoticias'
+import DOMPurify from 'dompurify'
 
 // Renderizar contenido (HTML del editor o markdown legacy)
 function RenderContent({ content }: { content: string }) {
   // Quitar tag de categoría si existe
   const cleanContent = content.replace(/^\[(\w+)\]\s*/i, '').trim()
 
-  // Si contiene tags HTML, renderizar directamente
+  // ✅ SIEMPRE SANITIZAR antes de renderizar HTML
+  const sanitizedContent = DOMPurify.sanitize(cleanContent, {
+    ALLOWED_TAGS: [
+      'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'strong', 'em', 'u', 's', 'del', 'ins',
+      'ul', 'ol', 'li',
+      'a', 'code', 'pre', 'blockquote', 'br', 'hr',
+      'table', 'thead', 'tbody', 'tr', 'th', 'td',
+      'img'
+    ],
+    ALLOWED_ATTR: [
+      'href', 'target', 'rel', // Links
+      'src', 'alt', 'width', 'height', // Images
+      'class' // Styling
+    ],
+    ALLOWED_URI_REGEXP: /^(?:(?:https?):\/\/)/i, // Solo https/http
+    ALLOW_DATA_ATTR: false, // No data-* attributes
+  })
+
+  // Si contiene tags HTML, renderizar con sanitización
   if (cleanContent.includes('<p>') || cleanContent.includes('<h2>') || cleanContent.includes('<ul>')) {
     return (
       <div
@@ -28,7 +48,7 @@ function RenderContent({ content }: { content: string }) {
           prose-p:text-foreground/90 prose-p:leading-relaxed
           prose-li:text-foreground/90
           prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
-        dangerouslySetInnerHTML={{ __html: cleanContent }}
+        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
     )
   }
@@ -50,13 +70,19 @@ function RenderContent({ content }: { content: string }) {
             const items = paragraph.split('\n').filter((line) => line.startsWith('- '))
             return (
               <ul key={i} className="list-disc list-inside space-y-1 my-4">
-                {items.map((item, j) => (
-                  <li key={j} className="text-foreground/90">
-                    <span dangerouslySetInnerHTML={{
-                      __html: item.replace('- ', '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    }} />
-                  </li>
-                ))}
+                {items.map((item, j) => {
+                  // ✅ Sanitizar cada item antes de renderizar
+                  const processedItem = item.replace('- ', '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                  const sanitizedItem = DOMPurify.sanitize(processedItem, {
+                    ALLOWED_TAGS: ['strong', 'em'],
+                    ALLOWED_ATTR: [],
+                  })
+                  return (
+                    <li key={j} className="text-foreground/90">
+                      <span dangerouslySetInnerHTML={{ __html: sanitizedItem }} />
+                    </li>
+                  )
+                })}
               </ul>
             )
           }
@@ -64,13 +90,19 @@ function RenderContent({ content }: { content: string }) {
             const items = paragraph.split('\n').filter((line) => /^\d+\./.test(line))
             return (
               <ol key={i} className="list-decimal list-inside space-y-1 my-4">
-                {items.map((item, j) => (
-                  <li key={j} className="text-foreground/90">
-                    <span dangerouslySetInnerHTML={{
-                      __html: item.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    }} />
-                  </li>
-                ))}
+                {items.map((item, j) => {
+                  // ✅ Sanitizar cada item antes de renderizar
+                  const processedItem = item.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                  const sanitizedItem = DOMPurify.sanitize(processedItem, {
+                    ALLOWED_TAGS: ['strong', 'em'],
+                    ALLOWED_ATTR: [],
+                  })
+                  return (
+                    <li key={j} className="text-foreground/90">
+                      <span dangerouslySetInnerHTML={{ __html: sanitizedItem }} />
+                    </li>
+                  )
+                })}
               </ol>
             )
           }

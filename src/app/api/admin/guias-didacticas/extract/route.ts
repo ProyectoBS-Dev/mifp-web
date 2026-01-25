@@ -2,6 +2,9 @@ import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import type { ExtractedGDData } from '@/types/gd'
+import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
+import { extractGDSchema, formatZodErrors } from '@/lib/validation/schemas'
+import { z } from 'zod'
 
 const EXTRACTION_PROMPT = `
 Eres un asistente experto en extraer datos estructurados de Guías Didácticas de ILERNA Online.
@@ -107,6 +110,10 @@ Texto de la Guía Didáctica:
 `
 
 export async function POST(request: NextRequest) {
+  // ✅ CRÍTICO: Rate limit para OpenAI (3 req/min para prevenir costos)
+  const rateLimitError = await withRateLimit(request, rateLimiters?.openai || null)
+  if (rateLimitError) return rateLimitError
+
   // Verificar autenticación y rol admin
   const auth = await verifyAdmin()
   if ('error' in auth) {
@@ -114,11 +121,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { gdId } = await request.json()
+    const body = await request.json()
 
-    if (!gdId) {
-      return NextResponse.json({ error: 'gdId requerido' }, { status: 400 })
+    // ✅ Validación estricta con Zod
+    const parseResult = extractGDSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json(formatZodErrors(parseResult.error), { status: 400 })
     }
+
+    const { gdId } = parseResult.data
 
     // Verificar que OPENAI_API_KEY existe
     if (!process.env.OPENAI_API_KEY) {
@@ -184,7 +195,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Llamar a OpenAI
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const openai = new OpenAI({ 
+      apiKey: process.env.OPENAI_API_KEY,
+      timeout: 30000, // ✅ Timeout de 30 segundos
+    })
     
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -241,9 +255,14 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Extract error:', error)
-    return NextResponse.json({ 
-      error: error instanceof Error ? error.message : 'Error interno' 
-    }, { status: 500 })
+    // ✅ NO exponer detalles internos
+    console.error('[Extract GD] Error:', error)
+    
+    // Solo mensajes genéricos al cliente
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(formatZodErrors(error), { status: 400 })
+    }
+    
+    return NextResponse.json({ error: 'Error al procesar la guía didáctica' }, { status: 500 })
   }
 }

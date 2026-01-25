@@ -11,14 +11,20 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 
+// Tipo compatible con la tabla users de Supabase
 interface UserProfile {
     id: string
     email: string
     full_name: string | null
     avatar_url: string | null
     grado_id: string | null
-    created_at: string
-    role: string
+    created_at: string | null
+    updated_at?: string | null
+    deleted_at?: string | null
+    role: string | null
+    onboarding_completed?: boolean | null
+    notification_settings?: unknown
+    settings?: unknown
 }
 
 interface Grado {
@@ -64,17 +70,18 @@ export function ProfileCard({ user, profile, grado }: ProfileCardProps) {
                 .select()
 
             if (updateError) {
+                console.error('Profile update error:', updateError)
                 setError('Error al guardar los cambios')
-            } else if (!data || data.length === 0) {
-                await supabase
-                    .from('users')
-                    .insert({
-                        id: user.id,
-                        email: user.email,
-                        full_name: fullName || null,
-                        onboarding_completed: true,
-                    })
+                return
             }
+            
+            if (!data || data.length === 0) {
+                // Esto no debería pasar nunca (user siempre existe por auth)
+                console.error('User profile not found:', user.id)
+                setError('Error: perfil no encontrado. Cierra sesión y vuelve a entrar.')
+                return
+            }
+            
             setIsEditing(false)
             router.refresh()
         } catch {

@@ -45,6 +45,26 @@ export interface FCTData {
   horasTotales: number
 }
 
+/**
+ * Tipos para la respuesta de la RPC get_notas_completas
+ */
+interface RpcResponse {
+  error?: string
+  asignaturas?: RpcAsignatura[]
+  fct?: {
+    id: string
+    nota: number | null
+    empresa: string | null
+    fecha_inicio: string | null
+    fecha_fin: string | null
+    horas_totales: number
+  }
+  semestre?: {
+    id: string
+    nombre: string
+  }
+}
+
 export interface NotasData {
   asignaturas: AsignaturaNotas[]
   fct: FCTData
@@ -131,7 +151,7 @@ export function useNotas(semestreId?: string) {
       // Usar RPC optimizada que hace todo en una query
       const { data, error } = await supabase.rpc('get_notas_completas', {
         p_user_id: user.id,
-        p_semestre_id: semestreId ?? null
+        p_semestre_id: semestreId ?? (null as unknown as undefined)
       })
 
       if (error) {
@@ -139,7 +159,8 @@ export function useNotas(semestreId?: string) {
         throw error
       }
 
-      const result = data
+      // Cast a tipo específico desde Json
+      const result = data as unknown as RpcResponse
 
       if (result?.error) {
         return {
@@ -150,7 +171,7 @@ export function useNotas(semestreId?: string) {
       }
 
       // Transformar respuesta de la RPC a formato esperado
-      const asignaturas: AsignaturaNotas[] = (result.asignaturas || []).map((asig: RpcAsignatura) => {
+      const asignaturas: AsignaturaNotas[] = (result?.asignaturas || []).map((asig: RpcAsignatura) => {
         // Calcular peso equitativo si peso_nota es null
         const numRAs = (asig.ras || []).length || 1
         const pesoEquitativo = Math.round(100 / numRAs)
@@ -184,15 +205,15 @@ export function useNotas(semestreId?: string) {
       })
 
       const fct: FCTData = {
-        id: result.fct?.id ?? null,
-        nota: result.fct?.nota ?? null,
-        empresa: result.fct?.empresa ?? null,
-        fechaInicio: result.fct?.fecha_inicio ?? null,
-        fechaFin: result.fct?.fecha_fin ?? null,
-        horasTotales: result.fct?.horas_totales ?? 400
+        id: result?.fct?.id ?? null,
+        nota: result?.fct?.nota ?? null,
+        empresa: result?.fct?.empresa ?? null,
+        fechaInicio: result?.fct?.fecha_inicio ?? null,
+        fechaFin: result?.fct?.fecha_fin ?? null,
+        horasTotales: result?.fct?.horas_totales ?? 400
       }
 
-      const semestreActivo = result.semestre ? {
+      const semestreActivo = result?.semestre ? {
         id: result.semestre.id,
         nombre: result.semestre.nombre
       } : null

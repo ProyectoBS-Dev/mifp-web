@@ -26,7 +26,7 @@ interface Noticia {
   titulo: string
   contenido: string
   imagen_url: string | null
-  publicada: boolean
+  publicada: boolean | null
   created_at: string
   autor: {
     full_name: string | null

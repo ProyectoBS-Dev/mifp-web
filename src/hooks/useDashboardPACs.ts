@@ -38,14 +38,14 @@ export function useDashboardPACs() {
       // Transformar los datos al formato esperado
       return (data || []).map((item: {
         id: string
-        completada: boolean
+        completada: boolean | null
         nota: number | null
         pac: {
           id: string
           numero: number
           titulo: string
-          fecha_limite: string
-          ra: { numero: number; titulo: string }
+          fecha_limite: string | null
+          ra: { numero: number; titulo: string } | null
           asignatura: { nombre: string; codigo: string }
         }
       }) => ({
@@ -56,9 +56,9 @@ export function useDashboardPACs() {
         asignatura: item.pac?.asignatura || { nombre: '', codigo: '' },
         ra: item.pac?.ra || { numero: 0, titulo: '' },
         fecha_limite: item.pac?.fecha_limite || '',
-        completada: item.completada,
+        completada: item.completada ?? false,
         nota: item.nota,
-      })).filter((pac: PACItem) => pac.id) // Filtrar PACs sin datos
+      })).filter((pac) => pac.id) // Filtrar PACs sin datos
     },
     staleTime: 1000 * 60 * 2, // 2 minutos
   })

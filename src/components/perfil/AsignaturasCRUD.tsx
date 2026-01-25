@@ -44,7 +44,7 @@ interface UserAsignatura {
         id: string
         nombre: string
         codigo: string
-        activo: boolean
+        activo: boolean | null
     }
 }
 

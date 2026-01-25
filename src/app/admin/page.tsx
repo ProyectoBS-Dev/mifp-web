@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 interface PendingGD {
   id: string
-  created_at: string
+  created_at: string | null
   asignatura: {
     nombre: string
     codigo: string
@@ -68,7 +68,7 @@ async function getStats() {
   ])
 
   const gds = gdsResult.data || []
-  const pendientes = gds.filter((g: { estado: string }) => g.estado === 'pendiente').length
+  const pendientes = gds.filter((g: { estado: string | null }) => g.estado === 'pendiente').length
 
   return {
     gdsPendientes: pendientes,
@@ -149,7 +149,7 @@ export default async function AdminPage() {
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" />
-                      {formatDistanceToNow(new Date(gd.created_at), {
+                      {formatDistanceToNow(new Date(gd.created_at ?? Date.now()), {
                         addSuffix: true,
                         locale: es,
                       })}

@@ -12,14 +12,20 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 
+// Tipo compatible con la tabla users de Supabase
 interface UserProfile {
   id: string
   email: string
   full_name: string | null
   avatar_url: string | null
   grado_id: string | null
-  created_at: string
+  created_at: string | null
+  updated_at?: string | null
+  deleted_at?: string | null
   role: string
+  onboarding_completed?: boolean | null
+  notification_settings?: unknown
+  settings?: unknown
 }
 
 interface Grado {
@@ -71,37 +77,26 @@ export function ProfileForm({ user, profile, grado, asignaturas }: ProfileFormPr
         .select()
 
       if (updateError) {
+        console.error('Profile update error:', updateError)
         // Error de RLS o de base de datos
         if (updateError.code === '42501' || updateError.message?.includes('policy')) {
           setError('No tienes permisos para actualizar tu perfil. Contacta soporte.')
         } else {
           setError('Error al guardar los cambios')
         }
-      } else if (!data || data.length === 0) {
-        // El update no afectó ninguna fila - el usuario no existe en la tabla
-        // Intentamos crear el registro del perfil
-
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert({
-            id: user.id,
-            email: user.email,
-            full_name: fullName || null,
-            onboarding_completed: true, // Si llega aquí ya pasó onboarding
-          })
-
-        if (insertError) {
-          setError('No se pudo crear tu perfil. Cierra sesión y vuelve a entrar.')
-        } else {
-          setSuccess(true)
-          setIsEditing(false)
-          router.refresh()
-        }
-      } else {
-        setSuccess(true)
-        setIsEditing(false)
-        router.refresh()
+        return
       }
+      
+      if (!data || data.length === 0) {
+        // Esto no debería pasar nunca (user siempre existe por auth/onboarding)
+        console.error('User profile not found:', user.id)
+        setError('Error: perfil no encontrado. Cierra sesión y vuelve a entrar.')
+        return
+      }
+      
+      setSuccess(true)
+      setIsEditing(false)
+      router.refresh()
     } catch {
       setError('Error inesperado')
     } finally {

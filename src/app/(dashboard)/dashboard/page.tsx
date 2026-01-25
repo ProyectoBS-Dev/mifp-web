@@ -30,8 +30,11 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .single()
 
-  const savedLayout = layoutData?.layout_config?.length > 0
-    ? (layoutData.layout_config as DashboardLayoutItem[])
+  // Type guard para verificar si layout_config es un array válido
+  const savedLayout = layoutData && 
+    Array.isArray(layoutData.layout_config) && 
+    layoutData.layout_config.length > 0
+    ? (layoutData.layout_config as unknown as DashboardLayoutItem[])
     : undefined
 
   return (

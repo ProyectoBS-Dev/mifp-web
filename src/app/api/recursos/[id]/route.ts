@@ -5,7 +5,7 @@
 
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 
 interface RouteParams {
   params: Promise<{ id: string }>

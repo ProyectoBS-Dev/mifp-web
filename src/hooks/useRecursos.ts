@@ -27,41 +27,44 @@ export function useRecursos() {
         return []
       }
 
-      // 2. Obtener asignaturas del usuario
-      const { data: userAsignaturas } = await supabase
-        .from('user_asignaturas')
-        .select('asignatura_id')
-        .eq('user_id', user.id)
+      // Optimización: Ejecutar las 2 queries en paralelo con Promise.all
+      // Las queries NO dependen entre sí (el filtrado es post-query en JavaScript)
+      const [asignaturasRes, recursosRes] = await Promise.all([
+        supabase
+          .from('user_asignaturas')
+          .select('asignatura_id')
+          .eq('user_id', user.id),
+        supabase
+          .from('recursos')
+          .select(`
+            id,
+            tipo,
+            titulo,
+            descripcion,
+            url,
+            archivo_path,
+            duracion,
+            created_by,
+            created_at,
+            recursos_asignaturas(
+              asignatura:asignaturas(id, nombre, codigo)
+            )
+          `)
+          .is('deleted_at', null)
+          .order('created_at', { ascending: false }),
+      ])
 
-      const userAsignaturaIds = userAsignaturas?.map(ua => ua.asignatura_id) || []
+      const userAsignaturaIds = (asignaturasRes.data || []).map(
+        (ua: { asignatura_id: string }) => ua.asignatura_id
+      )
 
-      // 3. Obtener todos los recursos con sus asignaturas
-      const { data: recursos, error } = await supabase
-        .from('recursos')
-        .select(`
-          id,
-          tipo,
-          titulo,
-          descripcion,
-          url,
-          archivo_path,
-          duracion,
-          created_by,
-          created_at,
-          recursos_asignaturas(
-            asignatura:asignaturas(id, nombre, codigo)
-          )
-        `)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false })
-
-      if (error) {
-        console.error('Error fetching recursos:', error)
-        throw error
+      if (recursosRes.error) {
+        console.error('Error fetching recursos:', recursosRes.error)
+        throw recursosRes.error
       }
 
-      // 4. Transformar y filtrar recursos
-      const filteredRecursos = (recursos || [])
+      // 3. Transformar y filtrar recursos
+      const filteredRecursos = (recursosRes.data || [])
         .map((r: { 
           recursos_asignaturas: Array<{ asignatura: { id: string; nombre: string; codigo: string } | null }>;
           [key: string]: unknown 

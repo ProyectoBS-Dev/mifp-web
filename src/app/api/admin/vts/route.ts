@@ -1,8 +1,20 @@
 import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
+import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
+import { 
+  createVTSchema, 
+  updateVTSchema, 
+  deleteVTSchema,
+  formatZodErrors 
+} from '@/lib/validation/schemas'
+import { z } from 'zod'
 
 // GET - Listar todas las VTs agrupadas por asignatura
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
+  if (rateLimitError) return rateLimitError
+
   const auth = await verifyAdmin()
   if ('error' in auth) {
     return NextResponse.json({ error: auth.error }, { status: auth.status })
@@ -70,21 +82,32 @@ export async function GET() {
     })
 
   } catch (error) {
-    console.error('Error fetching VTs:', error)
-    return NextResponse.json({ 
-      error: error instanceof Error ? error.message : 'Error interno' 
-    }, { status: 500 })
+    // ✅ NO exponer detalles internos
+    console.error('[VTs GET] Error:', error)
+    return NextResponse.json({ error: 'Error al obtener videotutorías' }, { status: 500 })
   }
 }
 
 // POST - Crear una nueva VT
 export async function POST(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
+  if (rateLimitError) return rateLimitError
+
   const auth = await verifyAdmin()
   if ('error' in auth) {
     return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   try {
+    const body = await request.json()
+    
+    // ✅ Validación estricta con Zod
+    const parseResult = createVTSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json(formatZodErrors(parseResult.error), { status: 400 })
+    }
+
     const { 
       asignaturaId, 
       semestreId, 
@@ -94,13 +117,7 @@ export async function POST(request: NextRequest) {
       hora_inicio, 
       duracion_minutos, 
       enlace_grabacion 
-    } = await request.json()
-
-    if (!asignaturaId || !semestreId || !numero || !titulo) {
-      return NextResponse.json({ 
-        error: 'asignaturaId, semestreId, numero y titulo son requeridos' 
-      }, { status: 400 })
-    }
+    } = parseResult.data
 
     const adminClient = createAdminClient()
 
@@ -146,26 +163,38 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, vt: newVT })
 
   } catch (error) {
-    console.error('Error creating VT:', error)
-    return NextResponse.json({ 
-      error: error instanceof Error ? error.message : 'Error interno' 
-    }, { status: 500 })
+    // ✅ NO exponer detalles internos
+    console.error('[VTs POST] Error:', error)
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(formatZodErrors(error), { status: 400 })
+    }
+    
+    return NextResponse.json({ error: 'Error al crear videotutoría' }, { status: 500 })
   }
 }
 
 // PUT - Actualizar una VT (enlace_grabacion principalmente)
 export async function PUT(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
+  if (rateLimitError) return rateLimitError
+
   const auth = await verifyAdmin()
   if ('error' in auth) {
     return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   try {
-    const { vtId, enlace_grabacion, titulo, fecha_programada, hora_inicio, duracion_minutos } = await request.json()
-
-    if (!vtId) {
-      return NextResponse.json({ error: 'vtId requerido' }, { status: 400 })
+    const body = await request.json()
+    
+    // ✅ Validación estricta con Zod
+    const parseResult = updateVTSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json(formatZodErrors(parseResult.error), { status: 400 })
     }
+
+    const { vtId, enlace_grabacion, titulo, fecha_programada, hora_inicio, duracion_minutos } = parseResult.data
 
     const adminClient = createAdminClient()
 
@@ -193,26 +222,38 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ success: true, vt: data })
 
   } catch (error) {
-    console.error('Error updating VT:', error)
-    return NextResponse.json({ 
-      error: error instanceof Error ? error.message : 'Error interno' 
-    }, { status: 500 })
+    // ✅ NO exponer detalles internos
+    console.error('[VTs PUT] Error:', error)
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(formatZodErrors(error), { status: 400 })
+    }
+    
+    return NextResponse.json({ error: 'Error al actualizar videotutoría' }, { status: 500 })
   }
 }
 
 // DELETE - Eliminar una VT
 export async function DELETE(request: NextRequest) {
+  // ✅ Rate limiting
+  const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
+  if (rateLimitError) return rateLimitError
+
   const auth = await verifyAdmin()
   if ('error' in auth) {
     return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
 
   try {
-    const { vtId } = await request.json()
-
-    if (!vtId) {
-      return NextResponse.json({ error: 'vtId requerido' }, { status: 400 })
+    const body = await request.json()
+    
+    // ✅ Validación estricta con Zod
+    const parseResult = deleteVTSchema.safeParse(body)
+    if (!parseResult.success) {
+      return NextResponse.json(formatZodErrors(parseResult.error), { status: 400 })
     }
+
+    const { vtId } = parseResult.data
 
     const adminClient = createAdminClient()
 
@@ -233,10 +274,14 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ success: true })
 
   } catch (error) {
-    console.error('Error deleting VT:', error)
-    return NextResponse.json({ 
-      error: error instanceof Error ? error.message : 'Error interno' 
-    }, { status: 500 })
+    // ✅ NO exponer detalles internos
+    console.error('[VTs DELETE] Error:', error)
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(formatZodErrors(error), { status: 400 })
+    }
+    
+    return NextResponse.json({ error: 'Error al eliminar videotutoría' }, { status: 500 })
   }
 }
 

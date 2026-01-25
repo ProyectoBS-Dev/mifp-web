@@ -98,9 +98,9 @@ export function SettingsSidebar({ activeSection, onSectionChange }: SettingsSide
 
       {/* Legal links footer */}
       <div className="mt-6 pt-4 border-t border-border">
-        <div className="flex flex-wrap gap-x-3 gap-y-1 px-3 text-xs text-muted-foreground">
-          <Link href="/docs" className="hover:text-foreground transition-colors">
-            Docs
+        <div className="flex flex-wrap gap-x-2 gap-y-1 px-3 text-xs text-muted-foreground">
+          <Link href="/recursos" className="hover:text-foreground transition-colors">
+            Recursos
           </Link>
           <span>·</span>
           <Link href="/terminos" className="hover:text-foreground transition-colors">

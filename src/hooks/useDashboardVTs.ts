@@ -41,15 +41,15 @@ export function useDashboardVTs() {
         asignatura: { id: string; nombre: string; codigo: string }
         user_vts: Array<{
           id: string
-          vista: boolean
+          vista: boolean | null
           vt: {
             id: string
             numero: number
             titulo: string
-            fecha_programada: string
-            hora_inicio: string
-            duracion_minutos: number
-            enlace_grabacion?: string
+            fecha_programada: string | null
+            hora_inicio: string | null
+            duracion_minutos: number | null
+            enlace_grabacion?: string | null
           }
         }>
       }) => {
@@ -60,11 +60,11 @@ export function useDashboardVTs() {
             userVtId: uv.id,
             numero: uv.vt.numero,
             titulo: uv.vt.titulo,
-            fecha_programada: uv.vt.fecha_programada,
+            fecha_programada: uv.vt.fecha_programada ?? '',
             hora_inicio: uv.vt.hora_inicio,
-            duracion_minutos: uv.vt.duracion_minutos,
+            duracion_minutos: uv.vt.duracion_minutos ?? 0,
             enlace_grabacion: uv.vt.enlace_grabacion,
-            vista: uv.vista,
+            vista: uv.vista ?? false,
           }))
           .sort((a, b) => a.numero - b.numero)
 

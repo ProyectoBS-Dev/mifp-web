@@ -5,6 +5,12 @@
 export type RecursoTipo = 'pdf' | 'enlace' | 'podcast'
 
 /**
+ * Tipos de recursos extendidos para UI
+ * Incluye tipos virtuales (video, test) que son filtros sobre 'enlace'
+ */
+export type RecursoTipoUI = RecursoTipo | 'video' | 'test' | 'todos' | 'favoritos'
+
+/**
  * Recurso almacenado en Supabase (metadatos)
  * Los archivos PDF y podcast están en Cloudflare R2
  */

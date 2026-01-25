@@ -2,6 +2,8 @@
 
 | Tarea | Acción Rápida |
 |-------|---------------|
+| ✅ **Verificar tipos** | **`pnpm type-check`** — SIEMPRE antes de completar tarea |
+| 🔄 Regenerar tipos BD | `pnpm dlx supabase gen types typescript --project-id twwvmauepebuqrpwpmmc > src/types/database.ts` |
 | 🔍 Crear feature nueva | Leer: `./structure/01-proyecto/` → `03-database/schema/` + `logic/` → `06-componentes/wireframes/` |
 | 🛣️ Crear API route | Usar: `verifyAdminOrEditor()` + `createAdminClient()` de `@/lib/supabase/admin` |
 | 🎨 Nuevo componente | Verificar: `./structure/06-componentes/wireframes/` + usar primitivos de `ui/` |
@@ -324,6 +326,9 @@ Si durante la lectura de `./structure/` encuentras información **contradictoria
 - ❌ Implementar cambios significativos sin actualizar `./structure/changelog.md`
 - ❌ Ignorar inconsistencias en la documentación
 - ❌ Usar scripts de extracción sin consultar primero `./structure/03-database/_scripts/README.md`
+- ❌ **Completar tarea sin ejecutar `pnpm type-check`**
+- ❌ **Modificar BD sin regenerar tipos de Supabase**
+- ❌ **Crear interfaces que no coincidan con nullability de BD**
 
 # 📁 Project Structure
 
@@ -445,7 +450,7 @@ See existing implementations:
 - `src/app/api/user/grid-layout/route.ts`
 
 ## Regeneración de Tipos de Supabase
-- **Estado actual:** Tipos completamente actualizados (23 Enero 2026)
+- **Estado actual:** Tipos completamente actualizados (25 Enero 2026)
 - **Proceso de regeneración:**
   1. **Generar token temporal:** Ir a https://supabase.com/dashboard/account/tokens
      - Crear nuevo token con expiración automática (recomendado: 1 hora)
@@ -692,3 +697,145 @@ const badge = getGradeBadge(nota)
 ## Testing (Future)
 - When tests are added, update this section with testing conventions
 - Consider documenting in `./structure/07-integraciones/tests-interactivos.md`
+
+# 🔷 TypeScript Strictness & Type Safety (CRÍTICO)
+
+## ⚠️ REGLA CRÍTICA: Type-Check Obligatorio
+
+**SIEMPRE ejecutar `pnpm type-check` antes de considerar una tarea completada.**
+
+Esto es especialmente crítico después de:
+- Modificar schemas o columnas en Supabase
+- Crear/modificar interfaces TypeScript
+- Agregar nuevos hooks o componentes
+- Modificar API routes que interactúan con la BD
+
+```bash
+pnpm type-check  # DEBE retornar 0 errores
+```
+
+## Sincronización Tipos Supabase ↔ TypeScript
+
+### Cuándo Regenerar Tipos (OBLIGATORIO)
+Ejecutar **inmediatamente después** de cualquier cambio en Supabase:
+
+```bash
+export SUPABASE_ACCESS_TOKEN=tu_token
+pnpm dlx supabase gen types typescript --project-id twwvmauepebuqrpwpmmc > src/types/database.ts
+```
+
+Cambios que requieren regeneración:
+- `ALTER TABLE` (agregar/modificar columnas)
+- `ALTER COLUMN ... SET NOT NULL` o `DROP NOT NULL`
+- Crear/modificar ENUMs
+- Crear/modificar funciones RPC
+- Cambiar DEFAULT values
+
+### Verificación Post-Regeneración
+```bash
+pnpm type-check  # Verificar que no hay errores nuevos
+```
+
+## Manejo de Nullability (Causa #1 de Errores)
+
+### Regla de Oro
+> **Los tipos de Supabase son la fuente de verdad.** Las interfaces locales DEBEN coincidir.
+
+### Patrones Correctos
+
+**1. Campos nullable en BD → nullable en interfaces:**
+```typescript
+// ❌ MAL - Asume que no es null
+interface GD {
+  created_at: string
+  estado: GDEstado
+}
+
+// ✅ BIEN - Coincide con BD
+interface GD {
+  created_at: string | null
+  estado: GDEstado | null
+}
+```
+
+**2. Usar nullish coalescing al transformar datos:**
+```typescript
+// ❌ MAL - Crash si es null
+const fecha = new Date(item.created_at)
+
+// ✅ BIEN - Valor por defecto seguro
+const fecha = new Date(item.created_at ?? Date.now())
+```
+
+**3. Type guards para campos opcionales:**
+```typescript
+// ❌ MAL - TypeScript no infiere el narrowing
+.filter(item => item.asignatura)
+
+// ✅ BIEN - Type guard explícito
+.filter((item): item is ItemWithAsignatura => item.asignatura !== null)
+```
+
+**4. Mapear null → undefined cuando sea necesario:**
+```typescript
+// Interfaces con `?:` (opcional) no aceptan `null`
+return {
+  ...data,
+  titulo: data.titulo ?? undefined,  // null → undefined
+}
+```
+
+## Manejo de Tipo `Json` de Supabase
+
+El tipo `Json` de Supabase es genérico y requiere casting explícito.
+
+### Patrón para RPC Returns
+```typescript
+// Definir interfaz esperada
+interface RpcResponse {
+  success: boolean
+  error?: string
+  data?: SomeType[]
+}
+
+// Casting seguro con unknown intermedio
+const result = data as unknown as RpcResponse
+
+// Type guard antes de usar
+if (result && typeof result === 'object' && 'error' in result) {
+  console.error(result.error)
+  return null
+}
+```
+
+### Patrón para Campos Json en Tablas
+```typescript
+// En select con campo Json
+const { data } = await supabase.from('tabla').select('*').single()
+
+// Casting al tipo esperado
+return data ? {
+  ...data,
+  config: data.config as unknown as ConfigType
+} : null
+```
+
+## Anti-Patrones TypeScript (NUNCA hacer)
+
+- ❌ `as any` - Usar `as unknown as Type` si es necesario
+- ❌ Ignorar errores de type-check sin corregir
+- ❌ Crear interfaces que no coincidan con BD
+- ❌ Asumir que campos son non-null sin verificar schema
+- ❌ Usar `@ts-ignore` sin comentario explicativo
+- ❌ Hacer insert/update sin verificar campos requeridos
+
+## Checklist Pre-Commit TypeScript
+
+Antes de hacer commit de cambios que involucren tipos:
+
+1. [ ] `pnpm type-check` retorna 0 errores
+2. [ ] Si modifiqué BD → regeneré tipos de Supabase
+3. [ ] Interfaces locales coinciden con tipos generados
+4. [ ] Campos nullable tienen `| null` en interfaces
+5. [ ] Usé nullish coalescing (`??`) para valores por defecto
+6. [ ] No hay `as any` sin justificación documentada

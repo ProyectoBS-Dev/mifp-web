@@ -133,7 +133,7 @@ export function OnboardingForm() {
     const { data, error: rpcError } = await supabase.rpc('complete_onboarding', {
       p_grado_id: selectedGrado.id,
       p_asignatura_ids: selectedAsignaturas,
-      p_semestre_id: semestreActivo,
+      p_semestre_id: semestreActivo ?? undefined,
     })
 
     if (rpcError) {

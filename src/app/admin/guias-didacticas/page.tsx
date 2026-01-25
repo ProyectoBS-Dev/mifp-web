@@ -19,9 +19,9 @@ type GDEstado = 'pendiente' | 'extrayendo' | 'extraida' | 'validada' | 'rechazad
 
 interface GD {
   id: string
-  created_at: string
-  estado: GDEstado
-  procesada: boolean
+  created_at: string | null
+  estado: GDEstado | null
+  procesada: boolean | null
   archivo_path: string | null
   asignatura: {
     nombre: string

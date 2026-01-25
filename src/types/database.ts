@@ -395,7 +395,7 @@ export type Database = {
           created_at: string | null
           datos_extraidos: Json | null
           deleted_at: string | null
-          estado: Database["public"]["Enums"]["gd_estado"] | null
+          estado: Database["public"]["Enums"]["gd_estado"]
           id: string
           motivo_rechazo: string | null
           procesada: boolean | null
@@ -410,7 +410,7 @@ export type Database = {
           created_at?: string | null
           datos_extraidos?: Json | null
           deleted_at?: string | null
-          estado?: Database["public"]["Enums"]["gd_estado"] | null
+          estado?: Database["public"]["Enums"]["gd_estado"]
           id?: string
           motivo_rechazo?: string | null
           procesada?: boolean | null
@@ -425,7 +425,7 @@ export type Database = {
           created_at?: string | null
           datos_extraidos?: Json | null
           deleted_at?: string | null
-          estado?: Database["public"]["Enums"]["gd_estado"] | null
+          estado?: Database["public"]["Enums"]["gd_estado"]
           id?: string
           motivo_rechazo?: string | null
           procesada?: boolean | null
@@ -508,7 +508,7 @@ export type Database = {
         Row: {
           autor_id: string
           contenido: string
-          created_at: string | null
+          created_at: string
           deleted_at: string | null
           id: string
           imagen_url: string | null
@@ -520,7 +520,7 @@ export type Database = {
         Insert: {
           autor_id: string
           contenido: string
-          created_at?: string | null
+          created_at?: string
           deleted_at?: string | null
           id?: string
           imagen_url?: string | null
@@ -532,7 +532,7 @@ export type Database = {
         Update: {
           autor_id?: string
           contenido?: string
-          created_at?: string | null
+          created_at?: string
           deleted_at?: string | null
           id?: string
           imagen_url?: string | null

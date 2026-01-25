@@ -33,7 +33,17 @@ export function useApuntes(includeArchived = false) {
         return []
       }
 
-      return data || []
+      // Mapear nulls a undefined para coincidir con tipo Apunte
+      return (data || []).map(item => ({
+        ...item,
+        titulo: item.titulo ?? undefined,
+        color: item.color ?? '#FBBF24',
+        orden: item.orden ?? 0,
+        pinned: item.pinned ?? undefined,
+        archived: item.archived ?? undefined,
+        created_at: item.created_at ?? new Date().toISOString(),
+        updated_at: item.updated_at ?? new Date().toISOString(),
+      }))
     },
     staleTime: 1000 * 60 * 5, // 5 minutos
   })

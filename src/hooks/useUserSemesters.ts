@@ -39,7 +39,7 @@ export function useUserSemesters() {
                 throw error
             }
 
-            return (data || []) as UserSemestre[]
+            return (data || []) as unknown as UserSemestre[]
         },
         staleTime: 1000 * 60 * 5, // 5 minutos
     })

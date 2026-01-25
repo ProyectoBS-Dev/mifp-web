@@ -30,9 +30,9 @@ export const metadata: Metadata = {
 
 interface GDDetail {
   id: string
-  created_at: string
-  estado: 'pendiente' | 'extrayendo' | 'extraida' | 'validada' | 'rechazada'
-  procesada: boolean
+  created_at: string | null
+  estado: 'pendiente' | 'extrayendo' | 'extraida' | 'validada' | 'rechazada' | null
+  procesada: boolean | null
   archivo_path: string | null
   motivo_rechazo: string | null
   datos_extraidos: ExtractedGDData | null
@@ -68,7 +68,11 @@ async function getGD(id: string): Promise<GDDetail | null> {
     .is('deleted_at', null)
     .single()
 
-  return data
+  // Type assertion para datos_extraidos (Json -> ExtractedGDData)
+  return data ? {
+    ...data,
+    datos_extraidos: data.datos_extraidos as ExtractedGDData | null
+  } : null
 }
 
 async function getFileUrl(path: string): Promise<string | null> {
@@ -102,7 +106,8 @@ export default async function ValidarGDPage({
     validada: { label: 'Validada', color: 'green' },
     rechazada: { label: 'Rechazada', color: 'red' },
   } as const
-  const estadoInfo = estadoConfig[gd.estado] || estadoConfig.pendiente
+  // Usar nullish coalescing para prevenir error si estado es null
+  const estadoInfo = estadoConfig[gd.estado ?? 'pendiente']
 
   return (
     <div className="space-y-6">
@@ -238,7 +243,7 @@ export default async function ValidarGDPage({
                   <div>
                     <p className="text-xs text-muted-foreground">Fecha de subida</p>
                     <p className="text-sm font-medium">
-                      {formatDistanceToNow(new Date(gd.created_at), {
+                      {formatDistanceToNow(new Date(gd.created_at ?? Date.now()), {
                         addSuffix: true,
                         locale: es,
                       })}

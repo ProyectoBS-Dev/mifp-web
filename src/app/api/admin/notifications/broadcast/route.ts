@@ -67,8 +67,8 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            count: usersList.length,
-            message: `Notificación enviada a ${usersList.length} usuarios`
+            count: users.length,
+            message: `Notificación enviada a ${users.length} usuarios`
         })
 
     } catch (error) {

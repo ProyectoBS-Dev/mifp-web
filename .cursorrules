@@ -61,6 +61,10 @@ Root layout tiene `title: { template: '%s | MiFP' }` → **NO duplicar "MiFP"** 
   - ❌ NEVER use inline styles with colors
 - **If color missing:** Extend `tailwind.config.ts` `theme.extend.colors` section, don't hardcode in components
 
+## Icons
+- **Prioritize:** 
+  - ✅ ALWAYS check: `./structure/09-diseno/iconos.md` 
+
 ## Components
 - **Before creating:** Check if similar component exists in `src/components/`
 - **Badge component:** Use `<Badge color="green" colorStyle="soft">` from `ui/badge.tsx`

@@ -967,6 +967,35 @@ export type Database = {
           },
         ]
       }
+      user_recursos_favoritos: {
+        Row: {
+          created_at: string
+          id: string
+          recurso_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          recurso_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          recurso_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_recursos_favoritos_recurso_id_fkey"
+            columns: ["recurso_id"]
+            isOneToOne: false
+            referencedRelation: "recursos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           avatar_url: string | null

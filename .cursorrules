@@ -400,6 +400,21 @@ if (result && typeof result === 'object' && 'error' in result) {
 - ❌ `@ts-ignore` sin comentario
 - ❌ Insert/update sin verificar campos requeridos
 
+## Anti-Patrón: eslint-disable como Parche
+
+**NUNCA usar `eslint-disable` para "arreglar" problemas de imports/SSR.**
+
+```typescript
+// ❌ MAL - Hack con require y eslint-disable
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const DOMPurify = require('dompurify')
+
+// ✅ BIEN - Buscar paquete isomórfico
+import DOMPurify from 'isomorphic-dompurify'
+```
+
+**Regla:** Si un import falla en SSR, buscar alternativa isomórfica (`isomorphic-*`, `universal-*`) antes de parchear con `require()` o `typeof window`.
+
 ## Checklist Pre-Commit
 
 1. [ ] Si modifiqué tipos/BD/interfaces → `pnpm type-check` = 0 errores

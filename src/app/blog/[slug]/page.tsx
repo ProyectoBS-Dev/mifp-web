@@ -96,7 +96,7 @@ async function getAdjacentPosts(currentSlug: string): Promise<{
   }
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.app'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
 
 export async function generateMetadata({ 
   params 
@@ -113,7 +113,7 @@ export async function generateMetadata({
   const autorNombre = post.autor?.full_name || post.autor?.email?.split('@')[0] || 'MiFP'
 
   return {
-    title: `${post.titulo} - Blog`,
+    title: post.titulo,
     description: post.extracto,
     keywords: ['FP', 'ILERNA', 'formación profesional', post.categoria],
     authors: [{ name: autorNombre }],
@@ -125,12 +125,12 @@ export async function generateMetadata({
       description: post.extracto,
       url: `${baseUrl}/blog/${slug}`,
       siteName: 'MiFP',
-      images: post.imagen_url ? [{
-        url: post.imagen_url,
+      images: [{
+        url: post.imagen_url || `${baseUrl}/images/og-default.png`,
         width: 1200,
         height: 630,
         alt: post.titulo,
-      }] : undefined,
+      }],
       locale: 'es_ES',
       type: 'article',
       publishedTime: post.created_at,
@@ -139,10 +139,10 @@ export async function generateMetadata({
       section: post.categoria,
     },
     twitter: {
-      card: post.imagen_url ? 'summary_large_image' : 'summary',
+      card: 'summary_large_image',
       title: post.titulo,
       description: post.extracto,
-      images: post.imagen_url ? [post.imagen_url] : undefined,
+      images: [post.imagen_url || `${baseUrl}/images/og-default.png`],
     },
     robots: {
       index: true,
@@ -171,6 +171,43 @@ export default async function PostPage({
   }
 
   const { prev, next } = await getAdjacentPosts(slug)
+  const autorNombre = post.autor?.full_name || post.autor?.email?.split('@')[0] || 'Equipo MiFP'
 
-  return <PostContent post={post} prevPost={prev} nextPost={next} />
+  return (
+    <>
+      {/* JSON-LD Structured Data - Article Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: post.titulo,
+            description: post.extracto,
+            image: post.imagen_url || `${baseUrl}/images/og-default.png`,
+            datePublished: post.created_at,
+            dateModified: post.updated_at || post.created_at,
+            author: {
+              '@type': 'Organization',
+              name: 'Equipo MiFP',
+              url: 'https://mifp.dev',
+            },
+            publisher: {
+              '@type': 'EducationalOrganization',
+              name: 'MiFP',
+              logo: {
+                '@type': 'ImageObject',
+                url: 'https://mifp.dev/images/isotipo.png',
+              },
+            },
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': `${baseUrl}/blog/${slug}`,
+            },
+          }),
+        }}
+      />
+      <PostContent post={post} prevPost={prev} nextPost={next} />
+    </>
+  )
 }

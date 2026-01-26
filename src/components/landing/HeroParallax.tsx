@@ -54,22 +54,22 @@ export function HeroParallax() {
       className="absolute inset-0 overflow-hidden pointer-events-none"
       aria-hidden="true"
     >
-      {/* Background gradient - same for both themes */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-vt-blue-light/30 to-vt-blue/40" />
+      {/* Background gradient - subtle overlay that adapts to theme */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-vt-blue-light/20 to-vt-blue/30 dark:from-transparent dark:via-vt-blue/10 dark:to-vt-purple/20" />
       
-      {/* Aurora glow effect */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[400px] bg-vt-blue/15 rounded-full blur-[120px]" />
-      <div className="absolute top-20 right-1/4 w-[500px] h-[350px] bg-vt-green/10 rounded-full blur-[100px]" />
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-vt-blue/10 rounded-full blur-[150px]" />
+      {/* Aurora glow effects */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-vt-blue/30 dark:bg-vt-blue/20 rounded-full blur-[120px]" />
+      <div className="absolute top-20 right-1/4 w-[500px] h-[350px] bg-vt-green/12 dark:bg-vt-green/8 rounded-full blur-[100px]" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-vt-green/20 dark:bg-vt-green/20 rounded-full blur-[150px]" />
       
       {/* Animated elements container */}
       <div ref={elementsRef} className="absolute inset-0" style={{ willChange: 'transform, opacity' }}>
-        {/* SVG Clouds - crisp at any resolution */}
-        <Cloud className="absolute top-[15%] left-[5%] w-32 h-20 text-white/70 drop-shadow-lg" />
-        <Cloud className="absolute top-[25%] right-[10%] w-40 h-24 text-white/60 drop-shadow-lg" />
-        <Cloud className="absolute top-[45%] left-[15%] w-48 h-28 text-white/80 drop-shadow-xl" />
-        <Cloud className="absolute bottom-[20%] right-[5%] w-56 h-32 text-white/75 drop-shadow-xl" />
-        <Cloud className="absolute bottom-[30%] left-[60%] w-24 h-16 text-white/50" />
+        {/* SVG Clouds - adapt to theme with better visibility */}
+        <Cloud className="absolute top-[15%] left-[5%] w-32 h-20 text-white/60 dark:text-slate-700/40 drop-shadow-lg" />
+        <Cloud className="absolute top-[25%] right-[10%] w-40 h-24 text-white/50 dark:text-slate-700/30 drop-shadow-lg" />
+        <Cloud className="absolute top-[45%] left-[15%] w-48 h-28 text-white/70 dark:text-slate-700/50 drop-shadow-xl" />
+        <Cloud className="absolute bottom-[20%] right-[5%] w-56 h-32 text-white/65 dark:text-slate-700/40 drop-shadow-xl" />
+        <Cloud className="absolute bottom-[30%] left-[60%] w-24 h-16 text-white/40 dark:text-slate-700/30" />
         
         {/* Owl mascot - temporarily disabled due to transparency issue
         <div className="absolute bottom-[10%] right-[10%] w-48 h-48 md:w-64 md:h-64">
@@ -82,20 +82,6 @@ export function HeroParallax() {
           />
         </div>
         */}
-      </div>
-      
-      {/* Wave divider at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 overflow-hidden leading-[0]">
-        <svg 
-          className="relative block w-full h-[80px] md:h-[120px]" 
-          viewBox="0 0 1200 120" 
-          preserveAspectRatio="none"
-        >
-          <path 
-            d="M0,60 C200,120 400,0 600,60 C800,120 1000,0 1200,60 L1200,120 L0,120 Z" 
-            className="fill-background"
-          />
-        </svg>
       </div>
     </div>
   )

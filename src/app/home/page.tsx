@@ -19,6 +19,8 @@ import {
   Eye,
   TabletSmartphone,
   MonitorSmartphoneIcon,
+  Palette,
+  Smartphone,
 } from 'lucide-react'
 import {
   Tooltip,
@@ -33,6 +35,15 @@ import { HeroTabs } from '@/components/landing/HeroTabs'
 import { FAQSection } from '@/components/landing/FAQSection'
 import { HowItWorks } from '@/components/landing/HowItWorks'
 import { ScrollReveal } from '@/components/ui/scroll-reveal'
+import { AnimatedDashboard } from '@/components/landing/AnimatedDashboard'
+import {
+  PacsIllustration,
+  CalendarIllustration,
+  NotasIllustration,
+  RecursosIllustration,
+  NotificacionesIllustration,
+  DashboardIllustration,
+} from '@/components/landing/illustrations'
 
 // SEO: Canonical URL pointing to root - tells Google /home is a duplicate of /
 export const metadata: Metadata = {
@@ -232,77 +243,77 @@ export default async function HomePage() {
 
                   {/* Right - Dashboard preview */}
                   <div className="relative">
-                    {/* Screenshot container with glow */}
-                    <div className="relative rounded-xl overflow-hidden shadow-2xl border bg-background">
-                      {/* Dashboard preview */}
-                      <Image
-                        src="/images/dashboard_preview.png"
-                        alt="Dashboard de MiFP"
-                        width={600}
-                        height={400}
-                        className="rounded-lg object-cover"
-                      />
-                    </div>
-
-                    {/* Decorative glow behind screenshot */}
-                    <div className="absolute -inset-4 -z-10 bg-gradient-to-r from-vt-green/20 via-vt-blue/20 to-vt-blue-light/20 rounded-2xl blur-2xl opacity-60" />
+                    {/* Animated Dashboard */}
+                    <AnimatedDashboard />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Bento Grid - 6 Feature Cards */}
-            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[minmax(180px,auto)]">
+            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[minmax(160px,auto)]">
 
               {/* Card 1 - PACs (Grande - ocupa 2 filas) */}
               <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-green/50 transition-all lg:row-span-2">
                 <div className="h-full flex flex-col">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-green/10 mb-4">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-green/10 mb-3">
                     <FileText className="h-6 w-6 text-vt-green" />
                   </div>
                   <h4 className="text-lg font-semibold mb-2">Gestión de PACs</h4>
-                  <p className="text-sm text-muted-foreground flex-1">
+                  <p className="text-sm text-muted-foreground mb-3">
                     Controla tus tareas pendientes, fechas de entrega y progreso. Nunca olvides una entrega.
                   </p>
-                  {/* Preview placeholder */}
-                  <div className="mt-4 rounded-lg border bg-muted/30 overflow-hidden flex-1 min-h-[120px] flex items-center justify-center">
-                    {/* PACs preview */}
-                    <Image
-                      src="/images/pacs_preview.png"
-                      alt="PACs del Dashboard de MiFP"
-                      width={300}
-                      height={200}
-                      className="rounded-lg object-cover"
-                    />
+                  {/* Illustration - subida */}
+                  <div className="flex-1 flex items-center justify-center min-h-[100px]">
+                    <PacsIllustration />
+                  </div>
+                  {/* Stats mini - bajadas */}
+                  <div className="grid grid-cols-2 gap-3 mt-2">
+                    <div className="rounded-lg bg-vt-green/5 p-3 border border-vt-green/10">
+                      <div className="text-2xl font-bold text-vt-green">8</div>
+                      <div className="text-xs text-muted-foreground">Pendientes</div>
+                    </div>
+                    <div className="rounded-lg bg-vt-green/5 p-3 border border-vt-green/10">
+                      <div className="text-2xl font-bold text-vt-green">5</div>
+                      <div className="text-xs text-muted-foreground">Esta semana</div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Card 2 - Calendario (Normal) */}
-              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-blue/50 transition-all">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-blue/10 mb-4">
+              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-blue/50 transition-all flex flex-col">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-blue/10 mb-3">
                   <Calendar className="h-6 w-6 text-vt-blue" />
                 </div>
                 <h4 className="text-lg font-semibold mb-2">Calendario Integrado</h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground mb-3">
                   Visualiza videotutorías, entregas y exámenes en un calendario personalizado.
                 </p>
+                {/* Illustration */}
+                <div className="mt-auto flex items-end justify-center pt-2">
+                  <CalendarIllustration />
+                </div>
               </div>
 
               {/* Card 3 - Notas (Normal) */}
-              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-yellow/50 transition-all">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-yellow/10 mb-4">
+              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-yellow/50 transition-all flex flex-col">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-yellow/10 mb-3">
                   <BarChart3 className="h-6 w-6 text-vt-yellow-dark" />
                 </div>
                 <h4 className="text-lg font-semibold mb-2">Seguimiento de Notas</h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground mb-3">
                   Calcula tu nota final automáticamente según los criterios de evaluación oficiales.
                 </p>
+                {/* Illustration */}
+                <div className="mt-auto flex items-end justify-center pt-2">
+                  <NotasIllustration />
+                </div>
               </div>
 
               {/* Card 4 - Recursos (Grande - ocupa 2 columnas en lg) */}
               <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-purple/50 transition-all lg:col-span-2">
-                <div className="flex flex-col md:flex-row md:items-start gap-4">
+                <div className="flex flex-col md:flex-row md:items-center gap-6">
                   <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-purple/10 shrink-0">
                     <BookOpen className="h-6 w-6 text-vt-purple" />
                   </div>
@@ -312,53 +323,76 @@ export default async function HomePage() {
                       Accede a materiales organizados por asignatura: PDFs, podcasts, enlaces útiles.
                     </p>
                   </div>
-                  {/* Preview placeholder */}
-                  <div className="hidden md:flex rounded-lg border bg-muted/30 overflow-hidden w-32 h-20 items-center justify-center shrink-0">
-                    {/* Recursos de Estudio preview */}
-                    <Image
-                      src="/images/recursos_preview.png"
-                      alt="Recursos de Estudio del Dashboard de MiFP"
-                      width={300}
-                      height={200}
-                      className="rounded-lg object-cover"
-                    />
+                  {/* Illustration */}
+                  <div className="flex items-center justify-center shrink-0 w-full md:w-auto">
+                    <RecursosIllustration />
                   </div>
                 </div>
               </div>
 
               {/* Card 5 - Notificaciones (Normal) */}
-              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-red/50 transition-all">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-red/10 mb-4">
+              <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-red/50 transition-all flex flex-col">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-red/10 mb-3">
                   <Bell className="h-6 w-6 text-vt-red" />
                 </div>
                 <h4 className="text-lg font-semibold mb-2">Notificaciones</h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground mb-3">
                   Recibe alertas de entregas próximas, nuevos recursos y comunicados importantes.
                 </p>
+                {/* Illustration */}
+                <div className="mt-auto flex items-end justify-center pt-2">
+                  <NotificacionesIllustration />
+                </div>
               </div>
 
               {/* Card 6 - Dashboard (Normal) */}
               <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-primary/50 transition-all lg:col-span-2">
-                <div className="flex flex-col md:flex-row md:items-start gap-4">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 shrink-0">
-                    <GraduationCap className="h-6 w-6 text-primary" />
+                <div className="flex flex-col h-full">
+                  <div className="flex flex-col md:flex-row md:items-start gap-6 mb-4">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 shrink-0">
+                      <GraduationCap className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-lg font-semibold mb-2">Dashboard Personal</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Un panel de control personalizable con los widgets que más necesitas.
+                      </p>
+                    </div>
+                    {/* Illustration */}
+                    <div className="flex items-center justify-center shrink-0 w-full md:w-auto">
+                      <DashboardIllustration />
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="text-lg font-semibold mb-2">Dashboard Personal</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Un panel de control personalizable con los widgets que más necesitas.
-                    </p>
-                  </div>
-                  {/* Preview placeholder */}
-                  <div className="hidden md:flex rounded-lg border bg-muted/30 overflow-hidden w-32 h-20 items-center justify-center shrink-0">
-                    {/* Asignaturas preview */}
-                    <Image
-                      src="/images/asignaturas_preview.png"
-                      alt="Asignaturas del Dashboard de MiFP"
-                      width={300}
-                      height={200}
-                      className="rounded-lg object-cover"
-                    />
+                  {/* Mini badges - grid 2x2 */}
+                  <div className="grid grid-cols-2 gap-3 mt-auto">
+                    <div className="rounded-lg bg-primary/5 p-3 border border-primary/10">
+                      <div className="text-2xl font-bold text-primary">6</div>
+                      <div className="text-xs text-muted-foreground">Widgets activos</div>
+                    </div>
+                    <div className="rounded-lg bg-vt-green/5 p-3 border border-vt-green/10">
+                      <div className="text-sm font-semibold text-vt-green flex items-center gap-1">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-vt-green opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-vt-green"></span>
+                        </span>
+                        En tiempo real
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">Datos actualizados</div>
+                    </div>
+                    <div className="rounded-lg bg-vt-blue/5 p-3 border border-vt-blue/10">
+                      <div className="text-sm font-semibold text-vt-blue flex items-center gap-1.5">
+                        <Palette className="h-4 w-4" />
+                        100%
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">Personalizable</div>
+                    </div>
+                    <div className="rounded-lg bg-vt-purple/5 p-3 border border-vt-purple/10">
+                      <div className="text-sm font-semibold text-vt-purple flex items-center gap-1.5">
+                        <Smartphone className="h-4 w-4" />
+                        Multi
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">Dispositivo</div>
+                    </div>
                   </div>
                 </div>
               </div>

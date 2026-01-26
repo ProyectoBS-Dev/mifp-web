@@ -1,0 +1,6 @@
+export { PacsIllustration } from './PacsIllustration'
+export { CalendarIllustration } from './CalendarIllustration'
+export { NotasIllustration } from './NotasIllustration'
+export { RecursosIllustration } from './RecursosIllustration'
+export { NotificacionesIllustration } from './NotificacionesIllustration'
+export { DashboardIllustration } from './DashboardIllustration'

@@ -29,20 +29,20 @@ import {
 } from '@/components/ui/tooltip'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { createClient } from '@/lib/supabase/server'
-import { HeroParallax } from '@/components/landing/HeroParallax'
-import { HeroTabs } from '@/components/landing/HeroTabs'
-import { FAQSection } from '@/components/landing/FAQSection'
-import { HowItWorks } from '@/components/landing/HowItWorks'
-import { ScrollReveal } from '@/components/ui/scroll-reveal'
-import { AnimatedDashboard } from '@/components/landing/AnimatedDashboard'
 import {
+  HeroParallax,
+  HeroTabs,
+  FAQSection,
+  HowItWorks,
+  AnimatedDashboard,
   PacsIllustration,
   CalendarIllustration,
   NotasIllustration,
   RecursosIllustration,
   NotificacionesIllustration,
   DashboardIllustration,
-} from '@/components/landing/illustrations'
+} from '@/components/landing'
+import { ScrollReveal } from '@/components/ui/scroll-reveal'
 
 export default async function LandingPage() {
   // Check if user is logged in - redirect to dashboard if so

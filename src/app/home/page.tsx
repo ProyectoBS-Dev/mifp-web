@@ -30,20 +30,20 @@ import {
 } from '@/components/ui/tooltip'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { createClient } from '@/lib/supabase/server'
-import { HeroParallax } from '@/components/landing/HeroParallax'
-import { HeroTabs } from '@/components/landing/HeroTabs'
-import { FAQSection } from '@/components/landing/FAQSection'
-import { HowItWorks } from '@/components/landing/HowItWorks'
-import { ScrollReveal } from '@/components/ui/scroll-reveal'
-import { AnimatedDashboard } from '@/components/landing/AnimatedDashboard'
 import {
+  HeroParallax,
+  HeroTabs,
+  FAQSection,
+  HowItWorks,
+  AnimatedDashboard,
   PacsIllustration,
   CalendarIllustration,
   NotasIllustration,
   RecursosIllustration,
   NotificacionesIllustration,
   DashboardIllustration,
-} from '@/components/landing/illustrations'
+} from '@/components/landing'
+import { ScrollReveal } from '@/components/ui/scroll-reveal'
 
 // SEO: Canonical URL pointing to root - tells Google /home is a duplicate of /
 export const metadata: Metadata = {

@@ -1,0 +1,7 @@
+export { AnimatedDashboard } from './AnimatedDashboard'
+export { FAQSection } from './FAQSection'
+export { FeatureTabs } from './FeatureTabs'
+export { HeroParallax } from './HeroParallax'
+export { HeroTabs } from './HeroTabs'
+export { HowItWorks } from './HowItWorks'
+export * from './illustrations'

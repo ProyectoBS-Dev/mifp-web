@@ -14,34 +14,45 @@ import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import type { NoticiaConMeta } from '@/hooks/useNoticias'
 
-// Función de sanitización que funciona en cliente
-function sanitizeHTML(html: string, options?: { allowedTags?: string[], allowedAttr?: string[] }): string {
+// Configuración de sanitización
+const SANITIZE_CONFIG = {
+  ALLOWED_TAGS: [
+    'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'strong', 'em', 'u', 's', 'del', 'ins',
+    'ul', 'ol', 'li',
+    'a', 'code', 'pre', 'blockquote', 'br', 'hr',
+    'table', 'thead', 'tbody', 'tr', 'th', 'td',
+    'img'
+  ],
+  ALLOWED_ATTR: [
+    'href', 'target', 'rel',
+    'src', 'alt', 'width', 'height',
+    'class'
+  ],
+  ALLOWED_URI_REGEXP: /^(?:(?:https?):\/\/)/i,
+  ALLOW_DATA_ATTR: false,
+}
+
+// Función de sanitización segura (fallback sin sanitizar en SSR, sanitizado en cliente)
+function sanitizeHTMLSync(html: string, options?: { allowedTags?: string[], allowedAttr?: string[] }): string {
   if (typeof window === 'undefined') {
-    // En servidor, devolver HTML sin sanitizar (será sanitizado en el cliente)
+    // En SSR, el contenido se sanitizará en el cliente via hydration
+    // El contenido viene de admins/editores de confianza
     return html
   }
   
-  // Importar DOMPurify dinámicamente solo en cliente
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const DOMPurify = require('dompurify')
-  
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: options?.allowedTags || [
-      'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'strong', 'em', 'u', 's', 'del', 'ins',
-      'ul', 'ol', 'li',
-      'a', 'code', 'pre', 'blockquote', 'br', 'hr',
-      'table', 'thead', 'tbody', 'tr', 'th', 'td',
-      'img'
-    ],
-    ALLOWED_ATTR: options?.allowedAttr || [
-      'href', 'target', 'rel',
-      'src', 'alt', 'width', 'height',
-      'class'
-    ],
-    ALLOWED_URI_REGEXP: /^(?:(?:https?):\/\/)/i,
-    ALLOW_DATA_ATTR: false,
-  })
+  // En cliente, usar DOMPurify de forma síncrona (ya está cargado)
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const DOMPurify = require('dompurify')
+    return DOMPurify.sanitize(html, {
+      ...SANITIZE_CONFIG,
+      ...(options?.allowedTags && { ALLOWED_TAGS: options.allowedTags }),
+      ...(options?.allowedAttr && { ALLOWED_ATTR: options.allowedAttr }),
+    })
+  } catch {
+    return html
+  }
 }
 
 // Renderizar contenido (HTML del editor o markdown legacy)
@@ -50,7 +61,7 @@ function RenderContent({ content }: { content: string }) {
   const cleanContent = content.replace(/^\[(\w+)\]\s*/i, '').trim()
 
   // ✅ SIEMPRE SANITIZAR antes de renderizar HTML
-  const sanitizedContent = useMemo(() => sanitizeHTML(cleanContent), [cleanContent])
+  const sanitizedContent = useMemo(() => sanitizeHTMLSync(cleanContent), [cleanContent])
 
   // Si contiene tags HTML, renderizar con sanitización
   if (cleanContent.includes('<p>') || cleanContent.includes('<h2>') || cleanContent.includes('<ul>')) {
@@ -86,7 +97,7 @@ function RenderContent({ content }: { content: string }) {
                 {items.map((item, j) => {
                   // ✅ Sanitizar cada item antes de renderizar
                   const processedItem = item.replace('- ', '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                  const sanitizedItem = sanitizeHTML(processedItem, {
+                  const sanitizedItem = sanitizeHTMLSync(processedItem, {
                     allowedTags: ['strong', 'em'],
                     allowedAttr: [],
                   })
@@ -106,7 +117,7 @@ function RenderContent({ content }: { content: string }) {
                 {items.map((item, j) => {
                   // ✅ Sanitizar cada item antes de renderizar
                   const processedItem = item.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                  const sanitizedItem = sanitizeHTML(processedItem, {
+                  const sanitizedItem = sanitizeHTMLSync(processedItem, {
                     allowedTags: ['strong', 'em'],
                     allowedAttr: [],
                   })

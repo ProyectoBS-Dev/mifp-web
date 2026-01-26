@@ -8,7 +8,7 @@ const onest = Onest({
   variable: '--font-onest',
 })
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.app'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: `${baseUrl}/images/og-image.png`, // Crear esta imagen: 1200x630px
+        url: `${baseUrl}/images/og-default.png`,
         width: 1200,
         height: 630,
         alt: 'MiFP - Tu compañero de estudios de FP',
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'MiFP - Tu compañero de estudios de FP',
     description: 'Plataforma de gestión académica para estudiantes de FP en ILERNA',
-    images: [`${baseUrl}/images/og-image.png`],
+    images: [`${baseUrl}/images/og-default.png`],
   },
   robots: {
     index: true,
@@ -86,6 +86,26 @@ export default function RootLayout({
         />
       </head>
       <body className={`${onest.variable} font-sans antialiased bg-background text-foreground`}>
+        {/* JSON-LD Structured Data - Organization Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'EducationalOrganization',
+              name: 'MiFP',
+              alternateName: 'Mi Formación Profesional',
+              url: 'https://mifp.dev',
+              logo: 'https://mifp.dev/images/isotipo.png',
+              description: 'Plataforma de gestión académica para estudiantes de Formación Profesional en ILERNA. Gestiona tus PACs, videotutorías, notas y más.',
+              foundingDate: '2025',
+              address: {
+                '@type': 'PostalAddress',
+                addressCountry: 'ES',
+              },
+            }),
+          }}
+        />
         <QueryProvider>
           {children}
         </QueryProvider>

@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.app'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -15,6 +15,7 @@ export default function robots(): MetadataRoute.Robots {
           '/notas/',
           '/ajustes/',
           '/perfil/',
+          '/recursos/',
           '/onboarding/',
         ],
       },

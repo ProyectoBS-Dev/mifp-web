@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.app'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Páginas estáticas

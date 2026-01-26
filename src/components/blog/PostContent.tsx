@@ -34,6 +34,7 @@ const SANITIZE_CONFIG = {
 }
 
 // Función de sanitización segura (fallback sin sanitizar en SSR, sanitizado en cliente)
+// Nota: isomorphic-dompurify falla en Windows (ENOENT con jsdom), usamos require condicional
 function sanitizeHTMLSync(html: string, options?: { allowedTags?: string[], allowedAttr?: string[] }): string {
   if (typeof window === 'undefined') {
     // En SSR, el contenido se sanitizará en el cliente via hydration
@@ -41,7 +42,7 @@ function sanitizeHTMLSync(html: string, options?: { allowedTags?: string[], allo
     return html
   }
   
-  // En cliente, usar DOMPurify de forma síncrona (ya está cargado)
+  // En cliente, usar DOMPurify de forma síncrona
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const DOMPurify = require('dompurify')

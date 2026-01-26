@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.app'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
 
 export const metadata: Metadata = {
   title: 'Política de Privacidad',
@@ -11,17 +11,24 @@ export const metadata: Metadata = {
     canonical: `${baseUrl}/privacidad`,
   },
   openGraph: {
-    title: 'Política de Privacidad',
+    title: 'Política de Privacidad | MiFP',
     description: 'Conoce cómo recopilamos, usamos y protegemos tus datos personales en MiFP.',
     url: `${baseUrl}/privacidad`,
     siteName: 'MiFP',
+    images: [{
+      url: `${baseUrl}/images/og-default.png`,
+      width: 1200,
+      height: 630,
+      alt: 'MiFP - Política de Privacidad',
+    }],
     locale: 'es_ES',
     type: 'website',
   },
   twitter: {
     card: 'summary',
-    title: 'Política de Privacidad',
+    title: 'Política de Privacidad | MiFP',
     description: 'Conoce cómo protegemos tus datos en MiFP.',
+    images: [`${baseUrl}/images/og-default.png`],
   },
   robots: {
     index: true,

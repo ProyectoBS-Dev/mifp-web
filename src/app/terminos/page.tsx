@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.app'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
 
 export const metadata: Metadata = {
   title: 'Términos y Condiciones',
@@ -11,17 +11,24 @@ export const metadata: Metadata = {
     canonical: `${baseUrl}/terminos`,
   },
   openGraph: {
-    title: 'Términos y Condiciones',
+    title: 'Términos y Condiciones | MiFP',
     description: 'Conoce las normas que rigen el uso de MiFP.',
     url: `${baseUrl}/terminos`,
     siteName: 'MiFP',
+    images: [{
+      url: `${baseUrl}/images/og-default.png`,
+      width: 1200,
+      height: 630,
+      alt: 'MiFP - Términos y Condiciones',
+    }],
     locale: 'es_ES',
     type: 'website',
   },
   twitter: {
     card: 'summary',
-    title: 'Términos y Condiciones',
+    title: 'Términos y Condiciones | MiFP',
     description: 'Conoce las normas de uso de MiFP.',
+    images: [`${baseUrl}/images/og-default.png`],
   },
   robots: {
     index: true,

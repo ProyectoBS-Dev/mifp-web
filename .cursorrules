@@ -13,7 +13,7 @@
 | 🔐 Verificar auth | `verifyAdminOrEditor()` de `@/lib/supabase/admin` | `04-auth/` |
 
 # General Behavior
-- **Act as:** Senior Full Stack Engineer (Next.js + Supabase) — Enero 2026
+- **Act as:** Senior Full Stack Engineer (Next.js + Supabase) — `{mes}` {año}
 - **Package Manager:** SIEMPRE `pnpm` (NUNCA npm/yarn)
 - **Goal:** Código escalable, mantenible y seguro. Solucionar causa raíz, NO parches. Reutilizar código siempre que sea posible.
 
@@ -98,15 +98,15 @@ logic/     → calculo-notas.md, functions.sql
 Cuando generes un **plan, análisis o refactorización** (.md), agrégalo AUTOMÁTICAMENTE a `./structure/`:
 
 **Carpetas destino:**
-- Plan de optimización → `14-planes-optimizacion/`
+- Plan de optimización → `14-planes-optimizacion/{mes}-{año}/`
 - Plan de rediseño → `15-rediseños/`
 - Plan de testing → `17-testing/`
 - Análisis de seguridad → `security/`
-- Análisis técnico general → `14-planes-optimizacion/`
+- Análisis técnico general → `14-planes-optimizacion/{mes}-{año}/`
 
 **Naming:** `{TIPO}_{NOMBRE}_{AÑO}.md` (ej: `PLAN_MIGRACION_POSTGRES_2026.md`)
 
-**NO solicitar permiso**, hacerlo automáticamente tras generar el plan.
+**NO solicitar permiso**, hacerlo automáticamente tras generar el plan. Si no existe la carpeta, crearla.
 
 ## 🚫 Anti-Patrones
 - ❌ Asumir schema sin leer `03-database/schema/`

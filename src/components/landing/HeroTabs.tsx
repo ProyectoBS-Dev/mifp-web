@@ -74,12 +74,12 @@ export function HeroTabs() {
       
       {/* Tagline */}
       <div className="mt-8 text-center">
-        <p className="text-slate-500 text-sm mb-6">
+        <p className="text-muted-foreground text-sm mb-6">
           Navega entre las diferentes pestañas para ver las funcionalidades de MiFP <Sparkles className="inline h-4 w-4" />
         </p>
         
         {/* Tabs Navigation */}
-        <div className="inline-flex items-center gap-1 p-1.5 rounded-full bg-slate-100 backdrop-blur-sm border border-slate-200">
+        <div className="inline-flex items-center gap-1 p-1.5 rounded-full bg-muted/50 backdrop-blur-sm border border-border">
           {tabs.map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -90,8 +90,8 @@ export function HeroTabs() {
                 className={cn(
                   'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all',
                   isActive
-                    ? 'bg-white text-slate-900 shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                    ? 'bg-background text-foreground shadow-sm border border-border'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                 )}
               >
                 <Icon className="h-4 w-4" />

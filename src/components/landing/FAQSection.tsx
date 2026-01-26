@@ -20,6 +20,12 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 interface FAQItem {
   id: string
@@ -42,7 +48,7 @@ const faqs: FAQItem[] = [
   {
     id: '2',
     question: '¿Solo funciona para ILERNA?',
-    answer: 'Actualmente está optimizado para estudiantes de ILERNA Online, con el sistema de evaluación específico (PACs, VTs, exámenes). Aunque puede adaptarse a otros centros.',
+    answer: 'Si, está optimizado para estudiantes de ILERNA Online, con el sistema de evaluación específico (PACs, VTs, exámenes). Aunque puede adaptarse a otros centros.',
     icon: GraduationCap,
     iconColor: 'text-vt-blue',
     iconBg: 'bg-vt-blue/10'
@@ -82,7 +88,7 @@ const faqs: FAQItem[] = [
   {
     id: '7',
     question: '¿Cómo contacto con soporte?',
-    answer: 'Puedes contactarnos a través de nuestro formulario de contacto, por email, o abriendo un issue en nuestro repositorio de GitHub.',
+    answer: 'En ajustes encontrarás el enlace a nuestro formulario de contacto.',
     icon: MessageSquare,
     iconColor: 'text-vt-green',
     iconBg: 'bg-vt-green/10'
@@ -91,12 +97,12 @@ const faqs: FAQItem[] = [
 
 // Quick links for the visual grid
 const quickLinks = [
-  { icon: Settings, label: 'Ajustes', href: '/ajustes', color: 'text-vt-purple' },
-  { icon: Layout, label: 'Dashboard', href: '/dashboard', color: 'text-vt-green' },
-  { icon: BarChart3, label: 'Notas', href: '/notas', color: 'text-vt-yellow' },
-  { icon: FolderOpen, label: 'Recursos', href: '/recursos', color: 'text-vt-blue' },
-  { icon: MessageCircle, label: 'Feedback', href: '/ajustes', color: 'text-vt-green' },
-  { icon: Scale, label: 'Legal', href: '/terminos', color: 'text-muted-foreground' },
+  { icon: Settings, label: 'Ajustes', href: '/ajustes', color: 'text-vt-purple', tooltip: 'Personaliza tu experiencia y preferencias' },
+  { icon: Layout, label: 'Dashboard', href: '/dashboard', color: 'text-vt-green', tooltip: 'Tu centro de control académico' },
+  { icon: BarChart3, label: 'Notas', href: '/notas', color: 'text-vt-yellow', tooltip: 'Consulta y calcula tus calificaciones' },
+  { icon: FolderOpen, label: 'Recursos', href: '/recursos', color: 'text-vt-blue', tooltip: 'Accede a materiales de estudio' },
+  { icon: MessageCircle, label: 'Feedback', href: '/ajustes', color: 'text-vt-green', tooltip: 'Envíanos tus sugerencias y comentarios' },
+  { icon: Scale, label: 'Legal', href: '/terminos', color: 'text-muted-foreground', tooltip: 'Términos y condiciones de uso' },
 ]
 
 export function FAQSection() {
@@ -177,21 +183,29 @@ export function FAQSection() {
               <div className="absolute inset-0 bg-gradient-to-br from-vt-green/20 via-vt-blue/20 to-vt-purple/20 blur-3xl rounded-full scale-150" />
               
               {/* Icons grid with links */}
-              <div className="relative grid grid-cols-3 gap-4 p-8">
-                {quickLinks.map((item, index) => {
-                  const Icon = item.icon
-                  return (
-                    <Link
-                      key={index}
-                      href={item.href}
-                      className="flex flex-col items-center justify-center w-24 h-24 rounded-2xl bg-card border border-border shadow-lg hover:shadow-xl hover:scale-105 hover:border-vt-green/50 transition-all duration-200 group"
-                    >
-                      <Icon className={cn('w-8 h-8 mb-2 transition-colors', item.color, 'group-hover:text-vt-green')} />
-                      <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">{item.label}</span>
-                    </Link>
-                  )
-                })}
-              </div>
+              <TooltipProvider>
+                <div className="relative grid grid-cols-3 gap-4 p-8">
+                  {quickLinks.map((item, index) => {
+                    const Icon = item.icon
+                    return (
+                      <Tooltip key={index}>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href={item.href}
+                            className="flex flex-col items-center justify-center w-24 h-24 rounded-2xl bg-card border border-border shadow-lg hover:shadow-xl hover:scale-105 hover:border-vt-green/50 transition-all duration-200 group"
+                          >
+                            <Icon className={cn('w-8 h-8 mb-2 transition-colors', item.color, 'group-hover:text-vt-green')} />
+                            <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">{item.label}</span>
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{item.tooltip}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  })}
+                </div>
+              </TooltipProvider>
             </div>
           </div>
         </div>

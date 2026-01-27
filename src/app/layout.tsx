@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     default: 'MiFP - Tu compañero de estudios de FP',
     template: '%s | MiFP',
   },
-  description: 'Plataforma de gestión académica para estudiantes de Formación Profesional en ILERNA. Gestiona tus PACs, videotutorías, notas y más.',
+  description: 'Plataforma de gestión académica para estudiantes de Formación Profesional Online. Gestiona tu progreso y evaluación continua, videotutorías, notas y más.',
   keywords: ['FP', 'ILERNA', 'DAM', 'DAW', 'estudiantes', 'gestión académica', 'formación profesional', 'ciclos formativos', 'PACs', 'videotutorías'],
   authors: [{ name: 'MiFP Team' }],
   creator: 'MiFP',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'MiFP - Tu compañero de estudios de FP',
-    description: 'Plataforma de gestión académica para estudiantes de Formación Profesional en ILERNA',
+    description: 'Plataforma de gestión académica para estudiantes de Formación Profesional Online.',
     url: baseUrl,
     siteName: 'MiFP',
     locale: 'es_ES',
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'MiFP - Tu compañero de estudios de FP',
-    description: 'Plataforma de gestión académica para estudiantes de FP en ILERNA',
+    description: 'Plataforma de gestión académica para estudiantes de FP Online.',
     images: [`${baseUrl}/images/og-default.png`],
   },
   robots: {
@@ -97,7 +97,7 @@ export default function RootLayout({
               alternateName: 'Mi Formación Profesional',
               url: 'https://mifp.dev',
               logo: 'https://mifp.dev/images/isotipo.png',
-              description: 'Plataforma de gestión académica para estudiantes de Formación Profesional en ILERNA. Gestiona tus PACs, videotutorías, notas y más.',
+              description: 'Plataforma de gestión académica para estudiantes de Formación Profesional Online. Gestiona tu progreso y evaluación continua, videotutorías, notas y más.',
               foundingDate: '2025',
               address: {
                 '@type': 'PostalAddress',

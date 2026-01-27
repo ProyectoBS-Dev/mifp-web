@@ -40,15 +40,15 @@ const faqs: FAQItem[] = [
   {
     id: '1',
     question: '¿Es gratis?',
-    answer: 'Sí, MiFP es completamente gratis. Es un proyecto creado por estudiantes de FP de Grado Superior de iLERNA Online y para estudiantes de FP.',
+    answer: 'Sí, MiFP es completamente gratis. Es un proyecto creado por estudiantes de FP de Grado Superior de FP Online y para estudiantes de FP.',
     icon: Coins,
     iconColor: 'text-vt-green',
     iconBg: 'bg-vt-green/10'
   },
   {
     id: '2',
-    question: '¿Solo funciona para ILERNA?',
-    answer: 'Si, está optimizado para estudiantes de ILERNA Online, con el sistema de evaluación específico (PACs, VTs, exámenes). Aunque puede adaptarse a otros centros.',
+    question: '¿Solo funciona para FP Online?',
+    answer: 'Si, está optimizado para estudiantes de FP Online, con el sistema de evaluación específico (PACs, VTs, exámenes).',
     icon: GraduationCap,
     iconColor: 'text-vt-blue',
     iconBg: 'bg-vt-blue/10'
@@ -64,7 +64,7 @@ const faqs: FAQItem[] = [
   {
     id: '4',
     question: '¿Cómo calcula las notas?',
-    answer: 'Utilizamos el sistema oficial de evaluación de ILERNA: PACs (interactivas y desarrollo), Videotutorías y Examen Final, con los pesos correspondientes de cada Resultado de Aprendizaje (RA).',
+    answer: 'Nos guiamos por el sistema oficial de evaluación de FP Online: PACs (interactivas y desarrollo), Videotutorías y Examen Final, con los pesos correspondientes de cada Resultado de Aprendizaje (RA). Todo tiene matices, ya que en cada escuela oficial online los promedios y pesos pueden variar ligeramente.',
     icon: Calculator,
     iconColor: 'text-vt-yellow',
     iconBg: 'bg-vt-yellow/10'

@@ -7,11 +7,11 @@ import { extractGDSchema, formatZodErrors } from '@/lib/validation/schemas'
 import { z } from 'zod'
 
 const EXTRACTION_PROMPT = `
-Eres un asistente experto en extraer datos estructurados de Guías Didácticas de ILERNA Online.
+Eres un asistente experto en extraer datos estructurados de Guías Didácticas de FP Online.
 
-## ESTRUCTURA DE UNA GD DE ILERNA
+## ESTRUCTURA DE UNA GD DE FP ONLINE
 
-Las Guías Didácticas de ILERNA tienen esta estructura típica:
+Las Guías Didácticas de FP Online tienen esta estructura típica:
 1. Introducción con tabla de RAs y fechas
 2. Contenidos por RA
 3. Estructura del Módulo:
@@ -39,7 +39,7 @@ Las Guías Didácticas de ILERNA tienen esta estructura típica:
   "PAC 1 (50%)" o "PAC 1 (100%)" dentro del bloque de cada RA
 - Las fechas de entrega están en la tabla de "Temporalización de la evaluación continua"
 
-### Sistema de Evaluación ILERNA:
+### Sistema de Evaluación de esta escuela de FP Online:
 - Evaluación Continua (PACs) = 40% de la nota de cada RA
 - Examen Final Global (PEF) = 60% de la nota de cada RA
 - Los pesos que extraes de las PACs son DENTRO del 40% de EC, no del total
@@ -205,7 +205,7 @@ export async function POST(request: NextRequest) {
       messages: [
         { 
           role: 'system', 
-          content: 'Eres un asistente que extrae datos estructurados de Guías Didácticas de ILERNA. Responde SOLO con JSON válido.' 
+          content: 'Eres un asistente que extrae datos estructurados de Guías Didácticas de FP Online. Responde SOLO con JSON válido.' 
         },
         { 
           role: 'user', 

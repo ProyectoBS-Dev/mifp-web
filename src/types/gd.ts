@@ -1,6 +1,6 @@
 /**
  * Types para el sistema de Guías Didácticas
- * Basado en la estructura de ILERNA Online
+ * Basado en la estructura de FP Online
  */
 
 // ============================================
@@ -79,9 +79,9 @@ export interface ExtractedVT {
 }
 
 export interface ExtractedEvaluacion {
-  /** Peso de evaluación continua (siempre 40 en ILERNA) */
+  /** Peso de evaluación continua (siempre 40 en FP Online) */
   peso_evaluacion_continua: number
-  /** Peso del examen final (siempre 60 en ILERNA) */
+  /** Peso del examen final (siempre 60 en FP Online) */
   peso_examen_final: number
   /** Fecha límite para revisión de PACs */
   fecha_revision_pacs?: string | null

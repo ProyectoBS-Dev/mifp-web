@@ -305,7 +305,7 @@ function CreateVTModal({ open, onOpenChange, asignatura, semestreId, nextNumero 
               id="enlace"
               value={formData.enlace_grabacion}
               onChange={(e) => setFormData(prev => ({ ...prev, enlace_grabacion: e.target.value }))}
-              placeholder="https://ilernaonline.zoom.us/rec/play/..."
+              placeholder="https://escuelaonline.zoom.us/rec/play/..."
             />
           </div>
 
@@ -548,7 +548,7 @@ function VTCard({ vt }: { vt: VTData }) {
                   <Input
                     value={formData.enlace_grabacion}
                     onChange={(e) => setFormData(prev => ({ ...prev, enlace_grabacion: e.target.value }))}
-                    placeholder="https://ilernaonline.zoom.us/rec/play/..."
+                    placeholder="https://escuelaonline.zoom.us/rec/play/..."
                     className="text-sm h-8"
                     disabled={isSaving}
                   />

@@ -418,7 +418,7 @@ export function calcularMediaPACsRA(pacs: PAC[]): { media: number | null; comple
 
 /**
  * Calcula la nota de un RA
- * Fórmula ILERNA: Nota_RA = (Media_PACs × 40%) + (Examen × 60%)
+ * Fórmula FP Online: Nota_RA = (Media_PACs × 40%) + (Examen × 60%)
  */
 export function calcularNotaRA(
   pacs: PAC[],

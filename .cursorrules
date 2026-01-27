@@ -4,16 +4,16 @@
 |-------|---------------|-------------------|
 | ✅ **Verificar tipos** | **`pnpm type-check`** — Solo tras cambios en tipos/BD/interfaces/componentes | — |
 | 🔄 Regenerar tipos BD | `pnpm dlx supabase gen types typescript --project-id twwvmauepebuqrpwpmmc > src/types/database.ts` | — |
-| 🔍 Crear feature | `01-proyecto/` → `03-database/schema/` → `06-componentes/wireframes/` | ✅ |
-| 🛣️ Crear API route | `verifyAdminOrEditor()` + `createAdminClient()` | `07-integraciones/api-routes.md` |
-| 🎨 Nuevo componente | Verificar wireframes + usar primitivos `ui/` | `06-componentes/wireframes/` |
-| 🗄️ Modificar BD | Verificar PRIMERO schema-actual.sql + regenerar tipos | `03-database/schema/` |
-| 🧮 Calcular notas | `lib/grades.ts` + `getGradeBadge(nota)` | `03-database/logic/calculo-notas.md` |
+| 🔍 Crear feature | `./structure/01-proyecto/` → `./structure/03-database/schema/` → `./structure/06-componentes/wireframes/` | ✅ |
+| 🛣️ Crear API route | `verifyAdminOrEditor()` + `createAdminClient()` | `./structure/07-integraciones/api-routes.md` |
+| 🎨 Nuevo componente | Verificar wireframes + usar primitivos `ui/` | `./structure/06-componentes/wireframes/` |
+| 🗄️ Modificar BD | Verificar PRIMERO schema-actual.sql + regenerar tipos | `./structure/03-database/schema/` |
+| 🧮 Calcular notas | `lib/grades.ts` + `getGradeBadge(nota)` | `./structure/03-database/logic/calculo-notas.md` |
 | 📅 Formatear fechas | `formatDate()` de `lib/format.ts` | — |
-| 🔐 Verificar auth | `verifyAdminOrEditor()` de `@/lib/supabase/admin` | `04-auth/` |
+| 🔐 Verificar auth | `verifyAdminOrEditor()` de `@/lib/supabase/admin` | `./structure/04-auth/` |
 
 # General Behavior
-- **Act as:** Senior Full Stack Engineer (Next.js + Supabase) — `{mes}` {año}
+- **Act as:** Senior Full Stack Engineer (Next.js + Supabase)
 - **Package Manager:** SIEMPRE `pnpm` (NUNCA npm/yarn)
 - **Goal:** Código escalable, mantenible y seguro. Solucionar causa raíz, NO parches. Reutilizar código siempre que sea posible.
 
@@ -54,17 +54,19 @@ Root layout tiene `title: { template: '%s | MiFP' }` → **NO duplicar "MiFP"**
 - **Ubicación:** `./structure/` (git-ignored, local sincronizada)
 - **Propósito:** Documentación técnica completa (arquitectura, decisiones, wireframes, schemas)
 - **Índice completo:** `./structure/README.md` (tabla con todas las carpetas 01-17, rules, scripts, security)
-- **Archivos clave:** `decisions.md`, `changelog.md`
+- **Archivos clave:**
+  - `./structure/changelog.md` — Registro de TODOS los cambios (actualizar SIEMPRE)
+  - `./structure/decisions.md` — Decisiones arquitectónicas (actualizar al tomar decisiones técnicas importantes)
 
 ## Carpetas CRÍTICAS (consultar siempre)
 
 | Carpeta | Contenido | Cuándo |
 |---------|-----------|--------|
-| `03-database/` | Schema, RLS, logic, migrations | **ANTES** de cualquier query/mutación BD |
-| `12-estructura-proyecto/` | Árbol de carpetas del proyecto | **ANTES** de crear archivos/carpetas |
-| `15-rediseños/` | Planes de rediseño UI | **ANTES** de asumir wireframe vigente |
+| `./structure/03-database/` | Schema, RLS, logic, migrations | **ANTES** de cualquier query/mutación BD |
+| `./structure/12-estructura-proyecto/` | Árbol de carpetas del proyecto | **ANTES** de crear archivos/carpetas |
+| `./structure/15-rediseños/` | Planes de rediseño UI | **ANTES** de asumir wireframe vigente |
 
-### 03-database/ (Detalle)
+### ./structure/03-database/ (Detalle)
 ```
 _scripts/  → Scripts SQL extracción Supabase
 schema/    → schema-actual.sql, schema-explicado.md
@@ -84,35 +86,37 @@ logic/     → calculo-notas.md, functions.sql
 
 | Cambio | Archivo a Actualizar |
 |--------|---------------------|
-| Tabla/columna BD | `03-database/schema/schema-explicado.md` |
-| Política RLS | `03-database/security/rls-policies.md` |
-| Trigger/función SQL | `03-database/logic/triggers-functions.md` |
-| Nueva ruta/página | `05-vistas/rutas.md` |
-| Lógica cálculo notas | `03-database/logic/calculo-notas.md` |
-| **CUALQUIER cambio** | **`changelog.md`** (SIEMPRE) |
+| Tabla/columna BD | `./structure/03-database/schema/schema-explicado.md` |
+| Política RLS | `./structure/03-database/security/rls-policies.md` |
+| Trigger/función SQL | `./structure/03-database/logic/triggers-functions.md` |
+| Nueva ruta/página | `./structure/05-vistas/rutas.md` |
+| Lógica cálculo notas | `./structure/03-database/logic/calculo-notas.md` |
+| **CUALQUIER cambio** | **`./structure/changelog.md`** (SIEMPRE) |
 
-**Protocolo:** Read archivo → StrReplace actualización → Agregar entrada en changelog
+**Protocolo:** Read archivo → StrReplace actualización → Agregar entrada en `./structure/changelog.md`
 
 ## 📝 Documentación Automática de Planes/Análisis
+
+**IMPORTANTE:** `./structure/` = `{workspace_root}/structure/` (carpeta `structure/` en la RAÍZ del proyecto, NUNCA en raíz directa)
 
 Cuando generes un **plan, análisis o refactorización** (.md), agrégalo AUTOMÁTICAMENTE a `./structure/`:
 
 **Carpetas destino:**
-- Plan de optimización → `14-planes-optimizacion/{mes}-{año}/`
-- Plan de rediseño → `15-rediseños/`
-- Plan de testing → `17-testing/`
-- Análisis de seguridad → `security/`
-- Análisis técnico general → `14-planes-optimizacion/{mes}-{año}/`
+- Plan de optimización → `./structure/14-planes-optimizacion/{mes}-{año}/`
+- Plan de rediseño → `./structure/15-rediseños/`
+- Plan de testing → `./structure/17-testing/`
+- Análisis de seguridad → `./structure/security/`
+- Análisis técnico general → `./structure/14-planes-optimizacion/{mes}-{año}/`
 
 **Naming:** `{TIPO}_{NOMBRE}_{AÑO}.md` (ej: `PLAN_MIGRACION_POSTGRES_2026.md`)
 
 **NO solicitar permiso**, hacerlo automáticamente tras generar el plan. Si no existe la carpeta, crearla.
 
 ## 🚫 Anti-Patrones
-- ❌ Asumir schema sin leer `03-database/schema/`
-- ❌ Crear componentes sin revisar `06-componentes/wireframes/` y `15-rediseños/`
-- ❌ Modificar lógica notas sin leer `03-database/logic/calculo-notas.md`
-- ❌ API routes sin revisar `03-database/security/rls-policies.md`
+- ❌ Asumir schema sin leer `./structure/03-database/schema/`
+- ❌ Crear componentes sin revisar `./structure/06-componentes/wireframes/` y `./structure/15-rediseños/`
+- ❌ Modificar lógica notas sin leer `./structure/03-database/logic/calculo-notas.md`
+- ❌ API routes sin revisar `./structure/03-database/security/rls-policies.md`
 - ❌ Modificar tipos/BD/interfaces sin ejecutar `pnpm type-check` al finalizar
 - ❌ Modificar BD sin regenerar tipos Supabase
 - ❌ Generar plan/análisis sin agregarlo a `./structure/`

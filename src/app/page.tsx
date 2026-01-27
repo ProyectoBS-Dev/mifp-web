@@ -435,7 +435,7 @@ export default async function LandingPage() {
       </ScrollReveal>
 
       {/* Footer */}
-      <footer className="border-t py-12 bg-card">
+      <footer className="border-t py-12 bg-card bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row md:justify-center gap-8 md:gap-16 lg:gap-24">
             {/* Logo & Description */}
@@ -443,9 +443,11 @@ export default async function LandingPage() {
               <Link href="/" className="flex items-center gap-2 mb-4">
                 <span className="text-xl font-bold gradient-text">MiFP</span>
               </Link>
-              <p className="text-sm text-muted-foreground">
-                Tu compañero de estudios para FP. Gestiona PACs, videotutorías, recursos y notas
-                de forma sencilla.
+              <p className="text-xs text-muted-foreground">
+                Tu compañero de estudios para FP Online. 
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Esta web es una herramienta complementaria de seguimiento de tus estudios en tu centro educativo. 
               </p>
             </div>
 
@@ -471,14 +473,14 @@ export default async function LandingPage() {
           </div>
 
           <div className="border-t mt-8 pt-8 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12">
-            <p className="flex items-center gap-2 text-sm text-muted-foreground md:pr-12">
+            <p className="flex items-center gap-2 text-sm text-muted-foreground md:pr-32">
               ~/Dev desarrollado por estudiantes de FP.
             </p>
             <TooltipProvider>
               <div className="flex items-center justify-center gap-3 md:pl-8">
                 <span className="text-sm text-muted-foreground font-medium">Hecho con</span>
                 <Heart className="h-4 w-4 text-vt-red" />
-                <span className="text-sm text-muted-foreground font-medium">por:</span>
+                <span className="text-sm text-muted-foreground font-medium">por</span>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link target="_blank" href="https://github.com/benriosdev" className="transition-opacity hover:opacity-60">

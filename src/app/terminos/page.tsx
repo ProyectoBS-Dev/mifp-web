@@ -85,7 +85,7 @@ export default function TerminosPage() {
           
           {/* Fecha de actualización */}
           <p className="text-muted-foreground text-sm">
-            Última actualización: 20 de enero de 2026
+            Última actualización: 28 de enero de 2026
           </p>
         </div>
       </div>
@@ -252,7 +252,14 @@ export default function TerminosPage() {
           </section>
 
           <section className="mb-10">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">12. Contacto</h2>
+            <h2 className="text-xl font-semibold mb-4 text-foreground">12. Proyecto y desarrollo</h2>
+            <p className="text-muted-foreground leading-relaxed">
+            MiFP es una herramienta independiente creada por estudiantes de Formación Profesional como proyecto académico. No está afiliada, respaldada ni asociada oficialmente con ningún centro educativo. Los nombres y marcas de instituciones educativas mencionados son propiedad de sus respectivos titulares y se utilizan únicamente con fines descriptivos e informativos bajo el derecho de cita educativa.
+            </p>
+          </section>
+
+          <section className="mb-10">
+            <h2 className="text-xl font-semibold mb-4 text-foreground">13. Contacto</h2>
             <p className="text-muted-foreground leading-relaxed">
               Para cualquier consulta sobre estos Términos, puedes contactarnos en{' '}
               <a href="mailto:contacto@mifp.dev" className="text-primary hover:underline">contacto@mifp.dev</a>.

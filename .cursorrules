@@ -400,6 +400,27 @@ if (result && typeof result === 'object' && 'error' in result) {
 - ❌ `@ts-ignore` sin comentario
 - ❌ Insert/update sin verificar campos requeridos
 
+## Anti-Patrón: eslint-disable como Parche
+
+**Evitar `eslint-disable` para "arreglar" problemas de imports/SSR.**
+
+**Orden de preferencia:**
+1. ✅ Buscar paquete isomórfico (`isomorphic-*`, `universal-*`)
+2. ✅ Si no existe o falla (ej: `isomorphic-dompurify` falla en Windows): usar `typeof window` + `require()`
+3. ✅ Para componentes completos: `next/dynamic` con `ssr: false`
+
+```typescript
+// Patrón aceptable cuando no hay alternativa isomórfica funcional
+function sanitizeHTML(html: string): string {
+  if (typeof window === 'undefined') return html  // SSR: contenido de admins
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const DOMPurify = require('dompurify')
+  return DOMPurify.sanitize(html, {...})
+}
+```
+
+**Nota:** Documentar en comentario por qué se usa este patrón (ej: "isomorphic-dompurify falla en Windows").
+
 ## Checklist Pre-Commit
 
 1. [ ] Si modifiqué tipos/BD/interfaces → `pnpm type-check` = 0 errores

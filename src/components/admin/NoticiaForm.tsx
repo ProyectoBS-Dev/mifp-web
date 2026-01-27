@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Save, Trash2 } from 'lucide-react'
+import { Loader2, Save, Trash2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   Select,
   SelectContent,
@@ -83,6 +84,8 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
   const [publicada, setPublicada] = useState(noticia?.publicada ?? true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [orphanedImages, setOrphanedImages] = useState<string[]>([]) // URLs de imágenes huérfanas a borrar
+  const [formError, setFormError] = useState<string | null>(null) // Errores del formulario
 
   // Auto-generar slug desde título (solo si el usuario no lo ha editado manualmente)
   useEffect(() => {
@@ -103,27 +106,75 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
     setSlugTouched(true)
   }, [titulo])
 
+  // ✅ Handler para cuando se elimina/cambia una imagen antes de guardar
+  const handlePreviousImageDelete = useCallback((imageUrl: string) => {
+    // Solo agregar si no es la imagen original de la noticia (en caso de edición)
+    if (!isEditing || imageUrl !== noticia?.imagen_url) {
+      setOrphanedImages(prev => [...prev, imageUrl])
+    }
+  }, [isEditing, noticia?.imagen_url])
+
+  // ✅ Función para borrar imágenes huérfanas del storage
+  const deleteOrphanedImages = async (imageUrls: string[]) => {
+    if (imageUrls.length === 0) return
+
+    try {
+      await Promise.all(
+        imageUrls.map(async (url) => {
+          const response = await fetch('/api/admin/noticias/delete-image', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageUrl: url }),
+          })
+          
+          if (!response.ok) {
+            console.warn(`Failed to delete orphaned image: ${url}`)
+          }
+        })
+      )
+    } catch (error) {
+      console.error('Error deleting orphaned images:', error)
+      // No fallar el guardado de la noticia por esto
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setFormError(null) // Limpiar error previo
     
     if (!titulo.trim()) {
-      alert('El título es obligatorio')
+      setFormError('El título es obligatorio')
+      return
+    }
+
+    if (titulo.trim().length < 5) {
+      setFormError('El título debe tener al menos 5 caracteres')
       return
     }
 
     if (!slug.trim()) {
-      alert('El slug es obligatorio')
+      setFormError('El slug (URL) es obligatorio')
+      return
+    }
+
+    if (slug.trim().length < 3) {
+      setFormError('El slug debe tener al menos 3 caracteres')
       return
     }
     
-    if (!contenido.trim() || contenido === '<p></p>') {
-      alert('El contenido es obligatorio')
+    // Calcular longitud real del contenido (sin HTML y sin categoría)
+    const contenidoTexto = contenido.replace(/<[^>]*>/g, '').trim()
+    if (!contenidoTexto || contenidoTexto.length < 10) {
+      setFormError('El contenido es demasiado corto (mínimo 10 caracteres de texto)')
       return
     }
 
     setIsSubmitting(true)
 
     try {
+      // ✅ Primero borrar imágenes huérfanas acumuladas
+      await deleteOrphanedImages(orphanedImages)
+
       // Añadir categoría al inicio del contenido
       const contenidoConCategoria = `[${categoria.toUpperCase()}]\n\n${contenido}`
 
@@ -133,7 +184,7 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
           titulo,
           slug,
           contenido: contenidoConCategoria,
-          imagen_url: imagenUrl || undefined,
+          imagen_url: imagenUrl,
           publicada,
         })
       } else {
@@ -141,7 +192,7 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
           titulo,
           slug,
           contenido: contenidoConCategoria,
-          imagen_url: imagenUrl || undefined,
+          imagen_url: imagenUrl,
           publicada,
         })
       }
@@ -150,7 +201,8 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
       router.refresh()
     } catch (error) {
       console.error('Error saving noticia:', error)
-      alert('Error al guardar la noticia')
+      const errorMessage = error instanceof Error ? error.message : 'Error al guardar la noticia'
+      setFormError(errorMessage)
     } finally {
       setIsSubmitting(false)
     }
@@ -159,6 +211,7 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
   const handleDelete = async () => {
     if (!noticia) return
     setIsDeleting(true)
+    setFormError(null)
 
     try {
       await deleteNoticia.mutateAsync(noticia.id)
@@ -166,7 +219,7 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
       router.refresh()
     } catch (error) {
       console.error('Error deleting noticia:', error)
-      alert(error instanceof Error ? error.message : 'Error al eliminar la noticia')
+      setFormError(error instanceof Error ? error.message : 'Error al eliminar la noticia')
     } finally {
       setIsDeleting(false)
     }
@@ -266,6 +319,7 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
           <ImageDropzone
             value={imagenUrl || undefined}
             onChange={setImagenUrl}
+            onPreviousImageDelete={handlePreviousImageDelete}
           />
         </CardContent>
       </Card>
@@ -295,6 +349,14 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Mensaje de error */}
+      {formError && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{formError}</AlertDescription>
+        </Alert>
+      )}
 
       {/* Acciones */}
       <div className="flex items-center justify-between">

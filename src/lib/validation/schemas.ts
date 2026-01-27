@@ -30,8 +30,12 @@ export const slugSchema = z
 export const createNoticiaSchema = z.object({
   titulo: z.string().min(5, 'Título muy corto').max(200, 'Título muy largo').trim(),
   slug: slugSchema,
-  contenido: z.string().min(50, 'Contenido muy corto').trim(),
-  imagen_url: z.string().url('URL de imagen inválida').optional().nullable(),
+  contenido: z.string().min(20, 'Contenido muy corto').trim(),
+  // imagen_url: null, undefined, o URL válida
+  imagen_url: z.preprocess(
+    (val) => (val === '' ? null : val),
+    z.string().url('URL de imagen inválida').nullable().optional()
+  ),
   publicada: z.boolean().default(true),
 })
 
@@ -42,8 +46,12 @@ export const createNoticiaSchema = z.object({
 export const updateNoticiaSchema = z.object({
   titulo: z.string().min(5).max(200).trim().optional(),
   slug: slugSchema.optional(),
-  contenido: z.string().min(50).trim().optional(),
-  imagen_url: z.string().url().optional().nullable(),
+  contenido: z.string().min(20).trim().optional(),
+  // imagen_url: null, undefined, o URL válida
+  imagen_url: z.preprocess(
+    (val) => (val === '' ? null : val),
+    z.string().url('URL de imagen inválida').nullable().optional()
+  ),
   publicada: z.boolean().optional(),
 })
 

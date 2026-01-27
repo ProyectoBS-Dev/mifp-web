@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { CleanupOrphanedImages } from '@/components/admin/CleanupOrphanedImages'
 
 export const metadata: Metadata = {
   title: 'Noticias - Admin',
@@ -90,12 +91,15 @@ export default async function NoticiasAdminPage() {
             Gestiona las publicaciones del blog
           </p>
         </div>
-        <Button asChild>
-          <Link href="/admin/noticias/nueva">
-            <Plus className="h-4 w-4 mr-2" />
-            Nueva noticia
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <CleanupOrphanedImages />
+          <Button asChild>
+            <Link href="/admin/noticias/nueva">
+              <Plus className="h-4 w-4 mr-2" />
+              Nueva noticia
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}

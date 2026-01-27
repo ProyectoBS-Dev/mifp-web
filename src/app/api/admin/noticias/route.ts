@@ -119,10 +119,10 @@ export async function PATCH(request: NextRequest) {
 
     const adminClient = createAdminClient()
 
-    // Verificar que la noticia existe
+    // Verificar que la noticia existe y obtener imagen actual
     const { data: existingNoticia, error: fetchError } = await adminClient
       .from('noticias')
-      .select('id, autor_id')
+      .select('id, autor_id, imagen_url')
       .eq('id', id)
       .is('deleted_at', null)
       .single()
@@ -134,6 +134,21 @@ export async function PATCH(request: NextRequest) {
     // Editores solo pueden actualizar sus propias noticias
     if (auth.role === 'editor' && existingNoticia.autor_id !== auth.user.id) {
       return NextResponse.json({ error: 'Solo puedes editar tus propias noticias' }, { status: 403 })
+    }
+
+    // ✅ Si se está actualizando la imagen, borrar la anterior del storage
+    if (imagen_url !== undefined && imagen_url !== existingNoticia.imagen_url) {
+      const oldImagePath = extractStoragePath(existingNoticia.imagen_url)
+      if (oldImagePath) {
+        const { error: deleteError } = await adminClient.storage
+          .from('noticias-images')
+          .remove([oldImagePath])
+        
+        if (deleteError) {
+          console.warn('Error deleting old image from storage:', deleteError)
+          // No fallar si no se puede eliminar la imagen antigua
+        }
+      }
     }
 
     // Construir objeto de actualización solo con campos proporcionados
@@ -183,7 +198,7 @@ export async function PATCH(request: NextRequest) {
   }
 }
 
-// DELETE - Soft delete de noticia + eliminar imagen
+// DELETE - Soft delete de noticia (conservar imagen para recuperación)
 export async function DELETE(request: NextRequest) {
   // ✅ Rate limiting
   const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
@@ -207,10 +222,10 @@ export async function DELETE(request: NextRequest) {
 
     const adminClient = createAdminClient()
 
-    // Verificar que la noticia existe y obtener imagen_url
+    // Verificar que la noticia existe
     const { data: noticia, error: fetchError } = await adminClient
       .from('noticias')
-      .select('id, autor_id, imagen_url')
+      .select('id, autor_id')
       .eq('id', id)
       .single()
 
@@ -223,20 +238,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Solo puedes eliminar tus propias noticias' }, { status: 403 })
     }
 
-    // Eliminar imagen del Storage si existe
-    const imagePath = extractStoragePath(noticia.imagen_url)
-    if (imagePath) {
-      const { error: storageError } = await adminClient.storage
-        .from('noticias-images')
-        .remove([imagePath])
-      
-      if (storageError) {
-        console.warn('Error deleting image from storage:', storageError)
-        // No fallar si no se puede eliminar la imagen
-      }
-    }
-
-    // Soft delete de la noticia
+    // ✅ Soft delete de la noticia (NO borrar imagen para permitir recuperación)
+    // La imagen se limpiará automáticamente después de 30 días si no se restaura
     const { error: deleteError } = await adminClient
       .from('noticias')
       .update({ deleted_at: new Date().toISOString() })

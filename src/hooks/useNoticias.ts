@@ -158,7 +158,7 @@ export function useNoticiasMutation() {
       titulo: string
       slug: string
       contenido: string
-      imagen_url?: string
+      imagen_url?: string | null
       publicada?: boolean
     }) => {
       // Usar API route para bypass RLS (evita recursión infinita)
@@ -186,7 +186,7 @@ export function useNoticiasMutation() {
       titulo?: string
       slug?: string
       contenido?: string
-      imagen_url?: string
+      imagen_url?: string | null
       publicada?: boolean
     }) => {
       // Usar API route para bypass RLS (evita recursión infinita)

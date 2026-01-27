@@ -9,10 +9,11 @@ import { Button } from '@/components/ui/button'
 interface ImageDropzoneProps {
   value?: string
   onChange: (url: string | null) => void
+  onPreviousImageDelete?: (url: string) => void // Callback para notificar que se eliminó la imagen previa
   className?: string
 }
 
-export function ImageDropzone({ value, onChange, className }: ImageDropzoneProps) {
+export function ImageDropzone({ value, onChange, onPreviousImageDelete, className }: ImageDropzoneProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -22,6 +23,9 @@ export function ImageDropzone({ value, onChange, className }: ImageDropzoneProps
 
     setIsUploading(true)
     setError(null)
+
+    // Guardar la URL previa para poder borrarla después
+    const previousUrl = value
 
     try {
       const formData = new FormData()
@@ -38,13 +42,18 @@ export function ImageDropzone({ value, onChange, className }: ImageDropzoneProps
         throw new Error(data.error || 'Error al subir imagen')
       }
 
+      // ✅ Si había una imagen anterior Y es diferente a la nueva, notificar para borrarla
+      if (previousUrl && previousUrl !== data.url && onPreviousImageDelete) {
+        onPreviousImageDelete(previousUrl)
+      }
+
       onChange(data.url)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al subir imagen')
     } finally {
       setIsUploading(false)
     }
-  }, [onChange])
+  }, [value, onChange, onPreviousImageDelete])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -60,6 +69,10 @@ export function ImageDropzone({ value, onChange, className }: ImageDropzoneProps
   })
 
   const handleRemove = () => {
+    // ✅ Notificar que se eliminó la imagen para poder borrarla del storage
+    if (value && onPreviousImageDelete) {
+      onPreviousImageDelete(value)
+    }
     onChange(null)
     setError(null)
   }

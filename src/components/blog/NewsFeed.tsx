@@ -54,6 +54,7 @@ function NewsCard({ news, reactionCounts, userReaction, onReact }: NewsCardProps
             alt={news.titulo}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
+            unoptimized={news.imagen_url.toLowerCase().endsWith('.gif')}
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">

@@ -156,7 +156,7 @@ export function AsignaturaDetail({
       </Button>
 
       {/* Header de la asignatura */}
-      <Card className="bg-gradient-to-r from-primary/5 to-primary/10">
+      <Card className="bg-gradient-to-r from-vt-blue/5 to-vt-blue/10">
         <CardContent className="pt-6">
           <div className="flex items-start justify-between mb-4">
             <div>

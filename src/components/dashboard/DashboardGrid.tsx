@@ -238,7 +238,7 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
             <div
               key={widget.id}
               className={cn(
-                'relative rounded-xl border bg-card shadow-sm overflow-hidden',
+                'relative rounded-xl bg-muted/30 shadow-md overflow-hidden',
                 'transition-shadow duration-200',
                 isEditing && 'ring-2 ring-primary/20 cursor-move hover:shadow-lg'
               )}
@@ -251,13 +251,13 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
               )}
 
               {/* Widget Header */}
-              <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
-                <widget.icon className="h-5 w-5 text-primary" />
+              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-vt-blue/5 to-vt-blue/10">
+                <widget.icon className="h-5 w-5 text-vt-blue" />
                 <h3 className="font-semibold text-sm">{widget.title}</h3>
               </div>
 
               {/* Widget Content */}
-              <div className="p-4 h-[calc(100%-52px)] overflow-hidden flex flex-col">
+              <div className="p-4 h-[calc(100%-52px)] overflow-hidden flex flex-col bg-muted/30">
                 <WidgetComponent />
               </div>
             </div>

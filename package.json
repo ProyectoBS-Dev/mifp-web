@@ -11,7 +11,7 @@
     "test": "echo \"No tests configured yet\" && exit 0",
     "sync-resources": "tsx structure/scripts/sync-resources.ts",
     "reset": "rm -rf .next && pnpm dev",
-    "full-reset": "rm -rf .next node_modules .turbo pnpm-lock.yaml"
+    "full-reset": "rm -rf .next node_modules .turbo pnpm-lock.yaml && pnpm install"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

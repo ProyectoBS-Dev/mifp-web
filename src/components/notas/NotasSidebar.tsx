@@ -168,7 +168,7 @@ export const NotasSidebar = memo(function NotasSidebar({
   totalAsignaturas
 }: NotasSidebarProps) {
   return (
-    <aside className="w-full lg:w-[300px] xl:w-[320px] flex-shrink-0 border-r bg-muted/30 flex flex-col h-full">
+    <aside className="w-full lg:w-[300px] xl:w-[320px] flex-shrink-0 border-r bg-muted/10 flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b">
         <h1 className="text-xl font-bold tracking-tight flex items-center gap-2">

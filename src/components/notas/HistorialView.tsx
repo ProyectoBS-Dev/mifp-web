@@ -109,7 +109,7 @@ export function HistorialView() {
     return (
         <div className="space-y-6">
             {/* Resumen principal */}
-            <Card className="bg-gradient-to-r from-primary/5 to-primary/10">
+            <Card className="bg-gradient-to-r from-vt-blue/5 to-vt-blue/10">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Award className="h-5 w-5" />

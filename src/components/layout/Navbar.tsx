@@ -28,7 +28,7 @@ export function Navbar({ user }: NavbarProps) {
   const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-muted/50 backdrop-blur">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl flex h-14 items-center">
         {/* Mobile menu */}
         <Sheet>

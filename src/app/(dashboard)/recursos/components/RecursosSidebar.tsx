@@ -115,7 +115,7 @@ export function RecursosSidebar({
 
   return (
     <TooltipProvider>
-      <aside className="hidden lg:flex w-64 border-r bg-muted/30 flex-col h-[calc(100vh-3.5rem)] sticky top-14">
+      <aside className="hidden lg:flex w-64 border-r bg-muted/10 flex-col h-[calc(100vh-3.5rem)] sticky top-14">
         <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
           {/* Todos los recursos */}
           <div>

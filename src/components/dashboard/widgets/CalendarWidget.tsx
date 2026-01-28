@@ -195,7 +195,7 @@ export function CalendarWidget() {
                     !isLastCol && 'border-r border-border/20',
                     !isLastRow && 'border-b border-border/20',
                     day && 'hover:bg-muted/60 cursor-pointer',
-                    isToday && 'bg-primary text-primary-foreground font-bold hover:bg-primary/90',
+                    isToday && 'bg-vt-blue/10 text-vt-blue font-bold hover:bg-vt-blue/20',
                     isWeekend && !isToday && day && 'bg-muted/10',
                     !day && 'bg-transparent cursor-default'
                   )}

@@ -435,7 +435,7 @@ export default async function LandingPage() {
       </ScrollReveal>
 
       {/* Footer */}
-      <footer className="border-t py-12 bg-card bg-muted/30">
+      <footer className="border-t py-12 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row md:justify-center gap-8 md:gap-16 lg:gap-24">
             {/* Logo & Description */}
@@ -467,7 +467,7 @@ export default async function LandingPage() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/privacidad" className="inline-flex items-center gap-1 hover:text-primary">Privacidad <ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link></li>
                 <li><Link href="/terminos" className="inline-flex items-center gap-1 hover:text-primary">Términos <ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link></li>
-                <li><Link href="/about-us" className="inline-flex items-center gap-1 hover:text-primary">Sobre nosotros <ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link></li>
+                <li><Link href="/sobre-nosotros" className="inline-flex items-center gap-1 hover:text-primary">Sobre nosotros <ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link></li>
               </ul>
             </div>
           </div>

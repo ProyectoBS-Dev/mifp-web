@@ -9,7 +9,8 @@
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "type-check": "tsc --noEmit",
     "test": "echo \"No tests configured yet\" && exit 0",
-    "sync-resources": "tsx structure/scripts/sync-resources.ts"
+    "sync-resources": "tsx structure/scripts/sync-resources.ts",
+    "reset": "rm -rf .next && pnpm dev"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

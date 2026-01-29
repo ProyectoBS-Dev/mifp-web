@@ -1,10 +1,8 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { Button } from '@/components/ui/button'
-import { ArrowUpRightIcon, LayoutDashboard } from 'lucide-react'
 import Image from 'next/image'
 import {
-  GraduationCap,
   Calendar,
   BarChart3,
   FileText,
@@ -21,6 +19,9 @@ import {
   MonitorSmartphoneIcon,
   Palette,
   Smartphone,
+  LayoutDashboard,
+  ArrowUpRightIcon,
+  GitCompareArrows,
 } from 'lucide-react'
 import {
   Tooltip,
@@ -199,7 +200,7 @@ export default async function HomePage() {
             {/* Header */}
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue mb-6">
-                <GraduationCap className="h-7 w-7 text-white" />
+                <GitCompareArrows className="h-7 w-7 text-white" />
               </div>
               <h2 className="text-3xl font-bold tracking-tight sm:text-5xl mb-4">
                 Todo tu FP en un solo lugar
@@ -350,7 +351,7 @@ export default async function HomePage() {
                 <div className="flex flex-col h-full">
                   <div className="flex flex-col md:flex-row md:items-start gap-6 mb-4">
                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 shrink-0">
-                      <GraduationCap className="h-6 w-6 text-primary" />
+                      <LayoutDashboard className="h-6 w-6 text-primary" />
                     </div>
                     <div className="flex-1">
                       <h4 className="text-lg font-semibold mb-2">Dashboard Personal</h4>

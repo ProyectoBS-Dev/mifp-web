@@ -7,16 +7,16 @@ import {
   GraduationCap,
   Calendar,
   FileText,
-  BarChart3,
-  BookOpen,
   Sparkles,
+  LayoutDashboard,
+  FolderSearch,
 } from 'lucide-react'
 
 const tabs = [
   { 
     id: 'dashboard', 
     label: 'Dashboard', 
-    icon: GraduationCap,
+    icon: LayoutDashboard,
     image: '/images/dashboard_tab_preview.webp',
     alt: 'Dashboard de MiFP'
   },
@@ -37,14 +37,14 @@ const tabs = [
   { 
     id: 'notas', 
     label: 'Notas', 
-    icon: BarChart3,
+    icon: GraduationCap,
     image: '/images/notas_tab_preview.webp',
     alt: 'Seguimiento de notas'
   },
   { 
     id: 'recursos', 
     label: 'Recursos', 
-    icon: BookOpen,
+    icon: FolderSearch,
     image: '/images/recursos_tab_preview.webp',
     alt: 'Recursos de estudio'
   },

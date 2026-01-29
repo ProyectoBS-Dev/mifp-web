@@ -16,7 +16,7 @@ import {
   Headphones,
   ExternalLink,
   Eye,
-  Package
+  EyeIcon
 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
@@ -339,7 +339,7 @@ export function ResourcesWidget() {
           href="/recursos"
           className="flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
         >
-          <Package className="h-3 w-3" />
+          <EyeIcon className="h-3 w-3" />
           Ver todos los recursos
         </Link>
       </div>

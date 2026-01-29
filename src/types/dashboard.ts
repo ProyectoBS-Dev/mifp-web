@@ -9,10 +9,10 @@ import {
   CalendarClock,
   Video,
   Calendar,
-  BookOpen,
   StickyNote,
   Newspaper,
   GraduationCap,
+  FolderSearch,
 } from 'lucide-react'
 
 // Tipos de widgets disponibles
@@ -88,7 +88,7 @@ export const DEFAULT_WIDGETS: WidgetConfig[] = [
     id: 'resources',
     type: 'resources',
     title: 'Recursos',
-    icon: BookOpen,
+    icon: FolderSearch,
     description: 'Material de estudio'
   },
   {

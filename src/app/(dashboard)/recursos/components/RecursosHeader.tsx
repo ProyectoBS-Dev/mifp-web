@@ -1,6 +1,6 @@
 'use client'
 
-import { FileText, Link as LinkIcon, Headphones, Video, CheckSquare, BookOpen } from 'lucide-react'
+import { FileText, Link as LinkIcon, Video, CheckSquare, FolderSearch } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 // ============================================
@@ -55,7 +55,7 @@ export function RecursosHeader({ counts }: RecursosHeaderProps) {
       {/* Título */}
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-lg bg-primary/10">
-          <BookOpen className="h-6 w-6 text-primary" />
+          <FolderSearch className="h-6 w-6 text-primary" />
         </div>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Recursos de Estudio</h1>

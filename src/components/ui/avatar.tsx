@@ -20,6 +20,11 @@ const Avatar = React.forwardRef<
 ))
 Avatar.displayName = AvatarPrimitive.Root.displayName
 
+/**
+ * AvatarImage con referrerPolicy="no-referrer" para permitir cargar
+ * imágenes de dominios externos como Google (lh3.googleusercontent.com)
+ * sin que el referrer sea enviado y cause errores 403.
+ */
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
@@ -27,6 +32,7 @@ const AvatarImage = React.forwardRef<
   <AvatarPrimitive.Image
     ref={ref}
     className={cn("aspect-square h-full w-full", className)}
+    referrerPolicy="no-referrer"
     {...props}
   />
 ))

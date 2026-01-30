@@ -161,7 +161,7 @@ export default function RecursosPage() {
       {sidebarContent}
 
       {/* Contenido Principal */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto bg-muted/50 rounded-lg shadow-lg">
         <div className="container max-w-5xl mx-auto p-6 space-y-6">
           {/* Header con botón mobile */}
           <div className="space-y-4">

@@ -107,7 +107,7 @@ export function SettingsPanel({ userEmail, userRole = 'estudiante' }: SettingsPa
       </div>
 
       {/* Main content */}
-      <main className="flex-1 min-w-0">
+      <main className="flex-1 min-w-0 p-6 bg-muted/50 rounded-lg shadow-lg border-none">
         {renderSection()}
       </main>
     </div>

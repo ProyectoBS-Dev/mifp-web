@@ -72,7 +72,7 @@ export function AsignaturasCRUD({
     const router = useRouter()
     const supabase = createClient()
     const queryClient = useQueryClient()
-    const { data: semestres } = useSemestres()
+    const { data: semestres, isLoading: semestresLoading } = useSemestres()
 
     // Estado
     const [userAsignaturas, setUserAsignaturas] = useState(initialUserAsignaturas)
@@ -104,6 +104,17 @@ export function AsignaturasCRUD({
         const matriculadasIds = filteredAsignaturas.map(ua => ua.asignatura_id)
         return availableAsignaturas.filter(a => !matriculadasIds.includes(a.id))
     }, [availableAsignaturas, filteredAsignaturas])
+
+    // Mapear semestres al formato esperado por SemesterSelector
+    const semestresParaSelector = useMemo(() => {
+        if (!semestres) return undefined
+        return semestres.map(s => ({
+            id: s.id,
+            nombre: s.nombre,
+            activo: s.activo,
+            num_asignaturas: s.num_asignaturas || 0
+        }))
+    }, [semestres])
 
     // Agrupar por semestre para mostrar resumen
     const asignaturasPorSemestre = useMemo(() => {
@@ -222,7 +233,8 @@ export function AsignaturasCRUD({
                 <SemesterSelector
                     value={selectedSemestreId}
                     onChange={setSelectedSemestreId}
-                    semestres={semestres}
+                    semestres={semestresParaSelector}
+                    isLoadingExternal={semestresLoading}
                 />
 
                 {selectedSemestreId && asignaturasDisponibles.length > 0 && (
@@ -235,7 +247,7 @@ export function AsignaturasCRUD({
 
             {/* Lista de asignaturas del semestre seleccionado */}
             {selectedSemestreId && (
-                <Card>
+                <Card className="bg-muted/50 rounded-lg shadow-lg border-none">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <BookOpen className="h-5 w-5" />
@@ -291,7 +303,7 @@ export function AsignaturasCRUD({
 
             {/* Resumen por semestre */}
             {asignaturasPorSemestre.length > 0 && (
-                <Card>
+                <Card className="bg-muted/50 rounded-lg shadow-lg border-none">
                     <CardHeader>
                         <CardTitle>Resumen por Semestre</CardTitle>
                     </CardHeader>

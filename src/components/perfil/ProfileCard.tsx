@@ -92,7 +92,7 @@ export function ProfileCard({ user, profile, grado }: ProfileCardProps) {
     }
 
     return (
-        <Card className="bg-gradient-to-br from-card to-muted/30">
+        <Card className="bg-muted/50 rounded-lg shadow-lg border-none">
             <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
                     {/* Avatar */}

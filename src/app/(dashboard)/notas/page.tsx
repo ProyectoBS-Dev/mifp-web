@@ -356,7 +356,7 @@ export default function NotasPage() {
         />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-background scrollbar-hide">
+        <main className="flex-1 overflow-y-auto bg-muted/50 rounded-lg shadow-lg scrollbar-hide">
           {activeTab === 'historial' ? (
             // Vista Historial
             <div className="p-6">

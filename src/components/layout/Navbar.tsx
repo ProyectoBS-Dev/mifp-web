@@ -34,9 +34,9 @@ export function Navbar({ user, variant = 'dashboard', showPublicNav = true, isLo
 
   return (
     <header className={cn(
-      "sticky top-0 z-50 w-full border-b backdrop-blur supports-[backdrop-filter]:bg-background/60",
+      "sticky top-0 z-50 w-full border-b backdrop-blur",
       variant === 'dashboard' && "bg-muted/50",
-      variant === 'public' && "bg-background/95"
+      variant === 'public' && "bg-muted/50"
     )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl flex h-14 items-center">
         {/* Mobile menu */}

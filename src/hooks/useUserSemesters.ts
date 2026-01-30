@@ -83,6 +83,7 @@ export function useSemestreActivo() {
 // ============================================
 // HOOK: useSemestres
 // Obtiene todos los semestres (para admin y perfil)
+// Incluye conteo de asignaturas del usuario
 // ============================================
 
 interface Semestre {
@@ -94,6 +95,7 @@ interface Semestre {
     año_academico: string
     activo: boolean
     created_at: string
+    num_asignaturas?: number
 }
 
 export function useSemestres() {
@@ -102,12 +104,34 @@ export function useSemestres() {
     return useQuery({
         queryKey: ['semestres'],
         queryFn: async (): Promise<Semestre[]> => {
+            const { data: { user } } = await supabase.auth.getUser()
+            
             const { data, error } = await supabase
                 .from('semestres')
                 .select('*')
                 .order('fecha_inicio', { ascending: false })
 
             if (error) throw error
+            
+            // Si hay usuario autenticado, calcular el conteo de asignaturas
+            if (user && data) {
+                const semestresConConteo = await Promise.all(
+                    data.map(async (semestre) => {
+                        const { count } = await supabase
+                            .from('user_asignaturas')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('user_id', user.id)
+                            .eq('semestre_id', semestre.id)
+                        
+                        return {
+                            ...semestre,
+                            num_asignaturas: count || 0
+                        }
+                    })
+                )
+                return semestresConConteo as Semestre[]
+            }
+            
             return (data || []) as Semestre[]
         },
         staleTime: 1000 * 60 * 5,

@@ -10,7 +10,7 @@ import {
   RecursosFilters,
   RecursosGrid,
   type SortOption
-} from './components'
+} from '@/components/recursos'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Menu } from 'lucide-react'

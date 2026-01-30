@@ -7,7 +7,7 @@ import { navItems } from './navItems'
 
 /**
  * Componente de navegación reutilizable para usuarios autenticados.
- * Muestra los links: Dashboard | Notas | Blog
+ * Muestra los links: Dashboard | Notas | Recursos | Blog
  */
 export function UserNav() {
     const pathname = usePathname()

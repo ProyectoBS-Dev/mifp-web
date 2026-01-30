@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-
-export interface CurrentUser {
-  id: string
-  email: string
-  full_name: string | null
-  avatar_url: string | null
-  role: 'admin' | 'estudiante' | 'moderador' | 'editor' | null
-}
+import type { CurrentUser } from '@/types/user'
 
 /**
  * Hook alternativo sin React Query - fetch directo
- * Usar solo si useCurrentUser tiene problemas de caché
+ * 
+ * Usar para rutas públicas donde no necesitas caché agresivo (como blog).
+ * Para rutas autenticadas, preferir useCurrentUser con React Query.
+ * 
+ * Incluye sincronización automática con eventos de auth de Supabase.
  */
 export function useCurrentUserDirect() {
   const [user, setUser] = useState<CurrentUser | null>(null)
@@ -20,10 +17,10 @@ export function useCurrentUserDirect() {
 
   useEffect(() => {
     let isMounted = true
+    const supabase = createClient()
 
     const fetchUser = async () => {
       try {
-        const supabase = createClient()
         const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
 
         if (authError) throw authError
@@ -64,10 +61,27 @@ export function useCurrentUserDirect() {
       }
     }
 
+    // Fetch inicial
     fetchUser()
+
+    // Sincronización con eventos de autenticación de Supabase
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (!isMounted) return
+      
+      if (event === 'SIGNED_OUT') {
+        // Limpiar usuario cuando cierra sesión
+        setUser(null)
+        setIsLoading(false)
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        // Refetch cuando hay cambios en la autenticación
+        setIsLoading(true)
+        fetchUser()
+      }
+    })
 
     return () => {
       isMounted = false
+      subscription.unsubscribe()
     }
   }, []) // Solo al montar
 

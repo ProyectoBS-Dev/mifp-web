@@ -1,7 +1,8 @@
 export * from './database'
 export * from './calendario'
+export * from './user'
 
-// Tipos de usuario
+// Tipos de usuario (legacy - preferir usar CurrentUser de './user')
 export interface UserProfile {
   id: string
   email: string

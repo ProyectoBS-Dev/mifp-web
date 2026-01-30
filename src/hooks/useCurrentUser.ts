@@ -1,13 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
-
-export interface CurrentUser {
-  id: string
-  email: string
-  full_name: string | null
-  avatar_url: string | null
-  role: 'admin' | 'estudiante' | 'moderador' | 'editor' | null
-}
+import type { CurrentUser } from '@/types/user'
 
 /**
  * Fetches the current authenticated user with profile data
@@ -53,6 +47,11 @@ async function fetchCurrentUser(): Promise<CurrentUser | null> {
  * Uses React Query to cache the user data for 5 minutes,
  * avoiding redundant queries on navigation.
  * 
+ * Includes automatic synchronization with Supabase auth events:
+ * - Detects logout in other tabs
+ * - Handles token refresh
+ * - Updates on profile changes
+ * 
  * @example
  * ```tsx
  * const { user, isLoading } = useCurrentUser()
@@ -63,6 +62,8 @@ async function fetchCurrentUser(): Promise<CurrentUser | null> {
  * ```
  */
 export function useCurrentUser() {
+  const queryClient = useQueryClient()
+  
   const { data: user = null, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['currentUser'],
     queryFn: fetchCurrentUser,
@@ -73,6 +74,31 @@ export function useCurrentUser() {
     refetchOnMount: true, // Siempre refetch al montar
     refetchOnReconnect: false, // No refetch al reconectar
   })
+
+  // Sincronización con eventos de autenticación de Supabase
+  useEffect(() => {
+    const supabase = createClient()
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Eventos importantes:
+      // - SIGNED_IN: Usuario inició sesión
+      // - SIGNED_OUT: Usuario cerró sesión
+      // - TOKEN_REFRESHED: Token renovado automáticamente
+      // - USER_UPDATED: Perfil actualizado
+      
+      if (event === 'SIGNED_OUT') {
+        // Limpiar caché cuando el usuario cierra sesión
+        queryClient.setQueryData(['currentUser'], null)
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        // Refetch para obtener datos frescos cuando hay cambios
+        refetch()
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [queryClient, refetch])
 
   return {
     user,

@@ -1,13 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
-
-export interface CurrentUser {
-  id: string
-  email: string
-  full_name: string | null
-  avatar_url: string | null
-  role: 'admin' | 'estudiante' | 'moderador' | 'editor' | null
-}
+import type { CurrentUser } from '@/types/user'
 
 /**
  * Fetches the current authenticated user with profile data
@@ -15,35 +9,65 @@ export interface CurrentUser {
  */
 async function fetchCurrentUser(): Promise<CurrentUser | null> {
   const supabase = createClient()
-  const { data: { user: authUser } } = await supabase.auth.getUser()
+  
+  try {
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
 
-  if (!authUser) return null
+    // Si hay error de sesión (OK en rutas públicas), retornar null
+    if (authError) {
+      if (authError.message?.includes('session') || authError.name === 'AuthSessionMissingError') {
+        return null
+      }
+      throw authError
+    }
 
-  // Obtener perfil del usuario
-  const { data: profile, error } = await supabase
-    .from('users')
-    .select('full_name, avatar_url, role')
-    .eq('id', authUser.id)
-    .single()
+    if (!authUser) return null
 
-  if (error) {
-    console.error('Error fetching user profile:', error)
-    // Retornar datos básicos del auth user si falla la query
+    // Obtener perfil del usuario
+    const { data: profile, error } = await supabase
+      .from('users')
+      .select('full_name, avatar_url, role')
+      .eq('id', authUser.id)
+      .single()
+
+    if (error) {
+      console.error('Error fetching user profile:', error)
+      // Retornar datos básicos del auth user si falla la query
+      return {
+        id: authUser.id,
+        email: authUser.email || '',
+        full_name: null,
+        avatar_url: null,
+        role: null,
+      }
+    }
+
+    // Sincronizar avatar_url desde metadatos de OAuth si no está en la BD
+    const metaAvatarUrl = authUser.user_metadata?.avatar_url
+    const needsAvatarUpdate = metaAvatarUrl && !profile?.avatar_url
+
+    if (needsAvatarUpdate) {
+      // Actualizar avatar_url en la BD desde los metadatos de Google/OAuth
+      await supabase
+        .from('users')
+        .update({ avatar_url: metaAvatarUrl })
+        .eq('id', authUser.id)
+    }
+
     return {
       id: authUser.id,
       email: authUser.email || '',
-      full_name: null,
-      avatar_url: null,
-      role: null,
+      full_name: profile?.full_name ?? null,
+      avatar_url: profile?.avatar_url ?? metaAvatarUrl ?? null,
+      role: profile?.role ?? null,
     }
-  }
-
-  return {
-    id: authUser.id,
-    email: authUser.email || '',
-    full_name: profile?.full_name ?? null,
-    avatar_url: profile?.avatar_url ?? null,
-    role: profile?.role ?? null,
+  } catch (err) {
+    // Manejar errores que no sean de sesión faltante
+    const errorMessage = (err as Error).message || ''
+    if (!errorMessage.includes('session') && !errorMessage.includes('AuthSessionMissing')) {
+      console.error('Error fetching current user:', err)
+    }
+    return null
   }
 }
 
@@ -52,6 +76,11 @@ async function fetchCurrentUser(): Promise<CurrentUser | null> {
  * 
  * Uses React Query to cache the user data for 5 minutes,
  * avoiding redundant queries on navigation.
+ * 
+ * Includes automatic synchronization with Supabase auth events:
+ * - Detects logout in other tabs
+ * - Handles token refresh
+ * - Updates on profile changes
  * 
  * @example
  * ```tsx
@@ -63,6 +92,8 @@ async function fetchCurrentUser(): Promise<CurrentUser | null> {
  * ```
  */
 export function useCurrentUser() {
+  const queryClient = useQueryClient()
+  
   const { data: user = null, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['currentUser'],
     queryFn: fetchCurrentUser,
@@ -73,6 +104,31 @@ export function useCurrentUser() {
     refetchOnMount: true, // Siempre refetch al montar
     refetchOnReconnect: false, // No refetch al reconectar
   })
+
+  // Sincronización con eventos de autenticación de Supabase
+  useEffect(() => {
+    const supabase = createClient()
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Eventos importantes:
+      // - SIGNED_IN: Usuario inició sesión
+      // - SIGNED_OUT: Usuario cerró sesión
+      // - TOKEN_REFRESHED: Token renovado automáticamente
+      // - USER_UPDATED: Perfil actualizado
+      
+      if (event === 'SIGNED_OUT') {
+        // Limpiar caché cuando el usuario cierra sesión
+        queryClient.setQueryData(['currentUser'], null)
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        // Refetch para obtener datos frescos cuando hay cambios
+        refetch()
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [queryClient, refetch])
 
   return {
     user,

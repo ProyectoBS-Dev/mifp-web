@@ -126,7 +126,7 @@ export function Navbar({ user, variant = 'dashboard', showPublicNav = true, isLo
           {isLoading ? (
             <>
               <Skeleton className="h-6 w-6 rounded-full mr-2" />
-              <Skeleton className="h-8 w-14 rounded-full pr-2" />
+              <Skeleton className="h-6 w-6 rounded-full pr-2" />
               <Skeleton className="h-9 w-9 rounded-full" />
             </>
           ) : user ? (

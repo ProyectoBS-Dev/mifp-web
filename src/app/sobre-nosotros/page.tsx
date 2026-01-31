@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
-import { Navbar } from '@/components/layout'
+import { Navbar, Footer } from '@/components/layout'
 import { 
   ArrowRight, 
   UserPlus, 
@@ -286,44 +286,7 @@ export default async function SobreNosotrosPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-12 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row md:justify-center gap-8 md:gap-16 lg:gap-24">
-            <div className="max-w-xs">
-              <Link href="/" className="flex items-center gap-2 mb-4">
-                <span className="text-xl font-bold gradient-text">MiFP</span>
-              </Link>
-              <p className="text-sm text-muted-foreground">
-                Tu compañero de estudios para FP. Gestiona PACs, videotutorías, recursos y notas de forma sencilla.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Producto</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/blog" className="hover:text-primary">Blog</Link></li>
-                <li><Link href="/registro" className="hover:text-primary">Crear cuenta</Link></li>
-                <li><Link href="/login" className="hover:text-primary">Iniciar sesión</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/privacidad" className="hover:text-primary">Privacidad</Link></li>
-                <li><Link href="/terminos" className="hover:text-primary">Términos</Link></li>
-                <li><Link href="/sobre-nosotros" className="hover:text-primary">Sobre nosotros</Link></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t mt-8 pt-8 text-center">
-            <p className="text-sm text-muted-foreground">
-              Desarrollado con ❤️ por estudiantes de FP
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   )
 }

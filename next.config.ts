@@ -30,12 +30,14 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Headers de seguridad
+  // Headers de seguridad (actualizados: 1 Feb 2026)
   async headers() {
     return [
+      // Headers globales para todas las rutas
       {
         source: '/(.*)',
         headers: [
+          // Protección básica contra XSS y clickjacking
           {
             key: 'X-Frame-Options',
             value: 'DENY',
@@ -44,9 +46,70 @@ const nextConfig: NextConfig = {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },
+          
+          // HSTS - Forzar HTTPS (1 año, configuración conservadora)
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000',
+          },
+          
+          // Referrer Policy
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
+          },
+          
+          // Permissions Policy - Deshabilitar features no utilizadas
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=()',
+          },
+          
+          // Cross-Origin Policies
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'same-site',
+          },
+          
+          // Content Security Policy - Configurado para compatibilidad con proyecto
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              // Scripts: Next.js hydration + JSON-LD requieren unsafe-inline y unsafe-eval
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              // Estilos: TipTap editor + Framer Motion + Google Fonts
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              // Fuentes: Google Fonts + data URIs
+              "font-src 'self' https://fonts.gstatic.com data:",
+              // Imágenes: Supabase, R2, Google avatars, GitHub avatars, Unsplash, Dicebear
+              "img-src 'self' data: https: blob:",
+              // Conexiones: Supabase API, OpenAI, Upstash, Cloudflare R2
+              "connect-src 'self' https://*.supabase.co https://api.openai.com https://*.upstash.io https://pub-*.r2.dev blob: data:",
+              // Frames: PDFs de Supabase Storage y Cloudflare R2
+              "frame-src 'self' blob: data: https://*.supabase.co https://pub-*.r2.dev",
+              // Otros
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'none'",
+              "upgrade-insecure-requests",
+            ].join('; '),
+          },
+        ],
+      },
+      
+      // Headers específicos para rutas API
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, max-age=0',
           },
         ],
       },

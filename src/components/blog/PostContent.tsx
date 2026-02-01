@@ -69,9 +69,10 @@ function RenderContent({ content }: { content: string }) {
     return (
       <div
         className="prose prose-lg dark:prose-invert max-w-none
-          prose-headings:border-b prose-headings:pb-2 prose-headings:mt-8 prose-headings:mb-4
+          prose-headings:border-b prose-headings:pb-2 prose-headings:mt-8 prose-headings:mb-4 prose-headings:text-foreground
           prose-p:text-foreground/90 prose-p:leading-relaxed
           prose-li:text-foreground/90
+          prose-strong:text-foreground
           prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
@@ -265,6 +266,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
             )}
           </div>
 
+          {/* Botón de volver al blog */}
           <div className="border-t pt-4">
             <Link
               href="/blog"

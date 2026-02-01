@@ -81,7 +81,8 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               // Scripts: Next.js hydration + JSON-LD requieren unsafe-inline y unsafe-eval
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              // Vercel Live (solo en preview): https://vercel.live
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live",
               // Estilos: TipTap editor + Framer Motion + Google Fonts
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               // Fuentes: Google Fonts + data URIs
@@ -89,9 +90,10 @@ const nextConfig: NextConfig = {
               // Imágenes: Supabase, R2, Google avatars, GitHub avatars, Unsplash, Dicebear
               "img-src 'self' data: https: blob:",
               // Conexiones: Supabase API, OpenAI, Upstash, Cloudflare R2
-              "connect-src 'self' https://*.supabase.co https://api.openai.com https://*.upstash.io https://pub-*.r2.dev blob: data:",
+              // Nota: *.r2.dev cubre todos los subdominios de R2 (pub-xxx.r2.dev, etc)
+              "connect-src 'self' https://*.supabase.co https://api.openai.com https://*.upstash.io https://*.r2.dev https://vercel.live blob: data:",
               // Frames: PDFs de Supabase Storage y Cloudflare R2
-              "frame-src 'self' blob: data: https://*.supabase.co https://pub-*.r2.dev",
+              "frame-src 'self' blob: data: https://*.supabase.co https://*.r2.dev",
               // Otros
               "object-src 'none'",
               "base-uri 'self'",

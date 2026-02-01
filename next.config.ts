@@ -90,6 +90,8 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com data:",
               // Imágenes: Supabase, R2, Google avatars, GitHub avatars, Unsplash, Dicebear
               "img-src 'self' data: https: blob:",
+              // Media (audio/video): Supabase Storage y Cloudflare R2
+              "media-src 'self' https://*.supabase.co https://*.r2.dev blob: data:",
               // Conexiones: Supabase API, OpenAI, Upstash, Cloudflare R2, Google OAuth
               // Nota: *.r2.dev cubre todos los subdominios de R2 (pub-xxx.r2.dev, etc)
               // Google OAuth: incluye todos los dominios necesarios (*.google.com, *.googleapis.com, *.gstatic.com, *.doubleclick.net)

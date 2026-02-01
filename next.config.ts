@@ -68,7 +68,8 @@ const nextConfig: NextConfig = {
           // Cross-Origin Policies
           {
             key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin',
+            // same-origin-allow-popups: permite OAuth popups (Google, GitHub)
+            value: 'same-origin-allow-popups',
           },
           {
             key: 'Cross-Origin-Resource-Policy',

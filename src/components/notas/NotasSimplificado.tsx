@@ -171,6 +171,8 @@ export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplific
                                     {/* Input de nota */}
                                     <div className="flex items-center gap-2">
                                         <Input
+                                            id={`nota-${asig.id}`}
+                                            name="nota"
                                             type="number"
                                             min={0}
                                             max={10}

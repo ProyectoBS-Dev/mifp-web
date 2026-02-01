@@ -93,7 +93,8 @@ const nextConfig: NextConfig = {
               // Nota: *.r2.dev cubre todos los subdominios de R2 (pub-xxx.r2.dev, etc)
               "connect-src 'self' https://*.supabase.co https://api.openai.com https://*.upstash.io https://*.r2.dev https://vercel.live blob: data:",
               // Frames: PDFs de Supabase Storage y Cloudflare R2
-              "frame-src 'self' blob: data: https://*.supabase.co https://*.r2.dev",
+              // Vercel Live (solo en preview): iframe de feedback
+              "frame-src 'self' blob: data: https://*.supabase.co https://*.r2.dev https://vercel.live",
               // Otros
               "object-src 'none'",
               "base-uri 'self'",

@@ -7,7 +7,6 @@ import {
   Headphones,
   ExternalLink,
   Eye,
-  Download,
   Video,
   CheckSquare,
   Folder,

@@ -1,53 +1,74 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { PasswordInput } from '@/components/ui/password-input'
-import { Label } from '@/components/ui/label'
-import { OAuthButtons } from './OAuthButtons'
-import { Separator } from '@/components/ui/separator'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Label } from "@/components/ui/label";
+import { OAuthButtons } from "./OAuthButtons";
+import { Separator } from "@/components/ui/separator";
 
 export function LoginForm() {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setIsLoading(true)
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
 
-    const supabase = createClient()
+    const supabase = createClient();
 
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
+    });
 
     if (signInError) {
       setError(
-        signInError.message === 'Invalid login credentials'
-          ? 'Email o contraseña incorrectos'
-          : signInError.message
-      )
-      setIsLoading(false)
-      return
+        signInError.message === "Invalid login credentials"
+          ? "Email o contraseña incorrectos"
+          : signInError.message,
+      );
+      setIsLoading(false);
+      return;
     }
 
-    router.push('/dashboard')
-    router.refresh()
-  }
+    // ✅ VERIFICACIÓN CRÍTICA: Comprobar si el usuario completó el onboarding
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from("users")
+        .select("onboarding_completed, grado_id")
+        .eq("id", user.id)
+        .single();
+
+      // Si no completó onboarding o no tiene grado asignado, redirigir a onboarding
+      if (!profile?.onboarding_completed || !profile?.grado_id) {
+        router.push("/onboarding");
+        router.refresh();
+        return;
+      }
+    }
+
+    // Usuario válido con onboarding completado - redirigir a dashboard
+    router.push("/dashboard");
+    router.refresh();
+  };
 
   return (
     <div className="grid gap-6">
       <OAuthButtons />
-      
+
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <Separator className="w-full" />
@@ -73,7 +94,7 @@ export function LoginForm() {
             disabled={isLoading}
           />
         </div>
-        
+
         <div className="grid gap-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Contraseña</Label>
@@ -102,12 +123,12 @@ export function LoginForm() {
         )}
 
         <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+          {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
         </Button>
       </form>
 
       <p className="text-center text-sm text-muted-foreground">
-        ¿No tienes cuenta?{' '}
+        ¿No tienes cuenta?{" "}
         <Link
           href="/registro"
           className="text-primary underline-offset-4 hover:underline font-medium"
@@ -116,5 +137,5 @@ export function LoginForm() {
         </Link>
       </p>
     </div>
-  )
+  );
 }

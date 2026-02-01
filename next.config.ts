@@ -83,7 +83,8 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               // Scripts: Next.js hydration + JSON-LD + Google OAuth (todos los dominios necesarios)
               // Vercel Live (solo en preview): https://vercel.live
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.google.com https://*.googleapis.com https://*.gstatic.com",
+              // Cloudflare Turnstile: CAPTCHA en /registro y /recuperar-password
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.google.com https://*.googleapis.com https://*.gstatic.com https://challenges.cloudflare.com",
               // Estilos: TipTap editor + Framer Motion + Google Fonts + Google OAuth
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.google.com https://*.gstatic.com",
               // Fuentes: Google Fonts + data URIs
@@ -98,7 +99,8 @@ const nextConfig: NextConfig = {
               "connect-src 'self' https://*.supabase.co https://api.openai.com https://*.upstash.io https://*.r2.dev https://vercel.live https://*.google.com https://*.googleapis.com https://*.gstatic.com https://*.doubleclick.net blob: data:",
               // Frames: PDFs de Supabase Storage y Cloudflare R2, Google OAuth
               // Vercel Live (solo en preview): iframe de feedback
-              "frame-src 'self' blob: data: https://*.supabase.co https://*.r2.dev https://vercel.live https://*.google.com https://*.gstatic.com",
+              // Cloudflare Turnstile: CAPTCHA iframe en /registro y /recuperar-password
+              "frame-src 'self' blob: data: https://*.supabase.co https://*.r2.dev https://vercel.live https://*.google.com https://*.gstatic.com https://challenges.cloudflare.com",
               // Otros
               "object-src 'none'",
               "base-uri 'self'",

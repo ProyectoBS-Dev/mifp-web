@@ -12,8 +12,7 @@ import {
   Video,
   Calendar,
   Percent,
-  Trash2,
-  Plus
+  Trash2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -178,6 +177,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
               <div>
                 <Label>Código</Label>
                 <Input
+                  id="modulo-codigo"
+                  name="codigo"
                   value={data.modulo.codigo}
                   onChange={(e) => setData({
                     ...data,
@@ -188,6 +189,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
               <div className="col-span-2">
                 <Label>Nombre</Label>
                 <Input
+                  id="modulo-nombre"
+                  name="nombre"
                   value={data.modulo.nombre}
                   onChange={(e) => setData({
                     ...data,
@@ -231,6 +234,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                   <div>
                     <Label>Título</Label>
                     <Input
+                      id={`ra-titulo-${index}`}
+                      name="titulo"
                       value={ra.titulo}
                       onChange={(e) => updateRA(index, 'titulo', e.target.value)}
                     />
@@ -241,6 +246,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                         <Calendar className="h-3 w-3" /> Fecha inicio
                       </Label>
                       <Input
+                        id={`ra-fecha-inicio-${index}`}
+                        name="fecha_inicio"
                         type="date"
                         value={ra.fecha_inicio || ''}
                         onChange={(e) => updateRA(index, 'fecha_inicio', e.target.value || null)}
@@ -251,6 +258,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                         <Calendar className="h-3 w-3" /> Fecha fin
                       </Label>
                       <Input
+                        id={`ra-fecha-fin-${index}`}
+                        name="fecha_fin"
                         type="date"
                         value={ra.fecha_fin || ''}
                         onChange={(e) => updateRA(index, 'fecha_fin', e.target.value || null)}
@@ -301,6 +310,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                     <div>
                       <Label>Título</Label>
                       <Input
+                        id={`pac-titulo-${index}`}
+                        name="titulo"
                         value={pac.titulo}
                         onChange={(e) => updatePAC(index, 'titulo', e.target.value)}
                       />
@@ -330,6 +341,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                         <Percent className="h-3 w-3" /> Peso en RA
                       </Label>
                       <Input
+                        id={`pac-peso-${index}`}
+                        name="peso_en_ra"
                         type="number"
                         min={0}
                         max={100}
@@ -342,6 +355,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                         <Calendar className="h-3 w-3" /> Fecha límite
                       </Label>
                       <Input
+                        id={`pac-fecha-limite-${index}`}
+                        name="fecha_limite"
                         type="date"
                         value={pac.fecha_limite || ''}
                         onChange={(e) => updatePAC(index, 'fecha_limite', e.target.value || null)}
@@ -401,6 +416,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                   <div>
                     <Label>Título</Label>
                     <Input
+                      id={`vt-titulo-${index}`}
+                      name="titulo"
                       value={vt.titulo}
                       onChange={(e) => updateVT(index, 'titulo', e.target.value)}
                     />
@@ -411,6 +428,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                         <Calendar className="h-3 w-3" /> Fecha
                       </Label>
                       <Input
+                        id={`vt-fecha-${index}`}
+                        name="fecha"
                         type="date"
                         value={vt.fecha || ''}
                         onChange={(e) => updateVT(index, 'fecha', e.target.value || null)}
@@ -419,6 +438,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                     <div>
                       <Label>Hora inicio</Label>
                       <Input
+                        id={`vt-hora-inicio-${index}`}
+                        name="hora_inicio"
                         type="time"
                         value={vt.hora_inicio || ''}
                         onChange={(e) => updateVT(index, 'hora_inicio', e.target.value || null)}
@@ -427,6 +448,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
                     <div>
                       <Label>Duración (min)</Label>
                       <Input
+                        id={`vt-duracion-${index}`}
+                        name="duracion_minutos"
                         type="number"
                         min={0}
                         value={vt.duracion_minutos || ''}

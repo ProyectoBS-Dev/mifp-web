@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -115,11 +116,11 @@ export function PDFPreviewModal({ recurso, onClose }: PDFPreviewModalProps) {
               <DialogTitle className="text-base font-medium truncate">
                 📄 {recurso.titulo}
               </DialogTitle>
-              {recurso.asignaturas && recurso.asignaturas.length > 0 && (
-                <p className="text-xs text-muted-foreground truncate">
-                  {recurso.asignaturas[0].nombre}
-                </p>
-              )}
+              <DialogDescription className="text-xs text-muted-foreground truncate">
+                {recurso.asignaturas && recurso.asignaturas.length > 0
+                  ? recurso.asignaturas[0].nombre
+                  : 'Vista previa del archivo PDF'}
+              </DialogDescription>
             </div>
 
             {/* Toolbar */}

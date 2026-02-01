@@ -241,9 +241,10 @@ export function useEntityMutation() {
 
 # 🎨 Component Guidelines
 
-**Forms:** `react-hook-form` + Zod + primitives `ui/`  
+**Forms:** `react-hook-form` + Zod + primitives `ui/`. SIEMPRE `id` y `name` en `<Input>` (autofill + a11y)  
 **Badge:** `<Badge color={getGradeBadge(nota).color}>{getGradeBadge(nota).label}</Badge>`  
 **Naming:** PascalCase components, camelCase hooks/utils, kebab-case folders
+
 
 # Code Quality
 

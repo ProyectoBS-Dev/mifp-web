@@ -88,7 +88,7 @@ export default async function SobreNosotrosPage() {
           <ScrollReveal>
             <div className="flex justify-center mb-8">
               <Link
-                href="/blog"
+                href="/blog/mifp-el-inicio-de-una-nueva-aventura"
                 className="group inline-flex items-center gap-3 px-4 py-2 rounded-full backdrop-blur-sm border border-vt-blue/50 dark:border-white/50 hover:bg-vt-gray/10 dark:hover:bg-white/10 transition-all"
               >
                 <Rocket className="h-4 w-4 text-vt-blue" />

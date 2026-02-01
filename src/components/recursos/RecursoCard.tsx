@@ -205,13 +205,6 @@ function RecursoActions({ recurso, visualType, onPreviewPDF }: RecursoActionsPro
           asChild
           className="flex-1 sm:flex-none"
         >
-          <a
-            href={`/api/download-pdf?path=${encodeURIComponent(recurso.archivo_path || '')}`}
-            download
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Descargar
-          </a>
         </Button>
       </div>
     )

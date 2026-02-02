@@ -12,7 +12,7 @@ export interface Noticia {
   titulo: string
   contenido: string
   imagen_url: string | null
-  autor_id: string
+  autor_id: string | null
   publicada: boolean | null
   created_at: string
   updated_at: string | null
@@ -22,7 +22,7 @@ export interface Noticia {
     full_name: string | null
     email: string
     avatar_url: string | null
-  }
+  } | null
 }
 
 export type NoticiaCategoria = 'comunicado' | 'recurso' | 'evento' | 'general'

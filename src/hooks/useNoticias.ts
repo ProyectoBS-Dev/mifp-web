@@ -40,7 +40,7 @@ function extractCategoria(contenido: string): NoticiaCategoria {
 }
 
 // Convertir HTML a texto plano
-function htmlToPlainText(html: string): string {
+export function htmlToPlainText(html: string): string {
   return html
     .replace(/<[^>]*>/g, ' ')  // Quitar tags HTML
     .replace(/&nbsp;/g, ' ')   // Reemplazar &nbsp;
@@ -52,7 +52,7 @@ function htmlToPlainText(html: string): string {
 }
 
 // Extraer extracto del contenido
-function extractExtracto(contenido: string, maxLength = 150): string {
+export function extractExtracto(contenido: string, maxLength = 150): string {
   // Quitar categoría si existe
   let text = contenido.replace(/^\[(\w+)\]\s*/i, '')
   // Quitar markdown headers

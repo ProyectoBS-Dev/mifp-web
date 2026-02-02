@@ -31,11 +31,16 @@ export function LoginForm() {
     });
 
     if (signInError) {
-      setError(
-        signInError.message === "Invalid login credentials"
-          ? "Email o contraseña incorrectos"
-          : signInError.message,
-      );
+      // Check for unconfirmed email
+      if (signInError.message.includes("Email not confirmed")) {
+        setError(
+          "Tu email aún no está confirmado. Revisa tu bandeja de entrada o solicita un nuevo enlace de confirmación más abajo.",
+        );
+      } else if (signInError.message === "Invalid login credentials") {
+        setError("Email o contraseña incorrectos");
+      } else {
+        setError(signInError.message);
+      }
       setIsLoading(false);
       return;
     }

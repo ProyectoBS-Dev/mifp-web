@@ -1,49 +1,64 @@
-import { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
-import { getUser } from '@/lib/supabase/cached'
-import { redirect } from 'next/navigation'
-import { DashboardGrid } from '@/components/dashboard'
-import { GDMissingBanner } from '@/components/guias-didacticas'
-import type { DashboardLayoutItem } from '@/types/dashboard'
+import { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/supabase/cached";
+import { redirect } from "next/navigation";
+import { DashboardGrid } from "@/components/dashboard";
+import { GDMissingBanner } from "@/components/guias-didacticas";
+import type { DashboardLayoutItem } from "@/types/dashboard";
 
 export const metadata: Metadata = {
-  title: 'Dashboard',
-  description: 'Tu panel de control personalizado',
-}
+  title: "Dashboard",
+  description: "Tu panel de control personalizado",
+};
 
 // Forzar renderizado dinámico para que siempre lea el layout actualizado
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   // Usar versión cacheada de getUser (reutiliza resultado del layout)
-  const user = await getUser()
+  const user = await getUser();
 
   if (!user) {
-    redirect('/login')
+    redirect("/login");
   }
 
-  const supabase = await createClient()
+  const supabase = await createClient();
+
+  // ✅ VERIFICACIÓN DE ONBOARDING (Defense in Depth)
+  // El proxy.ts ya hace esta verificación, pero agregamos otra capa
+  // de seguridad a nivel de servidor para prevenir edge cases
+  const { data: profile } = await supabase
+    .from("users")
+    .select("onboarding_completed")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.onboarding_completed) {
+    redirect("/onboarding");
+  }
 
   // Obtener layout guardado del usuario
   const { data: layoutData } = await supabase
-    .from('user_grid_layout')
-    .select('layout_config')
-    .eq('user_id', user.id)
-    .single()
+    .from("user_grid_layout")
+    .select("layout_config")
+    .eq("user_id", user.id)
+    .single();
 
   // Type guard para verificar si layout_config es un array válido
-  const savedLayout = layoutData && 
-    Array.isArray(layoutData.layout_config) && 
+  const savedLayout =
+    layoutData &&
+    Array.isArray(layoutData.layout_config) &&
     layoutData.layout_config.length > 0
-    ? (layoutData.layout_config as unknown as DashboardLayoutItem[])
-    : undefined
+      ? (layoutData.layout_config as unknown as DashboardLayoutItem[])
+      : undefined;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">
-          Tu panel de control personalizado. Arrastra y redimensiona los widgets.
+          Tu panel de control personalizado. Arrastra y redimensiona los
+          widgets.
         </p>
       </div>
 
@@ -52,5 +67,5 @@ export default async function DashboardPage() {
 
       <DashboardGrid userId={user.id} initialLayout={savedLayout} />
     </div>
-  )
+  );
 }

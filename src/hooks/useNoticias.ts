@@ -22,7 +22,7 @@ export interface Noticia {
     full_name: string | null
     email: string
     avatar_url: string | null
-  }
+  } | null
 }
 
 export type NoticiaCategoria = 'comunicado' | 'recurso' | 'evento' | 'general'

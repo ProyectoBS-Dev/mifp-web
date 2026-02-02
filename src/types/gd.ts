@@ -112,7 +112,7 @@ export interface GuiaDidactica {
   id: string
   asignatura_id: string
   semestre_id: string
-  subido_por: string
+  subido_por: string | null
   archivo_path: string
   estado: GDEstado
   procesada: boolean

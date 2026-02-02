@@ -506,7 +506,7 @@ export type Database = {
       }
       noticias: {
         Row: {
-          autor_id: string
+          autor_id: string | null
           contenido: string
           created_at: string
           deleted_at: string | null
@@ -518,7 +518,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          autor_id: string
+          autor_id?: string | null
           contenido: string
           created_at?: string
           deleted_at?: string | null
@@ -530,7 +530,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          autor_id?: string
+          autor_id?: string | null
           contenido?: string
           created_at?: string
           deleted_at?: string | null
@@ -992,6 +992,13 @@ export type Database = {
             columns: ["recurso_id"]
             isOneToOne: false
             referencedRelation: "recursos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_recursos_favoritos_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]

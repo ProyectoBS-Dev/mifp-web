@@ -20,7 +20,11 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: { error?: string; message?: string };
+  searchParams: Promise<{
+    error?: string;
+    message?: string;
+    error_code?: string;
+  }>;
 }) {
   // Redirect to dashboard if already logged in
   const supabase = await createClient();
@@ -32,8 +36,17 @@ export default async function LoginPage({
     redirect("/dashboard");
   }
 
-  const error = searchParams?.error;
-  const errorMessage = searchParams?.message;
+  // Await searchParams (Next.js 15+ requirement)
+  const params = await searchParams;
+  const error = params?.error;
+  const errorMessage = params?.message;
+  const errorCode = params?.error_code;
+
+  // Detectar token expirado de dos formas:
+  // 1. Nuestro callback: error=token_expired
+  // 2. Supabase directo: error_code=otp_expired
+  const isTokenExpired =
+    error === "token_expired" || errorCode === "otp_expired";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background-soft p-4">
@@ -44,7 +57,7 @@ export default async function LoginPage({
         </Link>
 
         {/* Mostrar alerta de error si el token expiró */}
-        {error === "token_expired" && (
+        {isTokenExpired && (
           <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg space-y-4">
             <div>
               <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
@@ -52,22 +65,19 @@ export default async function LoginPage({
               </p>
               <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
                 {errorMessage ||
-                  "El enlace de confirmación solo es válido por 1 hora. Puedes solicitar uno nuevo:"}
+                  "Los enlaces de confirmación son válidos durante 1 hora. Puedes solicitar un nuevo enlace a continuación:"}
               </p>
             </div>
             <ResendConfirmation />
           </div>
         )}
 
-        {/* Mostrar otros errores de autenticación */}
-        {error === "auth_callback_error" && (
+        {/* Mostrar otros errores de autenticación (pero no si ya mostramos token expirado) */}
+        {error === "auth_callback_error" && !isTokenExpired && (
           <div className="mb-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
             <p className="text-sm font-medium text-destructive">
-              ❌ Error de autenticación
-            </p>
-            <p className="text-xs text-destructive/80 mt-1">
               {errorMessage ||
-                "Hubo un problema al confirmar tu cuenta. Por favor, inicia sesión."}
+                "Error en el proceso de autenticación. Por favor, intenta de nuevo."}
             </p>
           </div>
         )}

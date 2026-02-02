@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
+import { htmlToPlainText, extractExtracto } from '@/lib/text-utils'
 
 // Re-export del cliente para uso interno del hook
 const getSupabase = () => createClient()
@@ -39,32 +40,8 @@ function extractCategoria(contenido: string): NoticiaCategoria {
   return 'general'
 }
 
-// Convertir HTML a texto plano
-export function htmlToPlainText(html: string): string {
-  return html
-    .replace(/<[^>]*>/g, ' ')  // Quitar tags HTML
-    .replace(/&nbsp;/g, ' ')   // Reemplazar &nbsp;
-    .replace(/&amp;/g, '&')    // Reemplazar &amp;
-    .replace(/&lt;/g, '<')     // Reemplazar &lt;
-    .replace(/&gt;/g, '>')     // Reemplazar &gt;
-    .replace(/\s+/g, ' ')      // Normalizar espacios
-    .trim()
-}
-
-// Extraer extracto del contenido
-export function extractExtracto(contenido: string, maxLength = 150): string {
-  // Quitar categoría si existe
-  let text = contenido.replace(/^\[(\w+)\]\s*/i, '')
-  // Quitar markdown headers
-  text = text.replace(/^#+\s+/gm, '')
-  // Convertir HTML a texto plano
-  text = htmlToPlainText(text)
-  // Tomar primera parte
-  if (text.length > maxLength) {
-    return text.slice(0, maxLength).trim() + '...'
-  }
-  return text.trim()
-}
+// Re-exportar utilidades de texto para uso en otros archivos
+export { htmlToPlainText, extractExtracto }
 
 export interface NoticiaConMeta extends Noticia {
   categoria: NoticiaCategoria

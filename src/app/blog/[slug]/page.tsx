@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PostContent } from '@/components/blog/PostContent'
 import type { NoticiaConMeta, NoticiaCategoria } from '@/hooks/useNoticias'
-import { extractExtracto } from '@/hooks/useNoticias'
+import { extractExtracto } from '@/lib/text-utils'
 
 // Extraer categoría del contenido
 function extractCategoria(contenido: string): NoticiaCategoria {

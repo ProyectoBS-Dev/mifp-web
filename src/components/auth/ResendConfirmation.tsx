@@ -31,21 +31,66 @@ export function ResendConfirmation({
     setIsLoading(true);
     setMessage(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.resend({
-      type: "signup",
-      email: email,
-    });
+    try {
+      // 1. Validate email status before allowing resend
+      const statusRes = await fetch("/api/auth/check-email-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-    if (error) {
+      // 2. Handle rate limit error
+      if (statusRes.status === 429) {
+        const data = await statusRes.json();
+        setMessage({
+          type: "error",
+          text:
+            data.error ||
+            "Demasiados intentos. Espera un minuto e intenta de nuevo.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // 3. Parse response
+      const { canResend, message: statusMsg } = await statusRes.json();
+
+      // 4. Handle validation errors (not registered, already confirmed, etc.)
+      if (!canResend) {
+        setMessage({
+          type: "error",
+          text: statusMsg,
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // 5. Email is valid and unconfirmed - proceed with resend
+      const supabase = createClient();
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+        },
+      });
+
+      if (error) {
+        setMessage({
+          type: "error",
+          text: error.message || "Error al enviar el email. Intenta de nuevo.",
+        });
+      } else {
+        setMessage({
+          type: "success",
+          text: "📧 Email de confirmación enviado. Revisa tu bandeja de entrada.",
+        });
+      }
+    } catch (error) {
+      console.error("[ResendConfirmation] Error:", error);
       setMessage({
         type: "error",
-        text: error.message || "Error al enviar el email. Intenta de nuevo.",
-      });
-    } else {
-      setMessage({
-        type: "success",
-        text: "📧 Email de confirmación enviado. Revisa tu bandeja de entrada.",
+        text: "Error al verificar el email. Intenta de nuevo.",
       });
     }
 

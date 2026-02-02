@@ -62,7 +62,7 @@ Root layout tiene `title: { template: '%s | MiFP' }` → **NO duplicar "MiFP"**
 
 | Carpeta | Contenido | Cuándo |
 |---------|-----------|--------|
-| `./structure/03-database/` | Schema, RLS, logic, migrations | **ANTES** de cualquier query/mutación BD |
+| `./structure/03-database/` | schema, security, logic, migrations | **ANTES** de cualquier query/mutación BD |
 | `./structure/12-estructura-proyecto/` | Árbol de carpetas del proyecto | **ANTES** de crear archivos/carpetas |
 | `./structure/15-rediseños/` | Planes de rediseño UI | **ANTES** de asumir wireframe vigente |
 

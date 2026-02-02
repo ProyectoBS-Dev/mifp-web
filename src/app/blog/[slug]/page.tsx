@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PostContent } from '@/components/blog/PostContent'
 import type { NoticiaConMeta, NoticiaCategoria } from '@/hooks/useNoticias'
+import { extractExtracto } from '@/hooks/useNoticias'
 
 // Extraer categoría del contenido
 function extractCategoria(contenido: string): NoticiaCategoria {
@@ -14,16 +15,6 @@ function extractCategoria(contenido: string): NoticiaCategoria {
     }
   }
   return 'general'
-}
-
-// Extraer extracto del contenido
-function extractExtracto(contenido: string, maxLength = 150): string {
-  let text = contenido.replace(/^\[(\w+)\]\s*/i, '')
-  text = text.replace(/^#+\s+/gm, '')
-  if (text.length > maxLength) {
-    return text.slice(0, maxLength).trim() + '...'
-  }
-  return text.trim()
 }
 
 async function getPostBySlug(slug: string): Promise<NoticiaConMeta | null> {
@@ -171,7 +162,6 @@ export default async function PostPage({
   }
 
   const { prev, next } = await getAdjacentPosts(slug)
-  const autorNombre = post.autor?.full_name || post.autor?.email?.split('@')[0] || 'Equipo MiFP'
 
   return (
     <>

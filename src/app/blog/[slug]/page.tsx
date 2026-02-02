@@ -48,7 +48,7 @@ async function getPostBySlug(slug: string): Promise<NoticiaConMeta | null> {
     ...data,
     categoria: extractCategoria(data.contenido),
     extracto: extractExtracto(data.contenido),
-  }
+  } as NoticiaConMeta
 }
 
 async function getAdjacentPosts(currentSlug: string): Promise<{

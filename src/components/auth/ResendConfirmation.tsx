@@ -28,6 +28,9 @@ export function ResendConfirmation({
       return;
     }
 
+    // Normalize email before sending
+    const normalizedEmail = email.trim().toLowerCase();
+
     setIsLoading(true);
     setMessage(null);
 
@@ -36,7 +39,7 @@ export function ResendConfirmation({
       const statusRes = await fetch("/api/auth/check-email-status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: normalizedEmail }),
       });
 
       // 2. Handle rate limit error
@@ -69,7 +72,7 @@ export function ResendConfirmation({
       const supabase = createClient();
       const { error } = await supabase.auth.resend({
         type: "signup",
-        email: email,
+        email: normalizedEmail,
         options: {
           emailRedirectTo: `${window.location.origin}/api/auth/callback`,
         },
@@ -83,7 +86,7 @@ export function ResendConfirmation({
       } else {
         setMessage({
           type: "success",
-          text: "📧 Email de confirmación enviado. Revisa tu bandeja de entrada.",
+          text: "Email de confirmación enviado. Revisa tu bandeja de entrada.",
         });
       }
     } catch (error) {

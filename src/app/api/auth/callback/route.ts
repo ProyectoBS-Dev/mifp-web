@@ -5,6 +5,9 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
 
+  // Extraer error_code de Supabase si existe
+  const errorCodeFromUrl = searchParams.get("error_code");
+
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
@@ -16,13 +19,16 @@ export async function GET(request: Request) {
         code: error.code,
       });
 
-      // Detectar token expirado o inválido
+      // Detectar token expirado por:
+      // 1. Mensaje de error, O
+      // 2. error_code=otp_expired de Supabase
       if (
         error.message.toLowerCase().includes("expired") ||
-        error.message.toLowerCase().includes("invalid")
+        error.message.toLowerCase().includes("invalid") ||
+        errorCodeFromUrl === "otp_expired"
       ) {
         return NextResponse.redirect(
-          `${origin}/login?error=token_expired&message=${encodeURIComponent("El enlace de confirmación ha expirado")}`,
+          `${origin}/login?error=token_expired&error_code=otp_expired&message=${encodeURIComponent("El enlace de confirmación ha expirado")}`,
         );
       }
 
@@ -50,6 +56,8 @@ export async function GET(request: Request) {
     }
   }
 
-  // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_error`);
+  // Si NO hay code, probablemente es un callback con hash fragments
+  // Dejar que el cliente (HashParamHandler) maneje los params del hash
+  // No redirigir con error genérico
+  return NextResponse.redirect(`${origin}/login`);
 }

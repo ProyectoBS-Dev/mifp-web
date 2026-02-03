@@ -8,7 +8,12 @@ import { z } from "zod";
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const EmailSchema = z.object({
-  email: z.string().email("Email inválido"),
+  email: z
+    .string()
+    .trim() // Remove whitespace
+    .toLowerCase() // Normalize to lowercase
+    .email("Email inválido") // Validate format
+    .max(100, "Email demasiado largo"), // Prevent abuse
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════

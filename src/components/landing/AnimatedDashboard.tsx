@@ -5,7 +5,7 @@ import { FileText, Link2, Headphones, CheckCircle2 } from 'lucide-react'
 export function AnimatedDashboard() {
 
   return (
-    <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden border bg-background/95 backdrop-blur-sm shadow-2xl">
+    <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] rounded-xl overflow-hidden border bg-background/95 backdrop-blur-sm shadow-2xl">
       <style>{`
         @keyframes slideInRight {
           from {
@@ -85,8 +85,8 @@ export function AnimatedDashboard() {
           <div className="flex items-center gap-1 text-xs">
             <button className="px-2 py-1 rounded-lg bg-gradient-to-br from-vt-green/10 to-vt-blue/10 text-vt-green font-medium border border-vt-green/20 animate-slide-right delay-100">Dashboard</button>
             <button className="px-2 py-1 rounded hover:bg-muted/50 text-muted-foreground animate-slide-right delay-200">Notas</button>
-            <button className="px-2 py-1 rounded hover:bg-muted/50 text-muted-foreground animate-slide-right delay-250">Recursos</button>
-            <button className="px-2 py-1 rounded hover:bg-muted/50 text-muted-foreground animate-slide-right delay-300">Blog</button>
+            <button className="px-2 py-1 rounded hover:bg-muted/50 text-muted-foreground animate-slide-right delay-250 hidden xs:inline-block">Recursos</button>
+            <button className="px-2 py-1 rounded hover:bg-muted/50 text-muted-foreground animate-slide-right delay-300 hidden sm:inline-block">Blog</button>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -126,7 +126,7 @@ export function AnimatedDashboard() {
         </div>
 
         {/* Widgets Grid */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           
           {/* Calendario Widget */}
           <div className="p-2.5 rounded-xl border bg-card/90 backdrop-blur-md shadow-lg hover:shadow-xl transition-shadow animate-slide-up delay-500">
@@ -248,7 +248,7 @@ export function AnimatedDashboard() {
           </div>
 
           {/* Notas rápidas */}
-          <div className="col-span-2 p-2.5 rounded-xl border bg-card/90 backdrop-blur-md shadow-lg hover:shadow-xl transition-shadow animate-slide-up delay-800">
+          <div className="col-span-2 sm:col-span-2 p-2.5 rounded-xl border bg-card/90 backdrop-blur-md shadow-lg hover:shadow-xl transition-shadow animate-slide-up delay-800">
             <div className="flex items-center gap-1.5 mb-2">
               <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-vt-yellow/20 to-vt-yellow-dark/20 flex items-center justify-center">
                 <svg className="w-3 h-3 text-vt-yellow-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">

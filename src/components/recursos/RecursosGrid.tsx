@@ -164,7 +164,7 @@ export function RecursosGrid({
       </p>
 
       {/* Grid */}
-      <div className="grid gap-4">
+      <div className="grid grid-cols-1 gap-4 max-w-full">
         {filteredRecursos.map((recurso) => (
           <RecursoCard key={recurso.id} recurso={recurso} />
         ))}

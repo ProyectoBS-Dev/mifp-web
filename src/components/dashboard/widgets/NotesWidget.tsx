@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -567,6 +568,9 @@ export function NotesWidget() {
                   </span>
                 )}
               </DialogTitle>
+              <DialogDescription className="sr-only">
+                Ver y editar nota seleccionada
+              </DialogDescription>
             </DialogHeader>
 
             <div className="py-2">
@@ -757,6 +761,9 @@ export function NotesWidget() {
           <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>Nueva nota</DialogTitle>
+              <DialogDescription className="sr-only">
+                Crear una nueva nota o apunte
+              </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-2">

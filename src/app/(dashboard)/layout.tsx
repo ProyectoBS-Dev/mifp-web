@@ -36,7 +36,7 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-background">
       <Navbar user={userData} />
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-7xl">
+      <main className="container mx-auto container-mobile py-4 sm:py-6 max-w-7xl">
         {/* Verificar si necesita onboarding de nuevo semestre */}
         <SemesterOnboardingChecker
           userId={user.id}

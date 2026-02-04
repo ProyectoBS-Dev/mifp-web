@@ -5,6 +5,14 @@ const config: Config = {
 	content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
 	theme: {
 		extend: {
+			// Breakpoints personalizados
+			screens: {
+				'xs': '360px',
+				// sm: 640px (default Tailwind)
+				// md: 768px (default Tailwind)
+				// lg: 1024px (default Tailwind)
+				// xl: 1280px (default Tailwind)
+			},
 			colors: {
 				background: 'hsl(var(--background))',
 				'background-soft': 'var(--background-soft)',

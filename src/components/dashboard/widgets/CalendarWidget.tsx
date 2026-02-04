@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -323,6 +324,9 @@ function EventDetailModal({ event, onClose }: EventDetailModalProps) {
             })()}
             {event.title}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Detalles del evento seleccionado
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3 py-2">
@@ -430,6 +434,9 @@ function DayEventsModal({ date, events, onSelectEvent, onCreateEvent, onClose, i
             <CalendarIcon className="h-5 w-5" />
             {format(date, "d 'de' MMMM", { locale: es })}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Eventos del día seleccionado
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-2 py-2 overflow-y-auto max-h-[50vh] pr-1">
@@ -551,6 +558,9 @@ function CreateEventModal({ isOpen, initialDate, onClose }: CreateEventModalProp
             <Pin className="h-5 w-5" />
             Nuevo evento
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Formulario para crear un nuevo evento en el calendario
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 py-2">

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, Home, Newspaper, LogIn, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ThemeToggle } from './ThemeToggle'
 import { UserMenu } from './UserMenu'
@@ -55,6 +55,9 @@ export function Navbar({ user, variant = 'dashboard', showPublicNav = true, isLo
                     <span className="text-xl font-bold gradient-text">MiFP</span>
                   </Link>
                 </SheetTitle>
+                <SheetDescription className="sr-only">
+                  Menú de navegación principal
+                </SheetDescription>
               </SheetHeader>
               <nav className="flex flex-col gap-1 mt-4">
                 {navItems.map((item) => (

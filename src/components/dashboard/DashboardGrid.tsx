@@ -155,7 +155,7 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
   }, [])
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0 max-w-full">
       {/* Controls */}
       <div className="flex items-center justify-end gap-2 mb-4">
         {/* Status indicator */}
@@ -219,7 +219,7 @@ export function DashboardGrid({ userId, initialLayout }: DashboardGridProps) {
       <ResponsiveGridLayout
         className="layout"
         layouts={layouts}
-        breakpoints={{ xl: 1536, lg: 1200, md: 996, sm: 768, xs: 480 }}
+        breakpoints={{ xl: 1536, lg: 1200, md: 996, sm: 768, xs: 0 }}
         cols={{ xl: 12, lg: 12, md: 10, sm: 6, xs: 4 }}
         rowHeight={80}
         onLayoutChange={handleLayoutChange}

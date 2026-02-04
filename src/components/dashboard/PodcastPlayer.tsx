@@ -160,7 +160,7 @@ export function PodcastPlayer({ recurso, className }: PodcastPlayerProps) {
     <div className={cn('space-y-2', className)}>
       {/* Barra de progreso */}
       <div className="flex items-center gap-2">
-        <span className="text-[10px] text-muted-foreground tabular-nums w-10">
+        <span className="text-[10px] text-muted-foreground tabular-nums w-8 xs:w-10">
           {formatSeconds(Math.round(progress))}
         </span>
 
@@ -173,7 +173,7 @@ export function PodcastPlayer({ recurso, className }: PodcastPlayerProps) {
           disabled={isLoading}
         />
 
-        <span className="text-[10px] text-muted-foreground tabular-nums w-10 text-right">
+        <span className="text-[10px] text-muted-foreground tabular-nums w-8 xs:w-10 text-right">
           {formatSeconds(Math.round(duration))}
         </span>
       </div>
@@ -221,8 +221,8 @@ export function PodcastPlayer({ recurso, className }: PodcastPlayerProps) {
           </Button>
         </div>
 
-        {/* Volumen */}
-        <div className="flex items-center gap-1">
+        {/* Volumen - oculto en pantallas muy pequeñas */}
+        <div className="hidden xs:flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
@@ -240,7 +240,7 @@ export function PodcastPlayer({ recurso, className }: PodcastPlayerProps) {
             max={1}
             step={0.1}
             onValueChange={handleVolumeChange}
-            className="w-16"
+            className="w-12 sm:w-16"
           />
         </div>
       </div>

@@ -86,7 +86,7 @@ export function RecursoCard({ recurso }: RecursoCardProps) {
   return (
     <>
       <div className={cn(
-        'rounded-lg border p-4 md:p-5 transition-all hover:shadow-md group relative',
+        'rounded-lg border p-4 md:p-5 transition-all hover:shadow-md group relative min-w-0',
         colorClass
       )}>
         {/* Botón de favorito - posición absoluta en esquina superior derecha */}

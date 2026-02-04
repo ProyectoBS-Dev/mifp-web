@@ -55,7 +55,7 @@ export function HeroTabs() {
   const activeTabData = tabs.find(t => t.id === activeTab) || tabs[0]
 
   return (
-    <div className="mt-16 max-w-4xl mx-auto">
+    <div className="mt-12 sm:mt-16 max-w-4xl mx-auto">
       {/* Dashboard Preview Image */}
       <div className="relative">
         <div className="relative rounded-xl overflow-hidden">
@@ -74,12 +74,13 @@ export function HeroTabs() {
       
       {/* Tagline */}
       <div className="mt-8 text-center">
-        <p className="text-muted-foreground text-sm mb-6">
+        <p className="text-muted-foreground text-xs xs:text-sm mb-4 sm:mb-6">
           Navega entre las diferentes pestañas para ver las funcionalidades de MiFP <Sparkles className="inline h-4 w-4" />
         </p>
         
         {/* Tabs Navigation */}
-        <div className="inline-flex items-center gap-1 p-1.5 rounded-full bg-muted/50 backdrop-blur-sm border border-border">
+        <div className="overflow-x-auto scrollbar-hide">
+          <div className="inline-flex items-center gap-1 p-1.5 rounded-full bg-muted/50 backdrop-blur-sm border border-border min-w-fit">
           {tabs.map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -88,17 +89,18 @@ export function HeroTabs() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  'inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all',
+                  'inline-flex items-center gap-1.5 xs:gap-2 px-3 xs:px-4 py-2 rounded-full text-xs xs:text-sm font-medium transition-all whitespace-nowrap',
                   isActive
                     ? 'bg-background text-foreground shadow-sm border border-border'
                     : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                 )}
               >
-                <Icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
+                <Icon className="h-3.5 w-3.5 xs:h-4 xs:w-4 shrink-0" />
+                <span className="hidden xs:inline">{tab.label}</span>
               </button>
             )
           })}
+          </div>
         </div>
       </div>
     </div>

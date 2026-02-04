@@ -332,3 +332,33 @@
     scrollbar-color: var(--vt-c-gray-dark-1) transparent;
   }
 }
+
+/* ─────────────────────────────────────────
+   MOBILE RESPONSIVE UTILITIES
+   ───────────────────────────────────────── */
+
+/* Mobile text handling - mejor wrapping en móvil */
+.text-wrap-balance {
+  text-wrap: balance;
+}
+
+.text-wrap-pretty {
+  text-wrap: pretty;
+}
+
+/* Container padding consistente mobile-first */
+.container-mobile {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+/* Safe viewport heights - considera teclado virtual en móvil */
+.min-h-screen-safe {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height */
+}
+
+/* Prevenir overflow horizontal en mobile */
+.mobile-safe {
+  max-width: 100vw;
+  overflow-x: hidden;
+}

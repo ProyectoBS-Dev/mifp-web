@@ -6,14 +6,14 @@ import { useRecursosFavoritos } from '@/hooks/useRecursosFavoritos'
 import { createClient } from '@/lib/supabase/client'
 import {
   RecursosSidebar,
+  RecursosSidebarContent,
   RecursosHeader,
   RecursosFilters,
   RecursosGrid,
   type SortOption
 } from '@/components/recursos'
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Menu } from 'lucide-react'
+import { CollapsibleSidebar } from '@/components/ui/collapsible-sidebar'
+import { Filter } from 'lucide-react'
 import type { RecursoTipoUI } from '@/types/recursos'
 
 // ============================================
@@ -51,9 +51,6 @@ export default function RecursosPage() {
   const [selectedTipo, setSelectedTipo] = useState<RecursoTipoUI | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('recientes')
-  
-  // Sheet mobile
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Cargar asignaturas con conteo de recursos
   useEffect(() => {
@@ -137,47 +134,35 @@ export default function RecursosPage() {
     }
   }, [recursos])
 
-  // Componente Sidebar (reutilizable para desktop y mobile)
-  const sidebarContent = (
-    <RecursosSidebar
-      asignaturas={asignaturas}
-      selectedAsignaturaId={selectedAsignaturaId}
-      selectedTipo={selectedTipo}
-      onSelectAsignatura={(id) => {
-        setSelectedAsignaturaId(id)
-        setMobileMenuOpen(false) // Cerrar en mobile
-      }}
-      onSelectTipo={(tipo) => {
-        setSelectedTipo(tipo)
-        setMobileMenuOpen(false) // Cerrar en mobile
-      }}
-      counts={counts}
-    />
-  )
+  // Props para sidebar (reemplaza sidebarContent)
+  const sidebarProps = {
+    asignaturas,
+    selectedAsignaturaId,
+    selectedTipo,
+    onSelectAsignatura: setSelectedAsignaturaId,
+    onSelectTipo: setSelectedTipo,
+    counts
+  }
 
   return (
     <div className="flex h-full">
       {/* Sidebar Desktop */}
-      {sidebarContent}
+      <RecursosSidebar {...sidebarProps} />
 
       {/* Contenido Principal */}
       <main className="flex-1 overflow-y-auto bg-muted/50 rounded-lg shadow-lg">
         <div className="container max-w-5xl mx-auto p-6 space-y-6">
           {/* Header con botón mobile */}
           <div className="space-y-4">
-            {/* Botón menú mobile */}
+            {/* Botón filtros mobile */}
             <div className="lg:hidden">
-              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Menu className="h-4 w-4 mr-2" />
-                    Filtros
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-80 p-0">
-                  {sidebarContent}
-                </SheetContent>
-              </Sheet>
+              <CollapsibleSidebar
+                icon={Filter}
+                label="Filtros"
+                description="Filtros de recursos por asignatura y tipo"
+              >
+                <RecursosSidebarContent {...sidebarProps} />
+              </CollapsibleSidebar>
             </div>
 
             {/* Header */}

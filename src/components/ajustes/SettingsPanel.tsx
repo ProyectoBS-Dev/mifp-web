@@ -50,9 +50,8 @@ export function SettingsPanel({ userEmail, userRole = 'estudiante' }: SettingsPa
         />
       </div>
 
-      {/* Mobile navigation */}
-      <div className="lg:hidden space-y-3">
-        {/* Config items */}
+      {/* Mobile Config Navigation - ANTES del main content */}
+      <div className="lg:hidden">
         <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
           <MobileNavButton 
             active={activeSection === 'apariencia'}
@@ -80,9 +79,16 @@ export function SettingsPanel({ userEmail, userRole = 'estudiante' }: SettingsPa
             Peligro
           </MobileNavButton>
         </div>
-        
-        {/* Resources items */}
-        <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 border-t pt-3">
+      </div>
+
+      {/* Main content */}
+      <main className="flex-1 min-w-0 p-6 bg-muted/50 rounded-lg shadow-lg border-none">
+        {renderSection()}
+      </main>
+
+      {/* Mobile Resources Navigation - DESPUÉS del main content */}
+      <div className="lg:hidden order-last border-t pt-3">
+        <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
           <Link
             href="/home#faqs"
             className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap bg-muted hover:bg-muted/80 transition-colors"
@@ -105,11 +111,6 @@ export function SettingsPanel({ userEmail, userRole = 'estudiante' }: SettingsPa
           </MobileNavButton>
         </div>
       </div>
-
-      {/* Main content */}
-      <main className="flex-1 min-w-0 p-6 bg-muted/50 rounded-lg shadow-lg border-none">
-        {renderSection()}
-      </main>
     </div>
   )
 }

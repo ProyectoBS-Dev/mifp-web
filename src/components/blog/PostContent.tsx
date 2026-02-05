@@ -286,8 +286,8 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
 
       {/* Footer con acciones */}
       <footer className="mt-12 pt-6 border-t">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <ReactionBar
               noticiaId={post.id}
               counts={counts}
@@ -301,20 +301,20 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
             </Button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {prevPost && (
-              <Button variant="ghost" size="sm" asChild>
+              <Button variant="ghost" size="sm" asChild className="max-w-[150px]">
                 <Link href={`/blog/${prevPost.slug}`} className="gap-1">
-                  <ArrowLeft className="h-4 w-4" />
-                  Anterior
+                  <ArrowLeft className="h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">Anterior</span>
                 </Link>
               </Button>
             )}
             {nextPost && (
-              <Button variant="ghost" size="sm" asChild>
+              <Button variant="ghost" size="sm" asChild className="max-w-[150px]">
                 <Link href={`/blog/${nextPost.slug}`} className="gap-1">
-                  Siguiente
-                  <ArrowRight className="h-4 w-4" />
+                  <span className="truncate">Siguiente</span>
+                  <ArrowRight className="h-4 w-4 flex-shrink-0" />
                 </Link>
               </Button>
             )}

@@ -125,7 +125,7 @@ export function Navbar({ user, variant = 'dashboard', showPublicNav = true, isLo
         </nav>
 
         {/* Right side */}
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1 sm:gap-2">
           {isLoading ? (
             <>
               <Skeleton className="h-6 w-6 rounded-full mr-2" />
@@ -141,16 +141,18 @@ export function Navbar({ user, variant = 'dashboard', showPublicNav = true, isLo
           ) : (
             <>
               <ThemeToggle />
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/login" className="gap-2">
+              {/* Login button - icon only on mobile, text on sm+ */}
+              <Button variant="ghost" size="sm" asChild className="gap-1.5 sm:gap-2">
+                <Link href="/login">
                   <LogIn className="h-4 w-4" />
-                  Iniciar sesión
+                  <span className="hidden sm:inline">Iniciar sesión</span>
                 </Link>
               </Button>
-              <Button size="sm" asChild>
-                <Link href="/registro" className="gap-2">
+              {/* Register button - icon only on mobile, text on sm+ */}
+              <Button size="sm" asChild className="gap-1.5 sm:gap-2">
+                <Link href="/registro">
                   <UserPlus className="h-4 w-4" />
-                  Registrarse
+                  <span className="hidden sm:inline">Registrarse</span>
                 </Link>
               </Button>
             </>

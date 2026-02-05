@@ -164,6 +164,7 @@ export const RecursosSidebarContent = memo(function RecursosSidebarContent({
                 <Button
                   variant="ghost"
                   className="w-full justify-between text-sm h-9 px-2"
+                  data-close-sidebar="false"
                 >
                   <span className="flex items-center gap-2">
                     <ChevronRight

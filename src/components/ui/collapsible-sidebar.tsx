@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
 import type { LucideIcon } from 'lucide-react'
@@ -27,8 +26,8 @@ export interface CollapsibleSidebarProps {
   onOpenChange?: (open: boolean) => void
   /** Descripción para accesibilidad (opcional) */
   description?: string
-  /** Callback cuando se hace click en un item del sidebar (para cerrar en escenarios de filtrado) */
-  onItemClick?: () => void
+  /** Si true, muestra solo el icono sin texto (texto en sr-only) */
+  iconOnly?: boolean
 }
 
 // ============================================
@@ -40,24 +39,26 @@ export interface CollapsibleSidebarProps {
  * 
  * Wrappea Sheet de shadcn/ui con:
  * - Botón trigger customizable con icono
- * - Auto-cierre al navegar a nueva ruta (pathname change)
- * - Cierre manual via onItemClick (para filtros en misma ruta)
+ * - Cierre automático al hacer click en Links y botones
+ * - Opción de mantener abierto con data-close-sidebar="false"
  * - Accesibilidad built-in
+ * 
+ * Para elementos que NO deben cerrar el Sheet (ej. collapsibles),
+ * añadir data-close-sidebar="false" al elemento.
  * 
  * @example
  * ```tsx
- * // Para navegación entre rutas (auto-close por pathname)
+ * // Uso básico - cierra automáticamente al click
  * <CollapsibleSidebar icon={Menu} label="Menú">
- *   <nav>...</nav>
+ *   <nav>
+ *     <Link href="/dashboard">Dashboard</Link>
+ *     <Link href="/notas">Notas</Link>
+ *   </nav>
  * </CollapsibleSidebar>
  * 
- * // Para filtros en misma ruta (manual close)
- * <CollapsibleSidebar 
- *   icon={Filter} 
- *   label="Filtros"
- *   onItemClick={() => setOpen(false)}
- * >
- *   <div>...</div>
+ * // Con collapsibles que NO deben cerrar
+ * <CollapsibleSidebar icon={Filter} label="Filtros">
+ *   <button data-close-sidebar="false">Expandir categoría</button>
  * </CollapsibleSidebar>
  * ```
  */
@@ -70,7 +71,7 @@ export function CollapsibleSidebar({
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
   description,
-  onItemClick
+  iconOnly = false
 }: CollapsibleSidebarProps) {
   // Estado interno (solo si no está controlado externamente)
   const [internalOpen, setInternalOpen] = useState(false)
@@ -80,17 +81,20 @@ export function CollapsibleSidebar({
   const open = isControlled ? controlledOpen : internalOpen
   const setOpen = isControlled ? controlledOnOpenChange! : setInternalOpen
 
-  // Auto-cerrar al navegar (cambio de pathname)
-  const pathname = usePathname()
-  
-  useEffect(() => {
-    setOpen(false)
-  }, [pathname, setOpen])
-
   // Handler para clicks dentro del contenido
-  const handleContentClick = () => {
-    if (onItemClick) {
-      onItemClick()
+  const handleContentClick = (e: React.MouseEvent) => {
+    // Buscar el elemento interactivo clickeado
+    const target = e.target as HTMLElement
+    const interactiveElement = target.closest('button, a, [role="button"], [role="link"]')
+    
+    // Si no hay elemento interactivo, no hacer nada
+    if (!interactiveElement) return
+    
+    // Verificar si el elemento tiene data-close-sidebar="false"
+    const shouldStayOpen = interactiveElement.getAttribute('data-close-sidebar') === 'false'
+    
+    // Solo cerrar si el elemento NO tiene la marca de "no cerrar"
+    if (!shouldStayOpen) {
       setOpen(false)
     }
   }
@@ -99,12 +103,16 @@ export function CollapsibleSidebar({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button 
-          variant="outline" 
-          size="sm"
+          variant={iconOnly ? "ghost" : "outline"}
+          size={iconOnly ? "icon" : "sm"}
           className={className}
         >
-          <Icon className="h-4 w-4 mr-2" />
-          {label}
+          <Icon className={iconOnly ? "h-5 w-5" : "h-4 w-4 mr-2"} />
+          {iconOnly ? (
+            <span className="sr-only">{label}</span>
+          ) : (
+            label
+          )}
         </Button>
       </SheetTrigger>
       <SheetContent side={side} className="w-80 p-0">
@@ -114,14 +122,10 @@ export function CollapsibleSidebar({
             {description || `Menú de navegación ${label.toLowerCase()}`}
           </SheetDescription>
         </SheetHeader>
-        {/* Wrapper para interceptar clicks si hay callback */}
-        {onItemClick ? (
-          <div onClick={handleContentClick}>
-            {children}
-          </div>
-        ) : (
-          children
-        )}
+        {/* Wrapper para detectar clicks en elementos interactivos */}
+        <div onClick={handleContentClick}>
+          {children}
+        </div>
       </SheetContent>
     </Sheet>
   )

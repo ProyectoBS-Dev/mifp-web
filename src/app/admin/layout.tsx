@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { UserMenu } from '@/components/layout/UserMenu'
-import { AdminSidebar } from '@/components/admin'
+import { AdminSidebar, AdminMobileSidebar } from '@/components/admin'
 
 export default async function AdminLayout({
   children,
@@ -49,8 +49,9 @@ export default async function AdminLayout({
               <span className="font-semibold text-primary">🔧 Panel Admin</span>
             </div>
 
-            {/* Acciones */}
+            {/* Acciones - Mobile sidebar + theme + user menu */}
             <div className="flex items-center gap-3">
+              <AdminMobileSidebar />
               <ThemeToggle />
               <UserMenu 
                 user={{
@@ -66,7 +67,7 @@ export default async function AdminLayout({
       </header>
 
       <div className="flex">
-        {/* Sidebar - Client Component */}
+        {/* Sidebar Desktop - Client Component */}
         <AdminSidebar />
 
         {/* Main content */}

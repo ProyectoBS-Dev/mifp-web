@@ -56,24 +56,24 @@ export function LandingContent({ isLoggedIn }: LandingContentProps) {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             {isLoggedIn ? (
-              <Button asChild>
+              <Button asChild className="gap-1.5 sm:gap-2">
                 <Link href="/dashboard">
-                  <LayoutDashboard className="h-5 w-5" />
-                  Ir al Dashboard
+                  <LayoutDashboard className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Ir al Dashboard</span>
                 </Link>
               </Button>
             ) : (
               <>
-                <Button variant="ghost" asChild>
+                <Button variant="ghost" asChild className="gap-1.5 sm:gap-2">
                   <Link href="/login">
-                    <LogIn className="h-5 w-5" />
-                    Iniciar sesión
+                    <LogIn className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="hidden sm:inline">Iniciar sesión</span>
                   </Link>
                 </Button>
-                <Button asChild>
+                <Button asChild className="gap-1.5 sm:gap-2">
                   <Link href="/registro">
-                    <UserPlus className="h-5 w-5" />
-                    Empezar gratis
+                    <UserPlus className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="hidden sm:inline">Empezar gratis</span>
                   </Link>
                 </Button>
               </>

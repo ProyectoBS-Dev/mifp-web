@@ -2,7 +2,7 @@
 
 | Tarea | Acción Rápida | Carpeta Structure |
 |-------|---------------|-------------------|
-| ✅ **Verificar tipos** | **`pnpm type-check`** — Solo tras cambios en tipos/BD/interfaces/componentes | — |
+| ✅ **Verificar tipos** | **`pnpm type-check`** — Solo recordar ejecutarlo al usuario tras cambios en tipos/BD/interfaces/componentes y al finalizar una implementación, no lo ejecutes tu automáticamente | — |
 | 🔄 Regenerar tipos BD | `pnpm dlx supabase gen types typescript --project-id twwvmauepebuqrpwpmmc > src/types/database.ts` | — |
 | 🔍 Crear feature | `./structure/01-proyecto/` → `./structure/03-database/schema/` → `./structure/06-componentes/wireframes/` | ✅ |
 | 🛣️ Crear API route | `verifyAdminOrEditor()` + `createAdminClient()` | `./structure/07-integraciones/api-routes.md` |
@@ -117,7 +117,7 @@ Cuando generes un **plan, análisis o refactorización** (.md), agrégalo AUTOM�
 - ❌ Crear componentes sin revisar `./structure/06-componentes/wireframes/` y `./structure/15-rediseños/`
 - ❌ Modificar lógica notas sin leer `./structure/03-database/logic/calculo-notas.md`
 - ❌ API routes sin revisar `./structure/03-database/security/rls-policies.md`
-- ❌ Modificar tipos/BD/interfaces sin ejecutar `pnpm type-check` al finalizar
+- ❌ Modificar tipos/BD/interfaces sin recordar al usuario que ejecute `pnpm type-check` al finalizar la implementación completa, no lo ejecutes tu automáticamente
 - ❌ Modificar BD sin regenerar tipos Supabase
 - ❌ Generar plan/análisis sin agregarlo a `./structure/`
 
@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
 3. `pnpm dlx supabase gen types typescript --project-id twwvmauepebuqrpwpmmc > src/types/database.ts`
 
 **Cuándo:** Tras ALTER TABLE, ENUM changes, función RPC, DROP/SET NOT NULL  
-**Verificar:** `pnpm type-check` (0 errores)  
+**Verificar:** sugerir ejecutar `pnpm type-check` pero no ejecutarlo automáticamente
 **Regla:** NUNCA `as any` en operaciones Supabase
 
 # 📡 React Query Patterns
@@ -323,14 +323,14 @@ export const getUser = cache(async (id: string) => {
 
 ## ⚠️ REGLA: Type-Check Selectivo
 
-**`pnpm type-check` SOLO cuando hayas:**
+**`pnpm type-check` recordar ejecutarlo al usuario (no el modelo automaticamente) SOLO cuando hayas:**
 - Modificado schema/columnas Supabase
 - Creado/modificado interfaces TypeScript
 - Agregado hooks/componentes
 - Modificado API routes que interactúan con BD
 - Regenerado tipos de Supabase
 
-**NO ejecutar tras:** Cambios en CSS, markdown, docs, o refactors que no toquen tipos
+**NO recordar ejecutar tras:** Cambios en CSS, markdown, docs, o refactors que no toquen tipos
 
 ## Sincronización Tipos Supabase ↔ TypeScript
 
@@ -341,7 +341,7 @@ export const getUser = cache(async (id: string) => {
 - Crear/modificar funciones RPC
 - Cambiar DEFAULT values
 
-**Verificar:** `pnpm type-check` post-regeneración
+**Verificar:** recordar al usuario que ejecute `pnpm type-check` post-regeneración pero no ejecutarlo automáticamente
 
 ## Manejo de Nullability (Causa #1 Errores)
 
@@ -428,7 +428,7 @@ function sanitizeHTML(html: string): string {
 
 ## Checklist Pre-Commit
 
-1. [ ] Si modifiqué tipos/BD/interfaces → `pnpm type-check` = 0 errores
+1. [ ] Si modifiqué tipos/BD/interfaces → sugerir ejecutar type-check pero no ejecutarlo automáticamente
 2. [ ] Si modifiqué BD → regeneré tipos de Supabase
 3. [ ] Interfaces coinciden con tipos generados
 4. [ ] Nullable fields tienen `| null`

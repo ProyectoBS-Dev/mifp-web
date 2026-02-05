@@ -18,6 +18,7 @@ import { useNotas } from '@/hooks/useNotas'
 interface NotasSimplificadoProps {
     semestreId: string
     semestreNombre: string
+    selectedAsignaturaId?: string | null
 }
 
 // ============================================
@@ -28,7 +29,7 @@ interface NotasSimplificadoProps {
  * Vista simplificada de notas para semestres inactivos.
  * Solo permite introducir la nota final de cada asignatura.
  */
-export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplificadoProps) {
+export function NotasSimplificado({ semestreId, semestreNombre, selectedAsignaturaId }: NotasSimplificadoProps) {
     const supabase = createClient()
     const queryClient = useQueryClient()
     const { data, isLoading, error } = useNotas(semestreId)
@@ -141,7 +142,9 @@ export function NotasSimplificado({ semestreId, semestreNombre }: NotasSimplific
             </CardHeader>
             <CardContent>
                 <div className="space-y-3">
-                    {data.asignaturas.map(asig => {
+                    {data.asignaturas
+                        .filter(asig => !selectedAsignaturaId || asig.id === selectedAsignaturaId)
+                        .map(asig => {
                         const localValue = localNotas.get(asig.id)
                         const displayValue = localValue !== undefined
                             ? localValue

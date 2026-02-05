@@ -58,18 +58,18 @@ export default async function SobreNosotrosPage() {
             <Link href="/" className="flex items-center gap-2">
               <span className="text-xl font-bold gradient-text">MiFP</span>
             </Link>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <ThemeToggle />
-              <Button variant="ghost" asChild>
+              <Button variant="ghost" asChild className="gap-1.5 sm:gap-2">
                 <Link href="/login">
-                  <LogIn className="h-5 w-5" />
-                  Iniciar sesión
+                  <LogIn className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Iniciar sesión</span>
                 </Link>
               </Button>
-              <Button asChild>
+              <Button asChild className="gap-1.5 sm:gap-2">
                 <Link href="/registro">
-                  <UserPlus className="h-5 w-5" />
-                  Empezar gratis
+                  <UserPlus className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Empezar gratis</span>
                 </Link>
               </Button>
             </div>

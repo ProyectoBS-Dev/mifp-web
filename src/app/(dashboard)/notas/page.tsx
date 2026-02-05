@@ -1,13 +1,15 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { RefreshCw } from 'lucide-react'
+import { RefreshCw, Menu } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { CollapsibleSidebar } from '@/components/ui/collapsible-sidebar'
 import { NotasSidebar, type AsignaturaCalculada, type EstadoAsignatura } from '@/components/notas/NotasSidebar'
 import { NotasDashboard } from '@/components/notas/NotasDashboard'
 import { AsignaturaDetail } from '@/components/notas/AsignaturaDetail'
+import { AsignaturaDetailSimplificado } from '@/components/notas/AsignaturaDetailSimplificado'
 import { HistorialView } from '@/components/notas/HistorialView'
 import { NotasSimplificado } from '@/components/notas/NotasSimplificado'
 import { NotasCalculator } from '@/components/notas/NotasCalculator'
@@ -66,37 +68,139 @@ interface MobileViewProps {
   selectedSemestreId: string | null
   semestreNombre: string
   isActiveSemestre: boolean
+  onSemestreChange: (id: string) => void
+  activeTab: 'semestre' | 'historial'
+  onTabChange: (tab: 'semestre' | 'historial') => void
+  asignaturasCalculadas: AsignaturaCalculada[]
+  fct: { id: string | null; nota: number | null; empresa: string | null; fechaInicio: string | null; fechaFin: string | null; horasTotales: number }
+  selectedAsignaturaId: string | null
+  onSelectAsignatura: (id: string | null) => void
+  asignaturasAprobadas: number
+  totalAsignaturas: number
+  // Props para detail view
+  selectedAsignatura: AsignaturaNotas | null
+  stats: {
+    media: number | null
+    aprobadas: number
+    suspensas: number
+    pendientes: number
+    total: number
+  }
+  // Handlers
+  onPACNotaSave: (userAsignaturaId: string, pacId: string, nota: number | null) => void
+  onExamenNotaSave: (userAsignaturaId: string, nota: number | null) => void
+  onFCTNotaSave: (nota: number | null) => void
+  isPACPending: boolean
+  isExamenPending: boolean
+  isFCTPending: boolean
+  isPACSuccess: boolean
+  isExamenSuccess: boolean
+  isFCTSuccess: boolean
 }
 
-function MobileView({ selectedSemestreId, semestreNombre, isActiveSemestre }: MobileViewProps) {
-  // En mobile, reutilizamos las vistas existentes que ya son responsive
-  if (!isActiveSemestre && selectedSemestreId) {
-    return (
-      <div className="p-4 space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Notas</h1>
-          <p className="text-sm text-muted-foreground">
-            Gestiona tus calificaciones
-          </p>
-        </div>
-        <NotasSimplificado
-          semestreId={selectedSemestreId}
-          semestreNombre={semestreNombre}
-        />
-      </div>
-    )
+function MobileView({ 
+  selectedSemestreId, 
+  semestreNombre, 
+  isActiveSemestre,
+  onSemestreChange,
+  activeTab,
+  onTabChange,
+  asignaturasCalculadas,
+  fct,
+  selectedAsignaturaId,
+  onSelectAsignatura,
+  asignaturasAprobadas,
+  totalAsignaturas,
+  selectedAsignatura,
+  stats,
+  onPACNotaSave,
+  onExamenNotaSave,
+  onFCTNotaSave,
+  isPACPending,
+  isExamenPending,
+  isFCTPending,
+  isPACSuccess,
+  isExamenSuccess,
+  isFCTSuccess
+}: MobileViewProps) {
+  // Props para el sidebar
+  const sidebarProps = {
+    asignaturasCalculadas,
+    fct,
+    selectedAsignaturaId,
+    onSelectAsignatura,
+    activeTab,
+    onTabChange,
+    selectedSemestreId,
+    onSemestreChange,
+    asignaturasAprobadas,
+    totalAsignaturas
   }
 
-  // Para el semestre activo, usar la calculadora original que ya es responsive
   return (
     <div className="p-4 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">📊 Notas</h1>
-        <p className="text-sm text-muted-foreground">
-          Gestiona tus calificaciones
-        </p>
+      {/* Header con botón menú */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">📊 Notas</h1>
+          <p className="text-sm text-muted-foreground">
+            {semestreNombre || 'Gestiona tus calificaciones'}
+          </p>
+        </div>
+        <CollapsibleSidebar
+          icon={Menu}
+          label="Menú"
+          description="Navegación de semestres y asignaturas"
+        >
+          <NotasSidebar {...sidebarProps} />
+        </CollapsibleSidebar>
       </div>
-      <NotasCalculator />
+
+      {/* Main Content - IGUAL QUE DESKTOP */}
+      {activeTab === 'historial' ? (
+        // Vista Historial
+        <HistorialView />
+      ) : selectedAsignatura ? (
+        // Vista Detalle Asignatura
+        isActiveSemestre ? (
+          // Semestre actual - componente completo con PACs/RAs
+          <AsignaturaDetail
+            asignatura={selectedAsignatura}
+            fctNota={fct.nota}
+            onBack={() => onSelectAsignatura(null)}
+            onPACNotaSave={onPACNotaSave}
+            onExamenNotaSave={onExamenNotaSave}
+            isPACPending={isPACPending}
+            isExamenPending={isExamenPending}
+            isPACSuccess={isPACSuccess}
+            isExamenSuccess={isExamenSuccess}
+          />
+        ) : (
+          // Semestre anterior - componente simplificado
+          <AsignaturaDetailSimplificado
+            asignatura={selectedAsignatura}
+            semestreId={selectedSemestreId!}
+            onBack={() => onSelectAsignatura(null)}
+          />
+        )
+      ) : (
+        // Vista Dashboard o Simplificado
+        isActiveSemestre ? (
+          <NotasDashboard
+            stats={stats}
+            fct={fct}
+            semestreNombre={semestreNombre}
+            onFCTNotaSave={onFCTNotaSave}
+            isFCTPending={isFCTPending}
+            isFCTSuccess={isFCTSuccess}
+          />
+        ) : selectedSemestreId ? (
+          <NotasSimplificado
+            semestreId={selectedSemestreId}
+            semestreNombre={semestreNombre}
+          />
+        ) : null
+      )}
     </div>
   )
 }
@@ -171,15 +275,33 @@ export default function NotasPage() {
     const total = data.asignaturas.length
 
     const asignaturasCalculadas: AsignaturaCalculada[] = data.asignaturas.map(asig => {
-      // Si no tiene GD, retornar datos mínimos
+      // Si no tiene GD, usar notaFinalCalculada (para semestres anteriores)
       if (!asig.tieneGD) {
-        pendientes++
+        const notaFinal = asig.notaFinalCalculada
+        
+        // Determinar estado
+        let estado: EstadoAsignatura = 'sin_notas'
+        if (notaFinal !== null) {
+          estado = notaFinal >= 5 ? 'aprobada' : 'suspensa'
+          
+          // Actualizar estadísticas
+          sumaNotas += notaFinal
+          countNotas++
+          if (notaFinal >= 5) {
+            aprobadas++
+          } else {
+            suspensas++
+          }
+        } else {
+          pendientes++
+        }
+        
         return {
           id: asig.id,
           nombre: asig.nombre,
           codigo: asig.codigo,
-          estado: 'sin_notas' as EstadoAsignatura,
-          notaModulo: null,
+          estado,
+          notaModulo: notaFinal, // ← USAR notaFinalCalculada como notaModulo
           rasCompletados: 0,
           rasTotal: 0
         }
@@ -269,8 +391,11 @@ export default function NotasPage() {
     }
   }, [data])
 
-  // Asignatura seleccionada
-  const selectedAsignatura = data?.asignaturas?.find(a => a.id === selectedAsignaturaId) || null
+  // Calcular asignatura seleccionada (objeto completo con PACs, RAs, etc.)
+  const selectedAsignatura = useMemo(() => {
+    if (!selectedAsignaturaId || !data?.asignaturas) return null
+    return data.asignaturas.find(a => a.id === selectedAsignaturaId) || null
+  }, [selectedAsignaturaId, data?.asignaturas])
 
   // Loading state
   if (isLoading) {
@@ -315,18 +440,6 @@ export default function NotasPage() {
     )
   }
 
-  // Para semestres inactivos, usar vista simplificada
-  if (!isActiveSemestre && currentSemestreId && currentSemestre) {
-    return (
-      <div className="p-6">
-        <NotasSimplificado
-          semestreId={currentSemestreId}
-          semestreNombre={currentSemestre.nombre}
-        />
-      </div>
-    )
-  }
-
   // Render principal: Layout Master-Detail
   return (
     <>
@@ -336,6 +449,26 @@ export default function NotasPage() {
           selectedSemestreId={currentSemestreId}
           semestreNombre={currentSemestre?.nombre || data?.semestreActivo?.nombre || ''}
           isActiveSemestre={isActiveSemestre}
+          onSemestreChange={setSelectedSemestreId}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          asignaturasCalculadas={datosCalculados.asignaturasCalculadas}
+          fct={data?.fct || { id: null, nota: null, empresa: null, fechaInicio: null, fechaFin: null, horasTotales: 400 }}
+          selectedAsignaturaId={selectedAsignaturaId}
+          onSelectAsignatura={setSelectedAsignaturaId}
+          asignaturasAprobadas={datosCalculados.stats.aprobadas}
+          totalAsignaturas={datosCalculados.stats.total}
+          selectedAsignatura={selectedAsignatura}
+          stats={datosCalculados.stats}
+          onPACNotaSave={handlePACNotaSave}
+          onExamenNotaSave={handleExamenNotaSave}
+          onFCTNotaSave={handleFCTNotaSave}
+          isPACPending={savePACNota.isPending}
+          isExamenPending={saveExamenNota.isPending}
+          isFCTPending={saveFCTNota.isPending}
+          isPACSuccess={savePACNota.isSuccess}
+          isExamenSuccess={saveExamenNota.isSuccess}
+          isFCTSuccess={saveFCTNota.isSuccess}
         />
       </div>
 
@@ -364,17 +497,27 @@ export default function NotasPage() {
             </div>
           ) : selectedAsignatura ? (
             // Vista Detalle Asignatura
-            <AsignaturaDetail
-              asignatura={selectedAsignatura}
-              fctNota={data?.fct.nota || null}
-              onBack={() => setSelectedAsignaturaId(null)}
-              onPACNotaSave={handlePACNotaSave}
-              onExamenNotaSave={handleExamenNotaSave}
-              isPACPending={savePACNota.isPending}
-              isExamenPending={saveExamenNota.isPending}
-              isPACSuccess={savePACNota.isSuccess}
-              isExamenSuccess={saveExamenNota.isSuccess}
-            />
+            isActiveSemestre ? (
+              // Semestre actual - componente completo con PACs/RAs
+              <AsignaturaDetail
+                asignatura={selectedAsignatura}
+                fctNota={data?.fct.nota || null}
+                onBack={() => setSelectedAsignaturaId(null)}
+                onPACNotaSave={handlePACNotaSave}
+                onExamenNotaSave={handleExamenNotaSave}
+                isPACPending={savePACNota.isPending}
+                isExamenPending={saveExamenNota.isPending}
+                isPACSuccess={savePACNota.isSuccess}
+                isExamenSuccess={saveExamenNota.isSuccess}
+              />
+            ) : (
+              // Semestre anterior - componente simplificado
+              <AsignaturaDetailSimplificado
+                asignatura={selectedAsignatura}
+                semestreId={currentSemestreId!}
+                onBack={() => setSelectedAsignaturaId(null)}
+              />
+            )
           ) : (
             // Vista Dashboard (default)
             <NotasDashboard

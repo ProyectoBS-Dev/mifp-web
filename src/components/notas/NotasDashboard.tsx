@@ -216,7 +216,7 @@ export function NotasDashboard({
     : 0
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* Hero: Media del semestre */}
       <Card className="bg-gradient-to-r from-vt-blue/5 to-vt-blue/10">
         <CardContent className="pt-6 pb-6">

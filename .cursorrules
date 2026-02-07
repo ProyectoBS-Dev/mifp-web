@@ -2,7 +2,7 @@
 
 | Tarea | Acción Rápida | Carpeta Structure |
 |-------|---------------|-------------------|
-| ✅ **Verificar tipos** | **`pnpm type-check`** — Solo recordar ejecutarlo al usuario tras cambios en tipos/BD/interfaces/componentes y al finalizar una implementación, no lo ejecutes tu automáticamente | — |
+| ✅ Verificar tipos | `pnpm type-check` — Solo recordar ejecutarlo al usuario tras cambios en tipos/BD/interfaces/componentes y al finalizar una implementación, no lo ejecutes tu automáticamente | — |
 | 🔄 Regenerar tipos BD | `pnpm dlx supabase gen types typescript --project-id twwvmauepebuqrpwpmmc > src/types/database.ts` | — |
 | 🔍 Crear feature | `./structure/01-proyecto/` → `./structure/03-database/schema/` → `./structure/06-componentes/wireframes/` | ✅ |
 | 🛣️ Crear API route | `verifyAdminOrEditor()` + `createAdminClient()` | `./structure/07-integraciones/api-routes.md` |
@@ -51,12 +51,18 @@ Root layout tiene `title: { template: '%s | MiFP' }` → **NO duplicar "MiFP"**
 # 📚 Knowledge Base: `./structure/` (CRÍTICO)
 
 ## Contexto
-- **Ubicación:** `./structure/` (git-ignored, local sincronizada)
+- **Ubicación:** `./structure/` (git-ignored, local sincronizada) - (carpeta `structure/` en la RAÍZ del proyecto, NUNCA en raíz directa)
 - **Propósito:** Documentación técnica completa (arquitectura, decisiones, wireframes, schemas)
-- **Índice completo:** `./structure/README.md` (tabla con todas las carpetas 01-17, rules, scripts, security)
+- **Índice completo:** `./structure/README.md` (tabla con todas las carpetas 01-20, rules, scripts, security)
 - **Archivos clave:**
   - `./structure/changelog.md` — Registro de TODOS los cambios (actualizar SIEMPRE)
   - `./structure/decisions.md` — Decisiones arquitectónicas (actualizar al tomar decisiones técnicas importantes)
+
+## Protocolo de Uso
+
+1. **Para índice completo de carpetas:** Read `./structure/README.md`
+2. **Para explorar nueva área:** `LS ./structure/` + leer READMEs
+3. **Si no existe docs:** Avisar usuario, proceder con best practices
 
 ## Carpetas CRÍTICAS (consultar siempre)
 
@@ -74,12 +80,6 @@ security/  → rls-policies.sql, rls-policies.md
 logic/     → calculo-notas.md, functions.sql
 ```
 
-## Protocolo de Uso
-
-1. **Para índice completo de carpetas:** Read `./structure/README.md`
-2. **Para explorar nueva área:** `LS ./structure/` + leer READMEs
-3. **Si no existe docs:** Avisar usuario, proceder con best practices
-
 ## Actualización Documentación
 
 **TÚ (el modelo) DEBES** actualizar `./structure/` tras cambios significativos:
@@ -96,8 +96,6 @@ logic/     → calculo-notas.md, functions.sql
 **Protocolo:** Read archivo → StrReplace actualización → Agregar entrada en `./structure/changelog.md`
 
 ## 📝 Documentación Automática de Planes/Análisis
-
-**IMPORTANTE:** `./structure/` = `{workspace_root}/structure/` (carpeta `structure/` en la RAÍZ del proyecto, NUNCA en raíz directa)
 
 Cuando generes un **plan, análisis o refactorización** (.md), agrégalo AUTOMÁTICAMENTE a `./structure/`:
 
@@ -117,21 +115,9 @@ Cuando generes un **plan, análisis o refactorización** (.md), agrégalo AUTOM�
 - ❌ Crear componentes sin revisar `./structure/06-componentes/wireframes/` y `./structure/15-rediseños/`
 - ❌ Modificar lógica notas sin leer `./structure/03-database/logic/calculo-notas.md`
 - ❌ API routes sin revisar `./structure/03-database/security/rls-policies.md`
-- ❌ Modificar tipos/BD/interfaces sin recordar al usuario que ejecute `pnpm type-check` al finalizar la implementación completa, no lo ejecutes tu automáticamente
+- ❌ Modificar tipos/BD/interfaces sin antes pedirle al usuario que ejecute `pnpm type-check` y pedir el resultado, no ejecutar automáticamente
 - ❌ Modificar BD sin regenerar tipos Supabase
-- ❌ Generar plan/análisis sin agregarlo a `./structure/`
-
-# 📁 Project Structure
-
-```
-src/
-├── components/{feature}/  → index.ts barrel exports. ui/ primitives, layout/ layouts
-├── app/api/               → admin/{resource}/, user/{resource}/, {resource}/ (plural names)
-├── hooks/                 → use{Entity}.ts (useNoticias, useApuntes)
-├── lib/                   → format.ts, grades.ts, utils.ts, supabase/, cloudflare/
-├── types/                 → {entity}.ts + index.ts barrel. database.ts (Supabase generated)
-└── providers/             → QueryProvider
-```
+- ❌ Generar plan/análisis sin agregarlo a `./structure/
 
 # 🗄️ Database & RLS
 
@@ -174,7 +160,7 @@ export async function POST(request: NextRequest) {
 3. `pnpm dlx supabase gen types typescript --project-id twwvmauepebuqrpwpmmc > src/types/database.ts`
 
 **Cuándo:** Tras ALTER TABLE, ENUM changes, función RPC, DROP/SET NOT NULL  
-**Verificar:** sugerir ejecutar `pnpm type-check` pero no ejecutarlo automáticamente
+**Verificar:** sugerir al final de la respuesta que el usuario ejecute `pnpm type-check`
 **Regla:** NUNCA `as any` en operaciones Supabase
 
 # 📡 React Query Patterns
@@ -323,7 +309,7 @@ export const getUser = cache(async (id: string) => {
 
 ## ⚠️ REGLA: Type-Check Selectivo
 
-**`pnpm type-check` recordar ejecutarlo al usuario (no el modelo automaticamente) SOLO cuando hayas:**
+**Aviso al usuario: ejecuta `pnpm type-check` SOLO cuando hayas:**
 - Modificado schema/columnas Supabase
 - Creado/modificado interfaces TypeScript
 - Agregado hooks/componentes
@@ -340,8 +326,6 @@ export const getUser = cache(async (id: string) => {
 - Crear/modificar ENUMs
 - Crear/modificar funciones RPC
 - Cambiar DEFAULT values
-
-**Verificar:** recordar al usuario que ejecute `pnpm type-check` post-regeneración pero no ejecutarlo automáticamente
 
 ## Manejo de Nullability (Causa #1 Errores)
 
@@ -399,7 +383,7 @@ if (result && typeof result === 'object' && 'error' in result) {
 ## Anti-Patrones TypeScript
 
 - ❌ `as any` → usar `as unknown as Type`
-- ❌ Ignorar errores type-check
+- ❌ Ignorar errores type-check si el usuario los proporciona
 - ❌ Interfaces != BD
 - ❌ Asumir non-null sin verificar
 - ❌ `@ts-ignore` sin comentario
@@ -428,7 +412,7 @@ function sanitizeHTML(html: string): string {
 
 ## Checklist Pre-Commit
 
-1. [ ] Si modifiqué tipos/BD/interfaces → sugerir ejecutar type-check pero no ejecutarlo automáticamente
+1. [ ] Si modifiqué tipos/BD/interfaces → sugerir al usuario ejecutar type-check
 2. [ ] Si modifiqué BD → regeneré tipos de Supabase
 3. [ ] Interfaces coinciden con tipos generados
 4. [ ] Nullable fields tienen `| null`

@@ -5,7 +5,7 @@ import { FileText, Link2, Headphones, CheckCircle2 } from 'lucide-react'
 export function AnimatedDashboard() {
 
   return (
-    <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] rounded-xl overflow-hidden border bg-background/95 backdrop-blur-sm shadow-2xl">
+    <div className="relative w-full aspect-[3/4] sm:aspect-[4/3] lg:aspect-[16/10] rounded-xl overflow-hidden border bg-background/95 backdrop-blur-sm shadow-2xl">
       <style>{`
         @keyframes slideInRight {
           from {

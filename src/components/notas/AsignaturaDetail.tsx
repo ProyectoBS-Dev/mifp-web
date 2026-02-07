@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button'
 import { NotaInput } from '@/components/ui/nota-input'
 import {
   type AsignaturaNotas,
-  type PAC,
   type RA,
   calcularMediaPACsRA,
   calcularNotaRA,

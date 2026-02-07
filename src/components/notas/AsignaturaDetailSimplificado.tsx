@@ -121,7 +121,7 @@ export function AsignaturaDetailSimplificado({
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Botón volver */}
       <Button variant="ghost" onClick={onBack} className="gap-2 -ml-2">
         <ArrowLeft className="h-4 w-4" />

@@ -74,7 +74,7 @@ export function HowItWorks() {
       {/* Subtle background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/20 to-transparent" />
       
-      <div className="container mx-auto container-mobile relative">
+      <div className="container mx-auto container-landing relative">
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">

@@ -351,6 +351,11 @@
   @apply px-4 sm:px-6 lg:px-8;
 }
 
+/* Container para landing - sin padding lateral, las cards tienen su propio padding */
+.container-landing {
+  @apply px-0;
+}
+
 /* Safe viewport heights - considera teclado virtual en móvil */
 .min-h-screen-safe {
   min-height: 100vh;

@@ -12,7 +12,6 @@ import { AsignaturaDetail } from '@/components/notas/AsignaturaDetail'
 import { AsignaturaDetailSimplificado } from '@/components/notas/AsignaturaDetailSimplificado'
 import { HistorialView } from '@/components/notas/HistorialView'
 import { NotasSimplificado } from '@/components/notas/NotasSimplificado'
-import { NotasCalculator } from '@/components/notas/NotasCalculator'
 import {
   useNotas,
   useSavePACNota,
@@ -138,9 +137,10 @@ function MobileView({
   }
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="space-y-6">
       {/* Header con botón menú */}
-      <div className="flex items-center justify-between">
+      <div className="px-4">
+        <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">📊 Notas</h1>
           <p className="text-sm text-muted-foreground">
@@ -154,6 +154,7 @@ function MobileView({
         >
           <NotasSidebar {...sidebarProps} />
         </CollapsibleSidebar>
+        </div>
       </div>
 
       {/* Main Content - IGUAL QUE DESKTOP */}
@@ -490,12 +491,11 @@ export default function NotasPage() {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-muted/50 rounded-lg shadow-lg scrollbar-hide">
-          {activeTab === 'historial' ? (
-            // Vista Historial
-            <div className="p-6">
+          <div className="p-6">
+            {activeTab === 'historial' ? (
+              // Vista Historial
               <HistorialView />
-            </div>
-          ) : selectedAsignatura ? (
+            ) : selectedAsignatura ? (
             // Vista Detalle Asignatura
             isActiveSemestre ? (
               // Semestre actual - componente completo con PACs/RAs
@@ -528,7 +528,8 @@ export default function NotasPage() {
               isFCTPending={saveFCTNota.isPending}
               isFCTSuccess={saveFCTNota.isSuccess}
             />
-          )}
+            )}
+          </div>
         </main>
       </div>
     </>

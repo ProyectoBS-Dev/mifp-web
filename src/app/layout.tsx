@@ -110,7 +110,8 @@ export default function RootLayout({
         <QueryProvider>
           {children}
         </QueryProvider>
-        <Analytics />
+        {/* Vercel Analytics solo en producción */}
+        { process.env.NODE_ENV === 'production' && <Analytics /> }
       </body>
     </html>
   )

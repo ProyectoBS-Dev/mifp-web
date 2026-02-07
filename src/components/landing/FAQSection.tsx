@@ -110,7 +110,7 @@ export function FAQSection() {
 
   return (
     <section className="py-24 sm:py-32 bg-muted/30" id="faqs">
-      <div className="container mx-auto container-mobile">
+      <div className="container mx-auto container-landing">
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue mb-6">
@@ -165,7 +165,7 @@ export function FAQSection() {
                   
                   <div className={cn(
                     'overflow-hidden transition-all duration-200',
-                    isOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
+                    isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                   )}>
                     <p className="px-5 pb-4 pl-12 sm:pl-[60px] text-muted-foreground text-sm leading-relaxed">
                       {faq.answer}

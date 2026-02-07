@@ -88,7 +88,7 @@ export function LandingContent({ isLoggedIn }: LandingContentProps) {
         <HeroParallax />
 
         {/* Content - z-10 to appear above background */}
-        <div className="relative z-10 container mx-auto container-mobile pt-12 sm:pt-16 pb-24 sm:pb-32">
+        <div className="relative z-10 container mx-auto container-landing pt-12 sm:pt-16 pb-24 sm:pb-32">
           <div className="text-center max-w-3xl mx-auto">
             {/* Notice Banner */}
             <Link
@@ -213,7 +213,7 @@ export function LandingContent({ isLoggedIn }: LandingContentProps) {
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[200px] md:w-[600px] md:h-[400px] bg-vt-blue/20 dark:bg-vt-blue/10 rounded-full blur-3xl" />
           <div className="absolute top-1/3 left-1/3 w-[200px] h-[150px] md:w-[400px] md:h-[300px] bg-vt-green/15 dark:bg-vt-green/10 rounded-full blur-3xl" />
 
-          <div className="container mx-auto container-mobile relative z-10">
+          <div className="container mx-auto container-landing relative z-10">
             {/* Header */}
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue mb-6">
@@ -350,21 +350,19 @@ export function LandingContent({ isLoggedIn }: LandingContentProps) {
 
               {/* Card 4 - Recursos (Grande - ocupa 2 columnas en lg) */}
               <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-purple/50 transition-all lg:col-span-2">
-                <div className="flex flex-col md:flex-row md:items-center gap-6">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-purple/10 shrink-0">
+                <div className="h-full flex flex-col">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-vt-purple/10 mb-3">
                     <BookOpen className="h-6 w-6 text-vt-purple" />
                   </div>
-                  <div className="flex-1">
-                    <h4 className="text-lg font-semibold mb-2">
-                      Recursos de Estudio
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      Accede a materiales organizados por asignatura: PDFs,
-                      podcasts, enlaces útiles.
-                    </p>
-                  </div>
+                  <h4 className="text-lg font-semibold mb-2">
+                    Recursos de Estudio
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Accede a materiales organizados por asignatura: PDFs,
+                    podcasts, enlaces útiles.
+                  </p>
                   {/* Illustration */}
-                  <div className="flex items-center justify-center shrink-0 w-full md:w-auto">
+                  <div className="flex-1 flex items-center justify-center min-h-[80px]">
                     <RecursosIllustration />
                   </div>
                 </div>
@@ -386,29 +384,25 @@ export function LandingContent({ isLoggedIn }: LandingContentProps) {
                 </div>
               </div>
 
-              {/* Card 6 - Dashboard (Normal) */}
+              {/* Card 6 - Dashboard */}
               <div className="group relative rounded-xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-primary/50 transition-all lg:col-span-2">
-                <div className="flex flex-col h-full">
-                  <div className="flex flex-col md:flex-row md:items-start gap-6 mb-4">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 shrink-0">
-                      <LayoutDashboard className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-lg font-semibold mb-2">
-                        Dashboard Personal
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
-                        Un panel de control personalizable con los widgets que
-                        más necesitas.
-                      </p>
-                    </div>
-                    {/* Illustration */}
-                    <div className="flex items-center justify-center shrink-0 w-full md:w-auto">
-                      <DashboardIllustration />
-                    </div>
+                <div className="h-full flex flex-col">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 mb-3">
+                    <LayoutDashboard className="h-6 w-6 text-primary" />
                   </div>
-                  {/* Mini badges - grid 2x2 */}
-                  <div className="grid grid-cols-2 gap-3 mt-auto">
+                  <h4 className="text-lg font-semibold mb-2">
+                    Dashboard Personal
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Un panel de control personalizable con los widgets que
+                    más necesitas.
+                  </p>
+                  {/* Illustration */}
+                  <div className="flex-1 flex items-center justify-center min-h-[80px]">
+                    <DashboardIllustration />
+                  </div>
+                  {/* Stats grid 2x2 */}
+                  <div className="grid grid-cols-2 gap-3 mt-2">
                     <div className="rounded-lg bg-primary/5 p-3 border border-primary/10">
                       <div className="text-2xl font-bold text-primary">6</div>
                       <div className="text-xs text-muted-foreground">
@@ -421,7 +415,7 @@ export function LandingContent({ isLoggedIn }: LandingContentProps) {
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-vt-green opacity-75"></span>
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-vt-green"></span>
                         </span>
-                        En tiempo real
+                        Tiempo real
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
                         Datos actualizados
@@ -476,7 +470,7 @@ export function LandingContent({ isLoggedIn }: LandingContentProps) {
           <div className="absolute bottom-1/4 right-[10%] w-24 h-24 md:w-40 md:h-40 bg-vt-blue/20 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 md:w-96 md:h-96 bg-vt-purple/10 rounded-full blur-[100px]" />
 
-          <div className="container mx-auto container-mobile text-center relative">
+          <div className="container mx-auto container-landing text-center relative">
             {/* Mascot Image with glow */}
             <div className="flex justify-center mb-8 relative">
               <div className="absolute inset-0 flex items-center justify-center">

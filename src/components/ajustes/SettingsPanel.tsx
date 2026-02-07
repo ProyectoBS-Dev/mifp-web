@@ -52,7 +52,7 @@ export function SettingsPanel({ userEmail, userRole = 'estudiante' }: SettingsPa
 
       {/* Mobile Config Navigation - ANTES del main content */}
       <div className="lg:hidden">
-        <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+        <div className="flex gap-2 flex-wrap pb-2 -mx-1 px-1">
           <MobileNavButton 
             active={activeSection === 'apariencia'}
             onClick={() => setActiveSection('apariencia')}
@@ -130,7 +130,7 @@ function MobileNavButton({
     <button
       onClick={onClick}
       className={`
-        px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
+        px-2 py-1 rounded-full text-sm font-sm whitespace-nowrap transition-colors
         ${active 
           ? danger 
             ? 'bg-destructive text-destructive-foreground' 

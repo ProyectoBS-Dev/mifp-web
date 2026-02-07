@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
@@ -19,9 +20,45 @@ import {
 import { ScrollReveal } from '@/components/ui/scroll-reveal'
 import { createClient } from '@/lib/supabase/server'
 
-export const metadata = {
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
+
+export const metadata: Metadata = {
   title: 'Sobre Nosotros',
-  description: 'Nuestra historia. De estudiantes para estudiantes.',
+  description: 'Nuestra historia. De estudiantes para estudiantes. Estamos redefiniendo cómo se vive la Formación Profesional en España.',
+  alternates: {
+    canonical: `${baseUrl}/sobre-nosotros`,
+  },
+  openGraph: {
+    title: 'Sobre Nosotros | MiFP',
+    description: 'Nuestra historia. De estudiantes para estudiantes. Estamos redefiniendo cómo se vive la Formación Profesional en España.',
+    url: `${baseUrl}/sobre-nosotros`,
+    siteName: 'MiFP',
+    images: [{
+      url: `${baseUrl}/images/og-default.png`,
+      width: 1200,
+      height: 630,
+      alt: 'MiFP - Sobre Nosotros',
+    }],
+    locale: 'es_ES',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sobre Nosotros | MiFP',
+    description: 'Nuestra historia. De estudiantes para estudiantes.',
+    images: [`${baseUrl}/images/og-default.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 }
 
 export default async function SobreNosotrosPage() {

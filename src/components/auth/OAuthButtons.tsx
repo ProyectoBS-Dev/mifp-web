@@ -18,16 +18,34 @@ export function OAuthButtons({ redirectTo = '/dashboard' }: OAuthButtonsProps) {
     
     const supabase = createClient()
     
+    // Clear any stale PKCE verifiers or auth state before starting new OAuth flow
+    // This prevents "PKCE code verifier not found" errors on retry
+    try {
+      await supabase.auth.signOut({ scope: 'local' })
+    } catch (error) {
+      // Ignore errors from signOut - user might not be logged in
+      console.debug('Local signout before OAuth (expected if no session):', error)
+    }
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
         redirectTo: `${window.location.origin}/api/auth/callback?next=${redirectTo}`,
+        queryParams: {
+          // Force consent screen to ensure clean OAuth flow
+          prompt: 'consent',
+        },
       },
     })
 
     if (error) {
       console.error('OAuth error:', error.message)
       setIsLoading(null)
+      
+      // Show user-friendly error message
+      if (error.message.includes('PKCE')) {
+        alert('Hubo un problema con la autenticación. Por favor, intenta de nuevo.')
+      }
     }
   }
 

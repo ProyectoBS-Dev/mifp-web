@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
+import { withCsrfProtection } from '@/lib/csrf'
 import { broadcastNotificationSchema, formatZodErrors } from '@/lib/validation/schemas'
 import { z } from 'zod'
 
@@ -13,6 +14,10 @@ export async function POST(request: NextRequest) {
     // ✅ CRÍTICO: Rate limit muy restrictivo (5 req/min)
     const rateLimitError = await withRateLimit(request, rateLimiters?.critical || null)
     if (rateLimitError) return rateLimitError
+
+    // ✅ CSRF protection
+    const csrfError = withCsrfProtection(request)
+    if (csrfError) return csrfError
 
     try {
         // Verificar autenticación y rol admin

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, verifyAdminOrEditor } from '@/lib/supabase/admin'
+import { withCsrfProtection } from '@/lib/csrf'
 
 // Extraer el path del archivo desde la URL de Supabase Storage
 function extractStoragePath(url: string | null): string | null {
@@ -12,6 +13,10 @@ function extractStoragePath(url: string | null): string | null {
 
 // DELETE - Eliminar imagen individual del storage
 export async function DELETE(request: NextRequest) {
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
+
   try {
     // Verificar autenticación y rol
     const auth = await verifyAdminOrEditor()

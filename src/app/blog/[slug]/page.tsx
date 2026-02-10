@@ -194,7 +194,7 @@ export default async function PostPage({
               '@type': 'WebPage',
               '@id': `${baseUrl}/blog/${slug}`,
             },
-          }),
+          }).replace(/</g, '\\u003c'),
         }}
       />
       <PostContent post={post} prevPost={prev} nextPost={next} />

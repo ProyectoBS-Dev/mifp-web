@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { verifyAdmin } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
+import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
+import { withCsrfProtection } from '@/lib/csrf'
+import { uuidSchema } from '@/lib/validation/schemas'
 
 // Validar Magic Bytes del PDF
 function isPDF(buffer: ArrayBuffer): boolean {
@@ -10,6 +13,14 @@ function isPDF(buffer: ArrayBuffer): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  // ✅ Rate limiting (admin: 20 req/min)
+  const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
+  if (rateLimitError) return rateLimitError
+
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
+
   // Verificar autenticación y rol admin
   const auth = await verifyAdmin()
   if ('error' in auth) {
@@ -17,12 +28,32 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // ✅ Validar Content-Type del request
+    const contentType = request.headers.get('content-type') || ''
+    if (!contentType.includes('multipart/form-data')) {
+      return NextResponse.json(
+        { error: 'Content-Type debe ser multipart/form-data' },
+        { status: 400 }
+      )
+    }
+
     const formData = await request.formData()
     const file = formData.get('file') as File
     const asignaturaId = formData.get('asignatura_id') as string
 
     if (!file || !asignaturaId) {
       return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 })
+    }
+
+    // ✅ Validar UUID con Zod
+    const uuidResult = uuidSchema.safeParse(asignaturaId)
+    if (!uuidResult.success) {
+      return NextResponse.json({ error: 'ID de asignatura inválido' }, { status: 400 })
+    }
+
+    // ✅ Validar extensión del archivo
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      return NextResponse.json({ error: 'Solo se permiten archivos PDF' }, { status: 400 })
     }
 
     // Validar tamaño (10MB max)

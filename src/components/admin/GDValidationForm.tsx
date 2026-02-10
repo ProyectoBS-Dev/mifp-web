@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
+import { useCsrfToken } from '@/hooks/useCsrfToken'
 
 interface GDValidationFormProps {
   gdId: string
@@ -48,6 +49,7 @@ export function GDValidationForm({ gdId, asignaturaId, semestreId }: GDValidatio
   const [rechazoMotivo, setRechazoMotivo] = useState('')
   const [rechazoOtro, setRechazoOtro] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const { csrfHeaders } = useCsrfToken()
 
   const handleExtract = async () => {
     setIsExtracting(true)
@@ -60,7 +62,7 @@ export function GDValidationForm({ gdId, asignaturaId, semestreId }: GDValidatio
     try {
       const response = await fetch('/api/admin/guias-didacticas/extract', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
         body: JSON.stringify({ gdId }),
         signal: controller.signal,
       })

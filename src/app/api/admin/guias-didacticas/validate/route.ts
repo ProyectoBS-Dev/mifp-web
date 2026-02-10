@@ -1,8 +1,13 @@
 import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 import type { ExtractedGDData } from '@/types/gd'
+import { withCsrfProtection } from '@/lib/csrf'
 
 export async function POST(request: NextRequest) {
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
+
   // Verificar autenticación y rol admin
   const auth = await verifyAdmin()
   if ('error' in auth) {

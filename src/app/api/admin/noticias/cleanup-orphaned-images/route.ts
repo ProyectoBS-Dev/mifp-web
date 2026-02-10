@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
+import { withCsrfProtection } from '@/lib/csrf'
 
 const DEFAULT_RETENTION_DAYS = 30 // Días por defecto
 
 // POST - Limpiar imágenes huérfanas del storage
 export async function POST(request: NextRequest) {
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
+
   try {
     // Solo admins pueden ejecutar limpieza masiva
     const auth = await verifyAdmin()

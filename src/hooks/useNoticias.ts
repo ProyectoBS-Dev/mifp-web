@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { htmlToPlainText, extractExtracto } from '@/lib/text-utils'
+import { useCsrfToken } from '@/hooks/useCsrfToken'
 
 // Re-export del cliente para uso interno del hook
 const getSupabase = () => createClient()
@@ -129,6 +130,7 @@ export function useNoticia(id: string) {
 // Usa API routes para evitar recursión en políticas RLS de noticias + users
 export function useNoticiasMutation() {
   const queryClient = useQueryClient()
+  const { csrfHeaders } = useCsrfToken()
 
   const createNoticia = useMutation({
     mutationFn: async (data: {
@@ -141,7 +143,7 @@ export function useNoticiasMutation() {
       // Usar API route para bypass RLS (evita recursión infinita)
       const response = await fetch('/api/admin/noticias', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
         body: JSON.stringify(data),
       })
 
@@ -169,7 +171,7 @@ export function useNoticiasMutation() {
       // Usar API route para bypass RLS (evita recursión infinita)
       const response = await fetch(`/api/admin/noticias?id=${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
         body: JSON.stringify(data),
       })
 
@@ -191,6 +193,7 @@ export function useNoticiasMutation() {
       // Usar API route para bypass RLS
       const response = await fetch(`/api/admin/noticias?id=${id}`, {
         method: 'DELETE',
+        headers: { ...csrfHeaders },
       })
 
       if (!response.ok) {

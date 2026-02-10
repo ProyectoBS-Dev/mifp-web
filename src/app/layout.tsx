@@ -104,7 +104,7 @@ export default function RootLayout({
                 '@type': 'PostalAddress',
                 addressCountry: 'ES',
               },
-            }),
+            }).replace(/</g, '\\u003c'),
           }}
         />
         <QueryProvider>

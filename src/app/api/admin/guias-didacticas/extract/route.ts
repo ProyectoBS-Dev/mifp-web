@@ -6,9 +6,6 @@ import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
 import { extractGDSchema, formatZodErrors } from '@/lib/validation/schemas'
 import { z } from 'zod'
 
-// ✅ Configuración de Vercel: timeout de 60 segundos para OpenAI
-export const maxDuration = 60
-
 const EXTRACTION_PROMPT = `
 Eres un asistente experto en extraer datos estructurados de Guías Didácticas de FP Online.
 
@@ -117,16 +114,11 @@ export async function POST(request: NextRequest) {
   const rateLimitError = await withRateLimit(request, rateLimiters?.openai || null)
   if (rateLimitError) return rateLimitError
 
-
   // Verificar autenticación y rol admin
   const auth = await verifyAdmin()
   if ('error' in auth) {
     return NextResponse.json({ error: auth.error }, { status: auth.status })
   }
-
-  // Variables necesarias para error recovery
-  let gdId: string | undefined
-  let adminClient: ReturnType<typeof createAdminClient> | undefined
 
   try {
     const body = await request.json()
@@ -137,7 +129,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(formatZodErrors(parseResult.error), { status: 400 })
     }
 
-    gdId = parseResult.data.gdId
+    const { gdId } = parseResult.data
 
     // Verificar que OPENAI_API_KEY existe
     if (!process.env.OPENAI_API_KEY) {
@@ -146,7 +138,7 @@ export async function POST(request: NextRequest) {
       }, { status: 500 })
     }
 
-    adminClient = createAdminClient()
+    const adminClient = createAdminClient()
 
     // Obtener la GD
     const { data: gd, error: gdError } = await adminClient
@@ -265,21 +257,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     // ✅ NO exponer detalles internos
     console.error('[Extract GD] Error:', error)
-    
-    // ✅ CRÍTICO: Revertir estado a pendiente para permitir retry
-    if (adminClient && gdId) {
-      try {
-        await adminClient
-          .from('guias_didacticas')
-          .update({ 
-            estado: 'pendiente',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', gdId)
-      } catch (revertError) {
-        console.error('[Extract GD] Error reverting state:', revertError)
-      }
-    }
     
     // Solo mensajes genéricos al cliente
     if (error instanceof z.ZodError) {

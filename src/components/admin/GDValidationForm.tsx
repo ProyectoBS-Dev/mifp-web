@@ -53,23 +53,42 @@ export function GDValidationForm({ gdId, asignaturaId, semestreId }: GDValidatio
     setIsExtracting(true)
     setError(null)
 
+    // Timeout en el cliente: 85s (debe ser menor que maxDuration=90 del server)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 85_000)
+
     try {
       const response = await fetch('/api/admin/guias-didacticas/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ gdId }),
+        signal: controller.signal,
       })
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Error al extraer datos')
+        // Vercel puede devolver HTML en un 504, no JSON
+        let errorMsg = 'Error al extraer datos'
+        try {
+          const data = await response.json()
+          errorMsg = data.error || errorMsg
+        } catch {
+          if (response.status === 504 || response.status === 502) {
+            errorMsg = 'La extracción tardó demasiado. Inténtalo de nuevo.'
+          }
+        }
+        throw new Error(errorMsg)
       }
 
       // Recargar la página para ver los datos extraídos
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido')
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        setError('La extracción tardó demasiado. Inténtalo de nuevo.')
+      } else {
+        setError(err instanceof Error ? err.message : 'Error desconocido')
+      }
     } finally {
+      clearTimeout(timeout)
       setIsExtracting(false)
     }
   }

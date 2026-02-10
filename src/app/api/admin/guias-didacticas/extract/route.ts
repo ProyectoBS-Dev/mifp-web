@@ -6,8 +6,8 @@ import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
 import { extractGDSchema, formatZodErrors } from '@/lib/validation/schemas'
 import { z } from 'zod'
 
-// ✅ Configuración de Vercel: timeout de 60 segundos para OpenAI
-export const maxDuration = 60
+// Vercel: timeout de 90 segundos (debe coincidir con Settings > Functions)
+export const maxDuration = 90
 
 const EXTRACTION_PROMPT = `
 Eres un asistente experto en extraer datos estructurados de Guías Didácticas de FP Online.
@@ -113,7 +113,7 @@ Texto de la Guía Didáctica:
 `
 
 export async function POST(request: NextRequest) {
-  // ✅ CRÍTICO: Rate limit para OpenAI (3 req/min para prevenir costos)
+  // Rate limit para OpenAI (3 req/min para prevenir costos)
   const rateLimitError = await withRateLimit(request, rateLimiters?.openai || null)
   if (rateLimitError) return rateLimitError
 
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // ✅ Validación estricta con Zod
+    // Validación estricta con Zod
     const parseResult = extractGDSchema.safeParse(body)
     if (!parseResult.success) {
       return NextResponse.json(formatZodErrors(parseResult.error), { status: 400 })
@@ -202,28 +202,37 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Llamar a OpenAI
+    // Llamar a OpenAI con AbortController para que el timeout ocurra
+    // ANTES de que Vercel mate la función (80s < 90s maxDuration)
+    const controller = new AbortController()
+    const abortTimeout = setTimeout(() => controller.abort(), 80_000)
+
     const openai = new OpenAI({ 
       apiKey: process.env.OPENAI_API_KEY,
-      timeout: 30000, // ✅ Timeout de 30 segundos
+      timeout: 75_000, // 75s - debe ser menor que maxDuration de Vercel
     })
     
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { 
-          role: 'system', 
-          content: 'Eres un asistente que extrae datos estructurados de Guías Didácticas de FP Online. Responde SOLO con JSON válido.' 
-        },
-        { 
-          role: 'user', 
-          content: EXTRACTION_PROMPT + pdfText.slice(0, 15000) + '\n---' 
-        }
-      ],
-      response_format: { type: 'json_object' },
-      temperature: 0.1, // Baja para respuestas más consistentes
-      max_tokens: 4000,
-    })
+    let completion
+    try {
+      completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          { 
+            role: 'system', 
+            content: 'Eres un asistente que extrae datos estructurados de Guías Didácticas de FP Online. Responde SOLO con JSON válido.' 
+          },
+          { 
+            role: 'user', 
+            content: EXTRACTION_PROMPT + pdfText.slice(0, 15000) + '\n---' 
+          }
+        ],
+        response_format: { type: 'json_object' },
+        temperature: 0.1,
+        max_tokens: 4000,
+      }, { signal: controller.signal })
+    } finally {
+      clearTimeout(abortTimeout)
+    }
 
     const responseContent = completion.choices[0]?.message?.content
     
@@ -263,10 +272,11 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    // ✅ NO exponer detalles internos
     console.error('[Extract GD] Error:', error)
     
-    // ✅ CRÍTICO: Revertir estado a pendiente para permitir retry
+    // CRÍTICO: Revertir estado a pendiente para permitir retry
+    // Esto funciona porque el AbortController asegura que el error
+    // se lanza ANTES de que Vercel mate la función
     if (adminClient && gdId) {
       try {
         await adminClient
@@ -276,16 +286,29 @@ export async function POST(request: NextRequest) {
             updated_at: new Date().toISOString()
           })
           .eq('id', gdId)
+        console.log('[Extract GD] Estado revertido a pendiente para gdId:', gdId)
       } catch (revertError) {
         console.error('[Extract GD] Error reverting state:', revertError)
       }
     }
     
-    // Solo mensajes genéricos al cliente
     if (error instanceof z.ZodError) {
       return NextResponse.json(formatZodErrors(error), { status: 400 })
     }
+
+    // Detectar timeout/abort para dar un mensaje más claro
+    const isTimeout = error instanceof Error && (
+      error.name === 'AbortError' ||
+      error.message?.includes('timed out') ||
+      error.message?.includes('timeout')
+    )
     
-    return NextResponse.json({ error: 'Error al procesar la guía didáctica' }, { status: 500 })
+    return NextResponse.json(
+      { error: isTimeout 
+        ? 'La extracción tardó demasiado. Inténtalo de nuevo.' 
+        : 'Error al procesar la guía didáctica' 
+      }, 
+      { status: isTimeout ? 504 : 500 }
+    )
   }
 }

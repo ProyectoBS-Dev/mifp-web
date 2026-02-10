@@ -19,6 +19,17 @@ export async function GET(request: Request) {
         code: error.code,
       });
 
+      // Detectar errores de PKCE (code verifier not found, etc.)
+      if (
+        error.message.toLowerCase().includes("pkce") ||
+        error.message.toLowerCase().includes("code verifier") ||
+        error.message.toLowerCase().includes("code_verifier")
+      ) {
+        return NextResponse.redirect(
+          `${origin}/login?error=pkce_error&message=${encodeURIComponent("Hubo un problema con la autenticación. Por favor, intenta iniciar sesión nuevamente.")}`,
+        );
+      }
+
       // Detectar token expirado por:
       // 1. Mensaje de error, O
       // 2. error_code=otp_expired de Supabase

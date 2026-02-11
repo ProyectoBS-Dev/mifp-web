@@ -199,26 +199,24 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
         }
     }
 
-    // Activar semestre (y desactivar el anterior)
+    // Activar semestre (y desactivar el anterior) — Operación atómica via RPC
     const handleActivate = async (semestre: Semestre) => {
         if (semestre.activo) return
         setIsLoading(true)
         setError(null)
 
         try {
-            // Desactivar todos los semestres
-            await supabase
-                .from('semestres')
-                .update({ activo: false })
-                .eq('activo', true)
+            // RPC transaccional: desactiva el anterior y activa el nuevo en una sola operación
+            const { data, error: rpcError } = await supabase.rpc('activar_semestre', {
+                p_semestre_id: semestre.id
+            })
 
-            // Activar el seleccionado
-            const { error: activateError } = await supabase
-                .from('semestres')
-                .update({ activo: true })
-                .eq('id', semestre.id)
+            if (rpcError) throw rpcError
 
-            if (activateError) throw activateError
+            const result = data as { success: boolean } | null
+            if (!result?.success) {
+                throw new Error('Error inesperado al activar semestre')
+            }
 
             setSuccess(`Semestre ${semestre.nombre} activado correctamente`)
             await refreshData()

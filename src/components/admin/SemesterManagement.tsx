@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useQueryClient } from '@tanstack/react-query'
+import { useCsrfToken } from '@/hooks/useCsrfToken'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -65,6 +66,7 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
     const router = useRouter()
     const queryClient = useQueryClient()
     const supabase = createClient()
+    const { csrfHeaders } = useCsrfToken()
 
     const [semestres, setSemestres] = useState<Semestre[]>(initialSemestres)
     const [isLoading, setIsLoading] = useState(false)
@@ -236,7 +238,7 @@ export function SemesterManagement({ initialSemestres }: SemesterManagementProps
         try {
             const response = await fetch('/api/admin/notifications/broadcast', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...csrfHeaders },
                 body: JSON.stringify({
                     tipo: 'sistema',
                     titulo: notifyData.titulo,

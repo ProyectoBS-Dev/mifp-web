@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, verifyAdminOrEditor } from '@/lib/supabase/admin'
 import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
+import { withCsrfProtection } from '@/lib/csrf'
+import { logAuditEvent } from '@/lib/audit'
 import { 
   createNoticiaSchema, 
   updateNoticiaSchema, 
@@ -23,6 +25,10 @@ export async function POST(request: NextRequest) {
   // ✅ Rate limiting
   const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
   if (rateLimitError) return rateLimitError
+
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
 
   try {
     const auth = await verifyAdminOrEditor()
@@ -72,6 +78,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Error al crear la noticia' }, { status: 500 })
     }
 
+    // ✅ Audit logging
+    await logAuditEvent({
+      action: 'noticia.create',
+      userId: auth.user.id,
+      resourceType: 'noticia',
+      resourceId: noticia.id,
+      metadata: { titulo, slug },
+    }, request)
+
     return NextResponse.json(noticia)
   } catch (error) {
     // ✅ NO exponer detalles internos
@@ -90,6 +105,10 @@ export async function PATCH(request: NextRequest) {
   // ✅ Rate limiting
   const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
   if (rateLimitError) return rateLimitError
+
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
 
   try {
     const auth = await verifyAdminOrEditor()
@@ -204,6 +223,10 @@ export async function DELETE(request: NextRequest) {
   const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
   if (rateLimitError) return rateLimitError
 
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
+
   try {
     const auth = await verifyAdminOrEditor()
     if ('error' in auth) {
@@ -249,6 +272,14 @@ export async function DELETE(request: NextRequest) {
       console.error('Error deleting noticia:', deleteError)
       return NextResponse.json({ error: 'Error al eliminar' }, { status: 500 })
     }
+
+    // ✅ Audit logging
+    await logAuditEvent({
+      action: 'noticia.delete',
+      userId: auth.user.id,
+      resourceType: 'noticia',
+      resourceId: id,
+    }, request)
 
     return NextResponse.json({ success: true })
   } catch (error) {

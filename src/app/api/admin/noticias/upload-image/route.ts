@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, verifyAdminOrEditor } from '@/lib/supabase/admin'
+import { withCsrfProtection } from '@/lib/csrf'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -26,6 +27,10 @@ function validateImageSignature(buffer: ArrayBuffer, mimeType: string): boolean 
 }
 
 export async function POST(request: NextRequest) {
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
+
   try {
     // Verificar autenticación y rol
     const auth = await verifyAdminOrEditor()
@@ -68,7 +73,7 @@ export async function POST(request: NextRequest) {
 
     // Subir a Supabase Storage
     const adminClient = createAdminClient()
-    const { data: uploadData, error: uploadError } = await adminClient.storage
+    const { error: uploadError } = await adminClient.storage
       .from('noticias-images')
       .upload(filePath, arrayBuffer, {
         contentType: file.type,

@@ -301,6 +301,39 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       eventos_calendario: {
         Row: {
           asignatura_id: string | null
@@ -1061,6 +1094,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activar_semestre: { Args: { p_semestre_id: string }; Returns: Json }
       calcular_nota_grado: { Args: { p_user_id: string }; Returns: Json }
       cleanup_old_notifications: { Args: never; Returns: Json }
       complete_onboarding: {

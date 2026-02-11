@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone'
 import { X, Loader2, Image as ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { useCsrfToken } from '@/hooks/useCsrfToken'
 
 interface ImageDropzoneProps {
   value?: string
@@ -16,6 +17,7 @@ interface ImageDropzoneProps {
 export function ImageDropzone({ value, onChange, onPreviousImageDelete, className }: ImageDropzoneProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { csrfHeaders } = useCsrfToken()
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
@@ -33,6 +35,7 @@ export function ImageDropzone({ value, onChange, onPreviousImageDelete, classNam
 
       const response = await fetch('/api/admin/noticias/upload-image', {
         method: 'POST',
+        headers: { ...csrfHeaders },
         body: formData,
       })
 
@@ -53,7 +56,7 @@ export function ImageDropzone({ value, onChange, onPreviousImageDelete, classNam
     } finally {
       setIsUploading(false)
     }
-  }, [value, onChange, onPreviousImageDelete])
+  }, [value, onChange, onPreviousImageDelete, csrfHeaders])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

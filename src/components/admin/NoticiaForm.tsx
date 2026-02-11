@@ -31,6 +31,7 @@ import { useNoticiasMutation, type Noticia } from '@/hooks/useNoticias'
 import { ImageDropzone } from './ImageDropzone'
 import { RichTextEditor } from './RichTextEditor'
 import { slugify, normalizeSlug } from '@/lib/slugify'
+import { useCsrfToken } from '@/hooks/useCsrfToken'
 
 const CATEGORIAS = [
   { value: 'comunicado', label: '📢 Comunicado' },
@@ -47,6 +48,7 @@ interface NoticiaFormProps {
 export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
   const router = useRouter()
   const { createNoticia, updateNoticia, deleteNoticia } = useNoticiasMutation()
+  const { csrfHeaders } = useCsrfToken()
 
   // Extraer categoría del contenido si existe
   const extractCategoria = (contenido: string) => {
@@ -123,7 +125,7 @@ export function NoticiaForm({ noticia, isEditing = false }: NoticiaFormProps) {
         imageUrls.map(async (url) => {
           const response = await fetch('/api/admin/noticias/delete-image', {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...csrfHeaders },
             body: JSON.stringify({ imageUrl: url }),
           })
           

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Trash2, AlertTriangle, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { useCsrfToken } from '@/hooks/useCsrfToken'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -25,6 +26,7 @@ interface SettingsDangerProps {
 
 export function SettingsDanger({ userEmail }: SettingsDangerProps) {
   const router = useRouter()
+  const { csrfHeaders } = useCsrfToken()
   const [deleteConfirmation, setDeleteConfirmation] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -41,6 +43,7 @@ export function SettingsDanger({ userEmail }: SettingsDangerProps) {
     try {
       const response = await fetch('/api/account/delete', {
         method: 'DELETE',
+        headers: { ...csrfHeaders },
       })
 
       if (!response.ok) {

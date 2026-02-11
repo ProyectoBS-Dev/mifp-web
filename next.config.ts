@@ -85,7 +85,8 @@ const nextConfig: NextConfig = {
               // Vercel Live (solo en preview): https://vercel.live
               // Vercel Analytics: https://*.vercel-scripts.com (desarrollo y producción)
               // Cloudflare Turnstile: CAPTCHA en /registro y /recuperar-password
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://*.google.com https://*.googleapis.com https://*.gstatic.com https://challenges.cloudflare.com",
+              // unsafe-eval: solo en desarrollo para Turbopack HMR
+              `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''} https://vercel.live https://*.vercel-scripts.com https://*.google.com https://*.googleapis.com https://*.gstatic.com https://challenges.cloudflare.com`,
               // Estilos: TipTap editor + Framer Motion + Google Fonts + Google OAuth
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.google.com https://*.gstatic.com",
               // Fuentes: Google Fonts + data URIs
@@ -107,8 +108,16 @@ const nextConfig: NextConfig = {
               "base-uri 'self'",
               "form-action 'self'",
               "frame-ancestors 'none'",
-              "upgrade-insecure-requests",
+              // upgrade-insecure-requests: solo en producción (Safari bloquea localhost sin TLS)
+              ...(process.env.NODE_ENV === 'production' ? ["upgrade-insecure-requests"] : []),
+              "report-uri /api/csp-report",
+              "report-to csp-endpoint",
             ].join('; '),
+          },
+          // Reporting-Endpoints header for CSP report-to directive (modern browsers)
+          {
+            key: 'Reporting-Endpoints',
+            value: 'csp-endpoint="/api/csp-report"',
           },
         ],
       },

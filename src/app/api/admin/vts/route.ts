@@ -1,6 +1,8 @@
 import { createAdminClient, verifyAdmin } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
+import { withCsrfProtection } from '@/lib/csrf'
+import { logAuditEvent } from '@/lib/audit'
 import { 
   createVTSchema, 
   updateVTSchema, 
@@ -94,6 +96,10 @@ export async function POST(request: NextRequest) {
   const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
   if (rateLimitError) return rateLimitError
 
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
+
   const auth = await verifyAdmin()
   if ('error' in auth) {
     return NextResponse.json({ error: auth.error }, { status: auth.status })
@@ -160,6 +166,15 @@ export async function POST(request: NextRequest) {
         .insert(userVtsToInsert)
     }
 
+    // ✅ Audit logging
+    await logAuditEvent({
+      action: 'vt.create',
+      userId: auth.user.id,
+      resourceType: 'vt',
+      resourceId: newVT.id,
+      metadata: { asignaturaId: parseResult.data.asignaturaId },
+    }, request)
+
     return NextResponse.json({ success: true, vt: newVT })
 
   } catch (error) {
@@ -179,6 +194,10 @@ export async function PUT(request: NextRequest) {
   // ✅ Rate limiting
   const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
   if (rateLimitError) return rateLimitError
+
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
 
   const auth = await verifyAdmin()
   if ('error' in auth) {
@@ -239,6 +258,10 @@ export async function DELETE(request: NextRequest) {
   const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
   if (rateLimitError) return rateLimitError
 
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
+
   const auth = await verifyAdmin()
   if ('error' in auth) {
     return NextResponse.json({ error: auth.error }, { status: auth.status })
@@ -270,6 +293,15 @@ export async function DELETE(request: NextRequest) {
       .eq('id', vtId)
 
     if (error) throw error
+
+    // ✅ Audit logging
+    await logAuditEvent({
+      action: 'vt.delete',
+      userId: auth.user.id,
+      resourceType: 'vt',
+      resourceId: parseResult.data.vtId,
+      metadata: { vtId: parseResult.data.vtId },
+    }, request)
 
     return NextResponse.json({ success: true })
 

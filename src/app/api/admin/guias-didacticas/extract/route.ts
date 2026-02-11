@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import type { ExtractedGDData } from '@/types/gd'
 import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
+import { withCsrfProtection } from '@/lib/csrf'
 import { extractGDSchema, formatZodErrors } from '@/lib/validation/schemas'
 import { z } from 'zod'
 
@@ -116,6 +117,10 @@ export async function POST(request: NextRequest) {
   // Rate limit para OpenAI (3 req/min para prevenir costos)
   const rateLimitError = await withRateLimit(request, rateLimiters?.openai || null)
   if (rateLimitError) return rateLimitError
+
+  // ✅ CSRF protection
+  const csrfError = withCsrfProtection(request)
+  if (csrfError) return csrfError
 
 
   // Verificar autenticación y rol admin

@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { useCsrfToken } from '@/hooks/useCsrfToken'
 
 interface CleanupResult {
   success: boolean
@@ -45,6 +46,7 @@ export function CleanupOrphanedImages() {
   const [result, setResult] = useState<CleanupResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [retentionDays, setRetentionDays] = useState<string>('30')
+  const { csrfHeaders } = useCsrfToken()
 
   const handleCleanup = async () => {
     setIsProcessing(true)
@@ -57,7 +59,7 @@ export function CleanupOrphanedImages() {
       
       const response = await fetch('/api/admin/noticias/cleanup-orphaned-images', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
         body: JSON.stringify({ retentionDays: daysValue }),
       })
 

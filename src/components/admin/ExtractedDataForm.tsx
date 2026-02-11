@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { ExtractedGDData, ExtractedRA, ExtractedPAC, ExtractedVT } from '@/types/gd'
+import { useCsrfToken } from '@/hooks/useCsrfToken'
 
 interface ExtractedDataFormProps {
   gdId: string
@@ -43,6 +44,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
   const [data, setData] = useState<ExtractedGDData>(initialData)
   const [isValidating, setIsValidating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { csrfHeaders } = useCsrfToken()
   const [openSections, setOpenSections] = useState({
     modulo: true,
     ras: true,
@@ -102,7 +104,7 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
     try {
       const response = await fetch('/api/admin/guias-didacticas/validate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
         body: JSON.stringify({ gdId, datos: data }),
       })
 

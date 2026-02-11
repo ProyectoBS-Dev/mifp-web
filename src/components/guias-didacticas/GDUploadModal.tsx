@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { GDDropzone } from './GDDropzone'
 import type { AsignaturaSinGD } from '@/hooks/useMissingGDs'
+import { useCsrfToken } from '@/hooks/useCsrfToken'
 
 interface GDUploadModalProps {
   open: boolean
@@ -36,6 +37,7 @@ export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModal
   const [uploadState, setUploadState] = useState<UploadState>('idle')
   const [errorMessage, setErrorMessage] = useState<string>('')
   const queryClient = useQueryClient()
+  const { csrfHeaders } = useCsrfToken()
 
   const handleSubmit = async () => {
     if (!file || !selectedAsignatura) return
@@ -50,6 +52,7 @@ export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModal
 
       const response = await fetch('/api/guias-didacticas/upload', {
         method: 'POST',
+        headers: { ...csrfHeaders },
         body: formData,
       })
 

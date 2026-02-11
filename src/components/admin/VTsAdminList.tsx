@@ -45,6 +45,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useRouter } from 'next/navigation'
+import { useCsrfToken } from '@/hooks/useCsrfToken'
 
 interface VTData {
   id: string
@@ -187,6 +188,7 @@ interface CreateVTModalProps {
 
 function CreateVTModal({ open, onOpenChange, asignatura, semestreId, nextNumero }: CreateVTModalProps) {
   const router = useRouter()
+  const { csrfHeaders } = useCsrfToken()
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
@@ -206,7 +208,7 @@ function CreateVTModal({ open, onOpenChange, asignatura, semestreId, nextNumero 
     try {
       const response = await fetch('/api/admin/vts', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
         body: JSON.stringify({
           asignaturaId: asignatura.id,
           semestreId,
@@ -339,6 +341,7 @@ function CreateVTModal({ open, onOpenChange, asignatura, semestreId, nextNumero 
 
 function VTCard({ vt }: { vt: VTData }) {
   const router = useRouter()
+  const { csrfHeaders } = useCsrfToken()
   const [isEditing, setIsEditing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -385,7 +388,7 @@ function VTCard({ vt }: { vt: VTData }) {
     try {
       const response = await fetch('/api/admin/vts', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
         body: JSON.stringify(payload)
       })
 
@@ -411,7 +414,7 @@ function VTCard({ vt }: { vt: VTData }) {
     try {
       const response = await fetch('/api/admin/vts', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
         body: JSON.stringify({ vtId: vt.id })
       })
 

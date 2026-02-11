@@ -12,9 +12,7 @@ import {
   Code2,
   Users,
   Calendar,
-  TrendingUp,
   Shield,
-  BookOpen,
   Sparkles
 } from 'lucide-react'
 import { ScrollReveal } from '@/components/ui/scroll-reveal'
@@ -120,7 +118,7 @@ export default async function SobreNosotrosPage() {
         <div className="absolute top-[10%] left-[-10%] w-[600px] h-[600px] bg-vt-green/10 dark:bg-vt-green/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-[10%] right-[-10%] w-[500px] h-[500px] bg-vt-blue/10 dark:bg-vt-blue/5 rounded-full blur-[100px] pointer-events-none" />
 
-        <div className={`relative z-10 mx-auto px-4 sm:px-6 lg:px-8 py-12 ${userData ? 'container max-w-7xl' : 'container max-w-6xl'}`}>
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-7xl">
           {/* Version Badge */}
           <ScrollReveal>
             <div className="flex justify-center mb-8">
@@ -140,31 +138,31 @@ export default async function SobreNosotrosPage() {
           {/* Hero Title */}
           <ScrollReveal delay={0.1}>
             <div className="flex flex-col items-center text-center mb-16">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
                 Nuestra Historia
               </h1>
               <p className="text-muted-foreground text-lg md:text-xl font-medium leading-relaxed max-w-2xl">
-                De estudiantes para estudiantes. Estamos redefiniendo cómo se vive la Formación Profesional en España.
+                Somos estudiantes de DAW y DAM creando herramientas para hacer la FP un poco más llevadera. Sin florituras, solo cosas que nos funcionan.
               </p>
             </div>
           </ScrollReveal>
 
           {/* Bento Grid */}
           <ScrollReveal delay={0.2}>
-            <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-6 auto-rows-[220px]">
+            <div className="grid grid-cols-2 md:grid-cols-4 md:grid-rows-3 gap-4 sm:gap-6 auto-rows-[200px] sm:auto-rows-[220px]">
               
               {/* Card 1 - El Origen (Grande - 2x2) */}
-              <div className="md:col-span-2 md:row-span-2 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-10 hover:border-vt-green/50 transition-all overflow-hidden">
+              <div className="col-span-2 md:col-span-2 md:row-span-2 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 sm:p-8 md:p-10 hover:border-vt-green/50 transition-all overflow-hidden">
                 <div className="relative z-10">
-                  <div className="inline-flex items-center gap-2 bg-vt-green/10 text-vt-green px-3 py-1 rounded-full text-xs font-bold mb-6">
+                  <div className="inline-flex items-center gap-2 bg-vt-green/10 text-vt-green px-3 py-1 rounded-full text-xs font-bold mb-4">
                     <Sparkles className="h-3 w-3" />
                     EL ORIGEN
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-extrabold mb-4 leading-tight">
-                    FP Online &amp; La chispa inicial
+                  <h3 className="text-xl font-extrabold sm:mb-4 mb-2 leading-tight">
+                    Cómo empezó todo
                   </h3>
-                  <p className="text-muted-foreground leading-relaxed max-w-md text-base">
-                    Todo comenzó en las aulas virtuales. Dos estudiantes de DAM y DAW online identificaron que la educación técnica necesitaba un puente entre la teoría académica y las exigencias del mercado real.
+                  <p className="text-muted-foreground leading-relaxed max-w-md text-sm">
+                    Empezamos como cualquier estudiante de FP online: intentando organizar PACs, buscando apuntes y llevando al día las entregas. Decidimos crear algo útil para todos.
                   </p>
                 </div>
                 
@@ -190,66 +188,47 @@ export default async function SobreNosotrosPage() {
               </div>
 
               {/* Card 2 - Expertise (Vertical) */}
-              <div className="md:col-span-1 md:row-span-2 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-8 hover:border-vt-blue/50 transition-all flex flex-col justify-between">
-                <div>
-                  <div className="inline-flex items-center gap-2 bg-vt-blue/10 text-vt-blue px-3 py-1 rounded-full text-xs font-bold mb-6 uppercase tracking-wider">
+              <div className="col-span-2 md:col-span-1 md:row-span-2 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 sm:p-8 hover:border-vt-blue/50 transition-all flex flex-col justify-between">
+                <div className="mb-6">
+                  <div className="inline-flex items-center gap-2 bg-vt-blue/10 text-vt-blue px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
                     <Code2 className="h-3 w-3" />
-                    Expertise
+                    ¿Qué nos motiva?
                   </div>
-                  <h3 className="text-xl md:text-2xl font-extrabold mb-4">
-                    Expertos en DAW/DAM
+                  <h3 className="text-xl font-extrabold sm:mb-4 mb-2 leading-tight">
+                    Aprendiendo DAW/DAM
                   </h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    Nuestra base es el código. Especialistas en desarrollo web y multiplataforma con enfoque práctico y real.
+                    Estudiantes como tú en DAW y DAM. Aprendiendo desarrollo web y multiplataforma mientras creamos herramientas que nos facilitan (y os facilitan) el día a día.
                   </p>
                 </div>
                 
-                <div className="flex items-center justify-center py-6">
-                  <div className="relative">
-                    <div className="w-24 h-24 bg-vt-blue/10 rounded-2xl flex items-center justify-center">
-                      <Code2 className="h-12 w-12 text-vt-blue" />
-                    </div>
-                    <div className="absolute -top-3 -right-3 bg-vt-green p-2.5 rounded-xl rotate-12 shadow-lg">
-                      <BookOpen className="h-4 w-4 text-white" />
-                    </div>
+                <div className="hidden md:flex items-center justify-center py-4">
+                  <div className="w-20 h-20 bg-vt-blue/10 rounded-2xl flex items-center justify-center">
+                    <Code2 className="h-10 w-10 text-vt-blue" />
                   </div>
                 </div>
               </div>
 
               {/* Card 3 - Fundador 1 */}
-              <div className="md:col-span-1 md:row-span-1 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-green/50 transition-all flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue shadow-sm ring-1 ring-vt-green/20 flex items-center justify-center">
+              <div className="md:col-span-1 md:row-span-1 col-span-1 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 pb-8 hover:border-vt-green/50 transition-all flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-vt-green to-vt-blue shadow-sm ring-1 ring-vt-green/20 flex items-center justify-center mb-3">
                   <span className="text-2xl font-bold text-white">B</span>
                 </div>
-                <div>
-                  <h4 className="font-bold text-lg">Estudiante DAW</h4>
-                  <p className="text-muted-foreground text-xs font-medium">CTO &amp; Founder</p>
-                  <div className="flex gap-2 mt-2">
-                    <div className="w-7 h-7 rounded-lg bg-muted hover:bg-vt-green hover:text-white transition-colors flex items-center justify-center cursor-pointer">
-                      <Code2 className="h-4 w-4" />
-                    </div>
-                  </div>
-                </div>
+                <h4 className="font-bold text-base">Estudiante DAW</h4>
+                <p className="text-muted-foreground text-xs font-medium mb-4">Dev &amp; Fundador</p>
               </div>
 
               {/* Card 4 - Fundador 2 */}
-              <div className="md:col-span-1 md:row-span-1 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-purple/50 transition-all flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-vt-blue to-vt-purple shadow-sm ring-1 ring-vt-purple/20 flex items-center justify-center">
+              <div className="md:col-span-1 md:row-span-1 col-span-1 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 pb-8 hover:border-vt-purple/50 transition-all flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-vt-blue to-vt-purple shadow-sm ring-1 ring-vt-purple/20 flex items-center justify-center mb-3">
                   <span className="text-2xl font-bold text-white">S</span>
                 </div>
-                <div>
-                  <h4 className="font-bold text-lg">Estudiante DAM</h4>
-                  <p className="text-muted-foreground text-xs font-medium">CEO &amp; Product</p>
-                  <div className="flex gap-2 mt-2">
-                    <div className="w-7 h-7 rounded-lg bg-muted hover:bg-vt-purple hover:text-white transition-colors flex items-center justify-center cursor-pointer">
-                      <Code2 className="h-4 w-4" />
-                    </div>
-                  </div>
-                </div>
+                <h4 className="font-bold text-base">Estudiante DAM</h4>
+                <p className="text-muted-foreground text-xs font-medium mb-4">Dev &amp; Fundadora</p>
               </div>
 
               {/* Card 5 - Misión (Horizontal - 2 columnas) */}
-              <div className="md:col-span-2 md:row-span-1 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-8 hover:border-vt-green/50 transition-all flex items-center justify-between overflow-hidden">
+              <div className="col-span-2 md:col-span-2 md:row-span-1 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 sm:p-8 hover:border-vt-green/50 transition-all flex items-center justify-between overflow-hidden">
                 <div className="relative z-10 flex flex-col justify-center">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="p-2 bg-vt-green/10 rounded-lg">
@@ -258,7 +237,7 @@ export default async function SobreNosotrosPage() {
                     <h3 className="text-xl font-extrabold">Nuestra Misión</h3>
                   </div>
                   <p className="text-muted-foreground text-sm leading-relaxed max-w-md">
-                    Empoderar a cada estudiante con herramientas tecnológicas que conviertan el estudio en una ventaja competitiva inmediata. Gestionamos tus PACs de forma eficiente.
+                    Queremos hacer la vida de los estudiantes de FP un poco más fácil. Calendarios de entregas, calculadoras de notas, recursos... herramientas prácticas hechas por estudiantes que las necesitan.
                   </p>
                 </div>
                 <div className="hidden sm:block opacity-[0.05] dark:opacity-[0.08] group-hover:opacity-[0.1] dark:group-hover:opacity-[0.15] transition-all group-hover:scale-110">
@@ -266,24 +245,24 @@ export default async function SobreNosotrosPage() {
                 </div>
               </div>
 
-              {/* Card 6 - Stat: Mejora de Notas */}
-              <div className="md:col-span-1 md:row-span-1 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-8 hover:border-vt-yellow/50 transition-all flex flex-col justify-center items-center text-center">
-                <div className="p-3 bg-vt-yellow/10 rounded-full mb-3">
-                  <TrendingUp className="h-8 w-8 text-vt-yellow-dark" />
+              {/* Card 6 - Stat: PACs a las 23:59 */}
+              <div className="md:col-span-1 md:row-span-1 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-yellow/50 transition-all flex flex-col justify-center items-center text-center">
+                <div className="p-2.5 bg-vt-yellow/10 rounded-full mb-2">
+                  <Calendar className="h-7 w-7 text-vt-yellow-dark" />
                 </div>
-                <p className="text-4xl font-black mb-1">98%</p>
-                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
-                  Mejora de Notas
+                <p className="text-lg font-black mb-0.5 leading-tight">PACs a las 23:59</p>
+                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                  Cosa del pasado
                 </p>
               </div>
 
-              {/* Card 7 - Stat: Seguridad */}
-              <div className="md:col-span-1 md:row-span-1 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-8 hover:border-vt-green/50 transition-all flex flex-col justify-center items-center text-center overflow-hidden">
+              {/* Card 7 - Stat: Modo Pánico */}
+              <div className="md:col-span-1 md:row-span-1 group relative rounded-3xl border bg-card/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 hover:border-vt-green/50 transition-all flex flex-col justify-center items-center text-center overflow-hidden">
                 <div className="absolute inset-0 bg-vt-green/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Shield className="h-10 w-10 mb-3 text-vt-green relative z-10" />
-                <p className="text-sm font-bold relative z-10">100% Seguro</p>
-                <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter relative z-10">
-                  Privacidad Total
+                <Shield className="h-8 w-8 mb-2 text-vt-green relative z-10" />
+                <p className="text-lg font-black relative z-10 leading-tight">Modo Pánico</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5 uppercase font-bold tracking-wider relative z-10">
+                  DESACTIVADO
                 </p>
               </div>
 

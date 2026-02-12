@@ -6,13 +6,14 @@ import { cn } from '@/lib/utils'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
 import { SemesterSelector } from '@/components/semester/SemesterSelector'
-import { type FCTData } from '@/hooks/useNotas'
+import { type FCTData, type EstadoAsignatura } from '@/hooks/useNotas'
 
 // ============================================
 // TIPOS EXPORTADOS (para uso en page.tsx)
 // ============================================
 
-export type EstadoAsignatura = 'sin_notas' | 'en_progreso' | 'aprobada' | 'suspensa'
+// Re-export desde useNotas (source of truth centralizado)
+export type { EstadoAsignatura }
 
 export interface AsignaturaCalculada {
   id: string

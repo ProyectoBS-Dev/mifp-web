@@ -40,7 +40,7 @@ export function AsignaturaDetailSimplificado({
 
   const [isSaving, setIsSaving] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
-  const [localNota, setLocalNota] = useState<string>('')
+  const [localNota, setLocalNota] = useState<string | null>(null)
 
   // Nota actual
   const notaActual = asignatura.notaFinalCalculada
@@ -90,9 +90,9 @@ export function AsignaturaDetailSimplificado({
 
   // Manejar blur (guardar)
   const handleBlur = () => {
-    if (localNota === '') {
-      // Limpiar local si está vacío
-      setLocalNota('')
+    if (localNota === null || localNota === '') {
+      // No editado o vacío: limpiar estado local
+      setLocalNota(null)
       return
     }
 
@@ -100,7 +100,7 @@ export function AsignaturaDetailSimplificado({
 
     // Validar
     if (isNaN(newNota) || newNota < 0 || newNota > 10) {
-      setLocalNota('')
+      setLocalNota(null)
       return
     }
 
@@ -110,7 +110,7 @@ export function AsignaturaDetailSimplificado({
     }
     
     // Limpiar local después de guardar
-    setLocalNota('')
+    setLocalNota(null)
   }
 
   // Manejar tecla Enter
@@ -168,7 +168,7 @@ export function AsignaturaDetailSimplificado({
                   min="0"
                   max="10"
                   step="0.01"
-                  value={localNota !== '' ? localNota : notaActual ?? ''}
+                  value={localNota !== null ? localNota : (notaActual ?? '')}
                   onChange={(e) => handleInputChange(e.target.value)}
                   onBlur={handleBlur}
                   onKeyDown={handleKeyDown}

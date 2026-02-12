@@ -233,7 +233,7 @@ export function AsignaturaDetail({
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-base">RA{ra.numero}: {ra.titulo}</CardTitle>
+                    <CardTitle className="text-base">{ra.codigo ?? `RA${ra.numero}`}: {ra.titulo}</CardTitle>
                     <p className="text-xs text-muted-foreground mt-1">
                       Peso en módulo: {ra.pesoHoras}% (por horas)
                     </p>

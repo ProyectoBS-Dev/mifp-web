@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 export interface RA {
   id: string
   numero: number
+  codigo: string | null
   titulo: string
   pesoHoras: number
 }
@@ -33,6 +34,9 @@ export interface AsignaturaNotas {
   notaFinalCalculada: number | null
   convocatoria: number
   tieneGD: boolean
+  /** true solo cuando tieneGD Y el semestre es el activo.
+   *  Cuando false, se usa notaFinalCalculada directamente. */
+  usarCalculoPACs: boolean
   aprobada: boolean
 }
 
@@ -62,6 +66,7 @@ interface RpcResponse {
   semestre?: {
     id: string
     nombre: string
+    activo?: boolean
   }
 }
 
@@ -170,6 +175,9 @@ export function useNotas(semestreId?: string) {
         }
       }
 
+      // Determinar si el semestre consultado es el activo
+      const esSemestreActivo = result?.semestre?.activo ?? false
+
       // Transformar respuesta de la RPC a formato esperado
       const asignaturas: AsignaturaNotas[] = (result?.asignaturas || []).map((asig: RpcAsignatura) => {
         // Calcular peso equitativo si peso_nota es null
@@ -182,9 +190,12 @@ export function useNotas(semestreId?: string) {
           nombre: asig.nombre,
           codigo: asig.codigo,
           tieneGD: asig.tiene_gd,
+          // Solo usar cálculo PACs cuando la GD está validada Y el semestre es el activo
+          usarCalculoPACs: asig.tiene_gd && esSemestreActivo,
           ras: (asig.ras || []).map((ra: RpcRA) => ({
             id: ra.id,
             numero: ra.numero,
+            codigo: ra.codigo ?? null,
             titulo: ra.titulo,
             pesoHoras: ra.peso_nota ?? pesoEquitativo  // Peso equitativo si es null
           })),
@@ -243,6 +254,7 @@ interface RpcAsignatura {
 interface RpcRA {
   id: string
   numero: number
+  codigo: string | null
   titulo: string
   peso_nota: number | null
 }
@@ -300,6 +312,7 @@ export function useSavePACNota() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notas'] })
+      queryClient.invalidateQueries({ queryKey: ['grade-progress'] })
     }
   })
 }
@@ -343,6 +356,7 @@ export function useSaveExamenNota() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notas'] })
+      queryClient.invalidateQueries({ queryKey: ['grade-progress'] })
     }
   })
 }
@@ -384,6 +398,7 @@ export function useSaveFCTNota() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notas'] })
+      queryClient.invalidateQueries({ queryKey: ['grade-progress'] })
     }
   })
 }
@@ -509,5 +524,179 @@ export function calcularNotaModulo(
     notaSinFCT: mediaRAs,
     notaConFCT,
     todosRAsAprobados: todosAprobados
+  }
+}
+
+// ============================================
+// TIPO: EstadoAsignatura (centralizado)
+// ============================================
+
+export type EstadoAsignatura = 'sin_notas' | 'en_progreso' | 'aprobada' | 'suspensa'
+
+// ============================================
+// FUNCIÓN: calcularDatosAsignatura
+// Calcula nota, estado y progreso de una asignatura.
+// Centraliza la lógica para sidebar, dashboard, mobile, etc.
+// ============================================
+
+export interface AsignaturaCalculadaResult {
+  notaModulo: number | null
+  estado: EstadoAsignatura
+  rasCompletados: number
+  rasTotal: number
+}
+
+/**
+ * Calcula los datos de visualización de una asignatura.
+ *
+ * - Si `usarCalculoPACs` es true (GD validada + semestre activo),
+ *   calcula la nota desde PACs + examen usando la fórmula ILERNA.
+ * - En caso contrario, usa `notaFinalCalculada` directamente.
+ *
+ * @param asig       - datos de la asignatura
+ * @param fctNota    - nota FCT del usuario (para media con FCT)
+ * @returns datos calculados para sidebar/dashboard
+ */
+export function calcularDatosAsignatura(
+  asig: AsignaturaNotas,
+  fctNota: number | null
+): AsignaturaCalculadaResult {
+  // ------------------------------------------------------------------
+  // CASO 1: Usar notaFinalCalculada directamente
+  // (semestre inactivo O asignatura sin GD)
+  // ------------------------------------------------------------------
+  if (!asig.usarCalculoPACs) {
+    const notaFinal = asig.notaFinalCalculada
+
+    let estado: EstadoAsignatura = 'sin_notas'
+    if (notaFinal !== null) {
+      estado = notaFinal >= 5 ? 'aprobada' : 'suspensa'
+    }
+
+    return {
+      notaModulo: notaFinal,
+      estado,
+      rasCompletados: 0,
+      rasTotal: 0
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // CASO 2: Calcular desde PACs + examen (semestre activo con GD)
+  // ------------------------------------------------------------------
+  const notasMap = new Map<string, number>()
+  let todosRAsAprobados = true
+  let rasCompletados = 0
+
+  asig.ras.forEach(ra => {
+    const pacsDelRA = asig.pacs.filter(p => p.raId === ra.id)
+    const resultado = calcularNotaRA(pacsDelRA, asig.notaExamen)
+    if (resultado.notaRA !== null) {
+      notasMap.set(ra.id, resultado.notaRA)
+      if (resultado.notaRA < 5) {
+        todosRAsAprobados = false
+      } else {
+        rasCompletados++
+      }
+    } else {
+      todosRAsAprobados = false
+    }
+  })
+
+  const notaModuloResult = calcularNotaModulo(asig.ras, notasMap, fctNota)
+  const notaModulo = notaModuloResult.notaSinFCT
+
+  // Determinar estado
+  const tieneNotaPAC = asig.pacs.some(p => p.nota !== null)
+  const tieneExamen = asig.notaExamen !== null
+
+  let estado: EstadoAsignatura = 'sin_notas'
+
+  if (!tieneNotaPAC && !tieneExamen) {
+    estado = 'sin_notas'
+  } else if (!tieneExamen) {
+    estado = 'en_progreso'
+  } else if (asig.notaFinalCalculada !== null) {
+    estado = asig.notaFinalCalculada >= 5 ? 'aprobada' : 'suspensa'
+  } else if (notaModulo !== null) {
+    const examenAprobado = asig.notaExamen! >= 5
+    estado = (examenAprobado && notaModulo >= 5) ? 'aprobada' : 'suspensa'
+  } else {
+    estado = 'en_progreso'
+  }
+
+  return {
+    notaModulo,
+    estado,
+    rasCompletados,
+    rasTotal: asig.ras.length
+  }
+}
+
+/**
+ * Tipo auxiliar para las estadísticas agregadas de un semestre.
+ */
+export interface StatsAsignaturas {
+  media: number | null
+  aprobadas: number
+  suspensas: number
+  pendientes: number
+  total: number
+}
+
+/**
+ * Calcula las estadísticas agregadas y datos de visualización
+ * de todas las asignaturas de un semestre.
+ */
+export function calcularDatosSemestre(
+  asignaturas: AsignaturaNotas[],
+  fctNota: number | null
+): {
+  asignaturasCalculadas: { id: string; nombre: string; codigo: string; estado: EstadoAsignatura; notaModulo: number | null; rasCompletados: number; rasTotal: number }[]
+  stats: StatsAsignaturas
+} {
+  let aprobadas = 0
+  let suspensas = 0
+  let pendientes = 0
+  let sumaNotas = 0
+  let countNotas = 0
+  const total = asignaturas.length
+
+  const asignaturasCalculadas = asignaturas.map(asig => {
+    const calc = calcularDatosAsignatura(asig, fctNota)
+
+    // Actualizar estadísticas
+    if (calc.notaModulo !== null) {
+      sumaNotas += calc.notaModulo
+      countNotas++
+      if (calc.estado === 'aprobada') {
+        aprobadas++
+      } else {
+        suspensas++
+      }
+    } else {
+      pendientes++
+    }
+
+    return {
+      id: asig.id,
+      nombre: asig.nombre,
+      codigo: asig.codigo,
+      estado: calc.estado,
+      notaModulo: calc.notaModulo,
+      rasCompletados: calc.rasCompletados,
+      rasTotal: calc.rasTotal
+    }
+  })
+
+  return {
+    asignaturasCalculadas,
+    stats: {
+      media: countNotas > 0 ? sumaNotas / countNotas : null,
+      aprobadas,
+      suspensas,
+      pendientes,
+      total
+    }
   }
 }

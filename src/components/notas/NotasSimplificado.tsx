@@ -97,6 +97,13 @@ export function NotasSimplificado({ semestreId, semestreNombre, selectedAsignatu
         if (newNota !== currentNota) {
             handleSaveNota(userAsignaturaId, newNota)
         }
+
+        // Limpiar estado local para usar el valor del servidor tras refetch
+        setLocalNotas(prev => {
+            const newMap = new Map(prev)
+            newMap.delete(userAsignaturaId)
+            return newMap
+        })
     }
 
     if (isLoading) {
@@ -146,9 +153,11 @@ export function NotasSimplificado({ semestreId, semestreNombre, selectedAsignatu
                         .filter(asig => !selectedAsignaturaId || asig.id === selectedAsignaturaId)
                         .map(asig => {
                         const localValue = localNotas.get(asig.id)
+                        // Usar notaFinalCalculada como valor canónico para semestres inactivos
+                        const notaDisplay = asig.notaFinalCalculada
                         const displayValue = localValue !== undefined
                             ? localValue
-                            : (asig.notaExamen?.toString() ?? '')
+                            : (notaDisplay?.toString() ?? '')
 
                         return (
                             <div
@@ -162,12 +171,12 @@ export function NotasSimplificado({ semestreId, semestreNombre, selectedAsignatu
 
                                 <div className="flex items-center gap-3">
                                     {/* Badge de estado */}
-                                    {asig.notaExamen !== null && (
+                                    {notaDisplay !== null && (
                                         <Badge
-                                            color={asig.notaExamen >= 5 ? 'green' : 'red'}
+                                            color={notaDisplay >= 5 ? 'green' : 'red'}
                                             className="text-xs"
                                         >
-                                            {asig.notaExamen >= 5 ? 'Aprobada' : 'Suspensa'}
+                                            {notaDisplay >= 5 ? 'Aprobada' : 'Suspensa'}
                                         </Badge>
                                     )}
 
@@ -182,10 +191,10 @@ export function NotasSimplificado({ semestreId, semestreNombre, selectedAsignatu
                                             step={0.1}
                                             value={displayValue}
                                             onChange={(e) => handleInputChange(asig.id, e.target.value)}
-                                            onBlur={() => handleBlur(asig.id, asig.notaExamen)}
+                                            onBlur={() => handleBlur(asig.id, notaDisplay)}
                                             className={cn(
                                                 'w-20 text-center font-bold',
-                                                getGradeColor(asig.notaExamen)
+                                                getGradeColor(notaDisplay)
                                             )}
                                             placeholder="-"
                                         />

@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CollapsibleSidebar } from '@/components/ui/collapsible-sidebar'
-import { NotasSidebar, type AsignaturaCalculada, type EstadoAsignatura } from '@/components/notas/NotasSidebar'
+import { NotasSidebar, type AsignaturaCalculada } from '@/components/notas/NotasSidebar'
 import { NotasDashboard } from '@/components/notas/NotasDashboard'
 import { AsignaturaDetail } from '@/components/notas/AsignaturaDetail'
 import { AsignaturaDetailSimplificado } from '@/components/notas/AsignaturaDetailSimplificado'
@@ -17,8 +17,7 @@ import {
   useSavePACNota,
   useSaveExamenNota,
   useSaveFCTNota,
-  calcularNotaRA,
-  calcularNotaModulo,
+  calcularDatosSemestre,
   type AsignaturaNotas,
 } from '@/hooks/useNotas'
 import { useUserSemesters, useSemestreActivo } from '@/hooks/useUserSemesters'
@@ -268,128 +267,7 @@ export default function NotasPage() {
       }
     }
 
-    let aprobadas = 0
-    let suspensas = 0
-    let pendientes = 0
-    let sumaNotas = 0
-    let countNotas = 0
-    const total = data.asignaturas.length
-
-    const asignaturasCalculadas: AsignaturaCalculada[] = data.asignaturas.map(asig => {
-      // Si no tiene GD, usar notaFinalCalculada (para semestres anteriores)
-      if (!asig.tieneGD) {
-        const notaFinal = asig.notaFinalCalculada
-        
-        // Determinar estado
-        let estado: EstadoAsignatura = 'sin_notas'
-        if (notaFinal !== null) {
-          estado = notaFinal >= 5 ? 'aprobada' : 'suspensa'
-          
-          // Actualizar estadísticas
-          sumaNotas += notaFinal
-          countNotas++
-          if (notaFinal >= 5) {
-            aprobadas++
-          } else {
-            suspensas++
-          }
-        } else {
-          pendientes++
-        }
-        
-        return {
-          id: asig.id,
-          nombre: asig.nombre,
-          codigo: asig.codigo,
-          estado,
-          notaModulo: notaFinal, // ← USAR notaFinalCalculada como notaModulo
-          rasCompletados: 0,
-          rasTotal: 0
-        }
-      }
-
-      // Calcular notas de cada RA (una sola vez)
-      const notasMap = new Map<string, number>()
-      let todosRAsAprobados = true
-      let rasCompletados = 0
-
-      asig.ras.forEach(ra => {
-        const pacsDelRA = asig.pacs.filter(p => p.raId === ra.id)
-        const resultado = calcularNotaRA(pacsDelRA, asig.notaExamen)
-        if (resultado.notaRA !== null) {
-          notasMap.set(ra.id, resultado.notaRA)
-          if (resultado.notaRA < 5) {
-            todosRAsAprobados = false
-          } else {
-            rasCompletados++
-          }
-        } else {
-          todosRAsAprobados = false
-        }
-      })
-
-      // Calcular nota del módulo (con FCT para stats de media)
-      const notaModuloResult = calcularNotaModulo(asig.ras, notasMap, data.fct.nota)
-      const notaModulo = notaModuloResult.notaSinFCT
-
-      // Determinar estado
-      const tieneNotaPAC = asig.pacs.some(p => p.nota !== null)
-      const tieneExamen = asig.notaExamen !== null
-      
-      let estado: EstadoAsignatura = 'sin_notas'
-      
-      if (!tieneNotaPAC && !tieneExamen) {
-        estado = 'sin_notas'
-      } else if (!tieneExamen) {
-        estado = 'en_progreso'
-      } else if (asig.notaFinalCalculada !== null) {
-        estado = asig.notaFinalCalculada >= 5 ? 'aprobada' : 'suspensa'
-      } else if (notaModulo !== null) {
-        const examenAprobado = asig.notaExamen! >= 5
-        estado = (examenAprobado && notaModulo >= 5) ? 'aprobada' : 'suspensa'
-      } else {
-        estado = 'en_progreso'
-      }
-
-      // Actualizar estadísticas
-      if (notaModulo !== null) {
-        // Sumar nota para la media (con FCT si existe)
-        sumaNotas += data.fct.nota !== null && notaModuloResult.notaConFCT !== null
-          ? notaModuloResult.notaConFCT
-          : notaModulo
-        countNotas++
-
-        const examenAprobado = asig.notaExamen !== null && asig.notaExamen >= 5
-        if (todosRAsAprobados && examenAprobado && notaModulo >= 5) {
-          aprobadas++
-        } else {
-          suspensas++
-        }
-      } else {
-        pendientes++
-      }
-
-      return {
-        id: asig.id,
-        nombre: asig.nombre,
-        codigo: asig.codigo,
-        estado,
-        notaModulo,
-        rasCompletados,
-        rasTotal: asig.ras.length
-      }
-    })
-
-    return {
-      asignaturasCalculadas,
-      stats: { 
-        media: countNotas > 0 ? sumaNotas / countNotas : null,
-        aprobadas, 
-        suspensas,
-        pendientes,
-        total 
-      }
-    }
+    return calcularDatosSemestre(data.asignaturas, data.fct.nota)
   }, [data])
 
   // Calcular asignatura seleccionada (objeto completo con PACs, RAs, etc.)

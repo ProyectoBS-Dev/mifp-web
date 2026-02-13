@@ -143,9 +143,21 @@ export function RegisterForm() {
   return (
     <div className="grid gap-6">
       <OAuthButtons redirectTo="/onboarding" />
+
+      <p className="text-sm text-muted-foreground">
+          Al hacer clic en <strong>Google</strong> o <strong>GitHub</strong>, confirmas tener más de 16 años y aceptas nuestros{' '}
+          <Link href="/terminos" className="text-primary hover:underline">
+            Términos
+          </Link>{' '}
+          y{' '}
+          <Link href="/privacidad" className="text-primary hover:underline">
+            Política de Privacidad.
+          </Link>
+        </p>
       
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
+          
           <Separator className="w-full" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
@@ -223,12 +235,13 @@ export function RegisterForm() {
           >
             Acepto los{' '}
             <Link href="/terminos" className="text-primary hover:underline">
-              términos y condiciones
+              términos y condiciones,
             </Link>{' '}
-            y la{' '}
+            la{' '}
             <Link href="/privacidad" className="text-primary hover:underline">
               política de privacidad
             </Link>
+            &nbsp;y confirmo ser mayor de 16 años.
           </label>
         </div>
 

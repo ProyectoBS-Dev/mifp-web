@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
+
 import { useSemestreActivo } from '@/hooks/useUserSemesters'
 
 // ============================================
@@ -168,14 +168,12 @@ export function NewSemesterOnboarding({
                             onClick={() => toggleAsignatura(asig.id)}
                         >
                             <Checkbox
-                                id={asig.id}
                                 checked={selectedIds.has(asig.id)}
-                                onCheckedChange={() => toggleAsignatura(asig.id)}
                             />
-                            <Label htmlFor={asig.id} className="flex-1 cursor-pointer">
+                            <div className="flex-1">
                                 <p className="font-medium">{asig.nombre}</p>
                                 <p className="text-sm text-muted-foreground">{asig.codigo}</p>
-                            </Label>
+                            </div>
                             {asig.semestre_recomendado && (
                                 <Badge color="gray" className="text-xs">
                                     S{asig.semestre_recomendado}

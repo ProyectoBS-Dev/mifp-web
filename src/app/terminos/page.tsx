@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, ArrowUpRightIcon } from 'lucide-react'
+import { ObfuscatedEmail } from '@/components/ui/ObfuscatedEmail'
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
 
@@ -85,7 +86,7 @@ export default function TerminosPage() {
           
           {/* Fecha de actualización */}
           <p className="text-muted-foreground text-sm">
-            Última actualización: 28 de enero de 2026
+            Última actualización: 13 de febrero de 2026
           </p>
         </div>
       </div>
@@ -138,7 +139,7 @@ export default function TerminosPage() {
               <li>Notificarnos cualquier uso no autorizado de tu cuenta</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              Eres responsable de toda la actividad que ocurra bajo tu cuenta.
+              Eres responsable de toda la actividad que ocurra bajo tu cuenta. Al registrarte aceptas expresamente cumplir los requisitos anteriores.
             </p>
           </section>
 
@@ -259,21 +260,25 @@ export default function TerminosPage() {
           </section>
 
           <section className="mb-10">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">13. Contacto</h2>
+            <h2 className="text-xl font-semibold mb-4 text-foreground">13. Aviso legal</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Para cualquier consulta sobre estos Términos, puedes contactarnos en{' '}
-              <a href="mailto:contacto@mifp.dev" className="text-primary hover:underline">contacto@mifp.dev</a>.
+              Responsable legal y del tratamiento de datos:
+              <br />
+              Titular: Silvia Lopez y Benjamin Rios.
+              <br />
+              Domicilio/Contacto: Oviedo, Asturias, España.
+              <br />
+              Email: <ObfuscatedEmail user="contacto" domain="mifp" tld="dev" className="text-primary hover:underline" />.
             </p>
           </section>
 
           {/* Footer */}
           <div className="mt-12 pt-8 border-t border-border not-prose">
             <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-2 text-sm text-muted-foreground font-normal">
-              <span>© 2026 MiFP</span>
-              <span>·</span>
-              <Link href="/privacidad" className="hover:text-primary transition-colors">Privacidad</Link>
-              <span>·</span>
-              <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
+              <span>© 2026 MiFP - </span>
+              <Link href="/privacidad" className="flex items-center gap-1 hover:text-primary transition-colors">Privacidad<ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link>
+              <Link href="/blog" className="flex items-center gap-1 hover:text-primary transition-colors">Blog<ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link>
+              <Link href="/" className="flex items-center gap-1 hover:text-primary transition-colors">Inicio<ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link>
             </div>
           </div>
 

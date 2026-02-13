@@ -38,16 +38,6 @@ export default async function RegisterPage() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          Al crear una cuenta, aceptas nuestros{' '}
-          <Link href="/terminos" className="underline hover:text-primary">
-            Términos de Servicio
-          </Link>{' '}
-          y{' '}
-          <Link href="/privacidad" className="underline hover:text-primary">
-            Política de Privacidad
-          </Link>
-        </p>
       </div>
     </div>
   )

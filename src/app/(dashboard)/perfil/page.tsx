@@ -4,10 +4,30 @@ import { createClient } from '@/lib/supabase/server'
 import { getUser } from '@/lib/supabase/cached'
 import { ProfileCard } from '@/components/perfil/ProfileCard'
 import { AsignaturasCRUD } from '@/components/perfil/AsignaturasCRUD'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { InfoIcon, ArrowUpRightIcon } from 'lucide-react'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Perfil',
   description: 'Tu perfil de usuario',
+}
+
+function DisclaimerCard() {
+  return (
+    <Alert variant="info">
+      <InfoIcon className="h-4 w-4 text-vt-blue" />
+      <AlertTitle>¿Cómo uso esta página?</AlertTitle>
+      <AlertDescription className="space-y-2">
+        <p>
+          Aqui podrás agregar las <strong>asignaturas</strong> que estas cursando actualmente y las de semestres pasados. <strong>Selecciona</strong> el semestre deseado, busca la asignatura por nombre o código y agrégala (Añadir asignatura). 
+        </p>
+        <p>
+          En la pestaña <Link href="/notas" className="inline-flex items-center gap-1 text-primary hover:underline">Notas<ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link> podrás ver y editar tus notas.
+        </p>
+      </AlertDescription>
+    </Alert>
+  )
 }
 
 export default async function PerfilPage() {
@@ -71,6 +91,9 @@ export default async function PerfilPage() {
         profile={profile}
         grado={grado as { id: string; nombre: string; codigo: string } | null}
       />
+
+      {/* Disclaimer */}
+      <DisclaimerCard />
 
       {/* Gestión de Asignaturas */}
       {grado ? (

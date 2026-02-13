@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { Clock, Sparkles } from 'lucide-react'
 import type { Metadata } from 'next'
+import { ObfuscatedEmail } from '@/components/ui/ObfuscatedEmail'
 
 export const metadata: Metadata = {
 	title: 'Mantenimiento',
@@ -88,12 +89,12 @@ export default function Maintenance() {
 						<p className="text-xs sm:text-sm text-muted-foreground mb-2">
 							Si necesitas ayuda urgente, contacta con nosotros:
 						</p>
-						<a
-							href="mailto:contacto@mifp.dev"
+						<ObfuscatedEmail 
+							user="contacto" 
+							domain="mifp" 
+							tld="dev" 
 							className="text-sm sm:text-base text-vt-green hover:text-vt-green-light font-medium transition-colors break-all"
-						>
-							contacto@mifp.dev
-						</a>
+						/>
 					</div>
 				</div>
 

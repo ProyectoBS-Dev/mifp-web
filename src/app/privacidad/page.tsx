@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, ArrowUpRightIcon } from 'lucide-react'
+import { ObfuscatedEmail } from '@/components/ui/ObfuscatedEmail'
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
 
@@ -85,7 +86,7 @@ export default function PrivacidadPage() {
           
           {/* Fecha de actualización */}
           <p className="text-muted-foreground text-sm">
-            Última actualización: 20 de enero de 2026
+            Última actualización: 13 de febrero de 2026
           </p>
         </div>
       </div>
@@ -112,6 +113,7 @@ export default function PrivacidadPage() {
               <li><strong className="text-foreground">Datos académicos:</strong> Grado (DAM/DAW), asignaturas matriculadas, notas registradas</li>
               <li><strong className="text-foreground">Preferencias:</strong> Tema de la interfaz, configuración de notificaciones</li>
               <li><strong className="text-foreground">Datos de uso:</strong> Interacciones con la plataforma para mejorar la experiencia</li>
+              <li><strong className="text-foreground">Datos de terceros:</strong> Si te registras mediante Google o GitHub, recibimos tu email, nombre y avatar asociados a esas cuentas, conforme a sus propias políticas de privacidad.</li>
             </ul>
           </section>
 
@@ -145,6 +147,7 @@ export default function PrivacidadPage() {
             <ul className="list-disc list-inside space-y-2 text-muted-foreground">
               <li><strong className="text-foreground">Supabase:</strong> Almacenamiento de base de datos y autenticación</li>
               <li><strong className="text-foreground">Vercel:</strong> Alojamiento y despliegue de la aplicación</li>
+              <li><strong className="text-foreground">Cloudflare:</strong> Proveedor de seguridad y protección contra bots (Turnstile).</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
               Estos proveedores actúan como encargados del tratamiento y están obligados contractualmente 
@@ -153,11 +156,15 @@ export default function PrivacidadPage() {
           </section>
 
           <section className="mb-10">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">6. Transferencias internacionales</h2>
+            <h2 className="text-xl font-semibold mb-4 text-foreground">6. Alojamiento de datos y transferencias internacionales</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Algunos de nuestros proveedores pueden procesar datos fuera del Espacio Económico Europeo (EEE). 
-              En estos casos, nos aseguramos de que existan garantías adecuadas, como las Cláusulas 
-              Contractuales Tipo aprobadas por la Comisión Europea o decisiones de adecuación.
+              <strong>Base de datos principal:</strong> Tus datos personales (email, notas, progreso) se almacenan físicamente en Irlanda (Región eu-west-1), dentro del Espacio Económico Europeo (EEE), bajo la estricta protección del RGPD.
+            </p>
+            <p className="text-muted-foreground leading-relaxed mt-4">
+              <strong>Alojamiento de la aplicación:</strong> La ejecución del código de MiFP se realiza en servidores de Vercel ubicados mayoritariamente en la Unión Europea (Francia y Alemania).
+            </p>
+            <p className="text-muted-foreground leading-relaxed mt-4">
+              En los casos donde se realice procesamiento técnico en Reino Unido (región de Londres), nos amparamos en la Decisión de Adecuación de la Comisión Europea (adoptada el 28 de junio de 2021), la cual reconoce que Reino Unido ofrece un nivel de protección de datos equivalente al de la Unión Europea, garantizando la seguridad de tu información.
             </p>
           </section>
 
@@ -179,7 +186,7 @@ export default function PrivacidadPage() {
               <li><strong className="text-foreground">Acceso:</strong> Consultar qué datos tenemos sobre ti</li>
               <li><strong className="text-foreground">Rectificación:</strong> Corregir datos inexactos desde tu perfil</li>
               <li><strong className="text-foreground">Supresión:</strong> Eliminar tu cuenta y todos tus datos</li>
-              <li><strong className="text-foreground">Portabilidad:</strong> Solicitar una copia de tus datos contactándonos por email</li>
+              <li><strong className="text-foreground">Portabilidad:</strong> Solicitar una copia de tus datos contactándonos a <ObfuscatedEmail user="contacto" domain="mifp" tld="dev" className="text-primary hover:underline">nuestro correo</ObfuscatedEmail></li>
               <li><strong className="text-foreground">Oposición:</strong> Oponerte a determinados tratamientos</li>
               <li><strong className="text-foreground">Limitación:</strong> Solicitar la limitación del tratamiento en ciertos casos</li>
             </ul>
@@ -202,6 +209,7 @@ export default function PrivacidadPage() {
             <ul className="list-disc list-inside space-y-2 text-muted-foreground mt-4">
               <li><strong className="text-foreground">Sesión:</strong> Para mantener tu sesión iniciada</li>
               <li><strong className="text-foreground">Preferencias:</strong> Para recordar tu tema (claro/oscuro)</li>
+              <li><strong className="text-foreground">Seguridad:</strong> Utilizamos Cloudflare Turnstile para proteger el registro contra bots. Esta herramienta puede analizar tu comportamiento de navegación de forma anónima para distinguir humanos de robots, siendo estrictamente necesaria para la seguridad.</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
               No utilizamos cookies de terceros para publicidad ni seguimiento.
@@ -233,13 +241,10 @@ export default function PrivacidadPage() {
           {/* Footer de la política */}
           <div className="mt-12 pt-8 border-t border-border not-prose">
             <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-2 text-sm text-muted-foreground font-normal">
-              <span>© 2026 MiFP</span>
-              <span>·</span>
-              <Link href="/terminos" className="hover:text-primary transition-colors">Términos</Link>
-              <span>·</span>
-              <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
-              <span>·</span>
-              <a href="mailto:contacto@mifp.dev" className="hover:text-primary transition-colors">Contacto</a>
+              <span>© 2026 MiFP - </span>
+              <Link href="/terminos" className="flex items-center gap-1 hover:text-primary transition-colors">Términos<ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link>
+              <Link href="/blog" className="flex items-center gap-1 hover:text-primary transition-colors">Blog<ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link>
+              <Link href="/" className="flex items-center gap-1 hover:text-primary transition-colors">Inicio<ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link>
             </div>
           </div>
 

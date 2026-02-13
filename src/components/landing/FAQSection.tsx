@@ -97,12 +97,12 @@ const faqs: FAQItem[] = [
 
 // Quick links for the visual grid
 const quickLinks = [
-  { icon: Settings, label: 'Ajustes', href: '/ajustes', color: 'text-vt-purple', tooltip: 'Personaliza tu experiencia y preferencias' },
-  { icon: Layout, label: 'Dashboard', href: '/dashboard', color: 'text-vt-green', tooltip: 'Tu centro de control académico' },
-  { icon: BarChart3, label: 'Notas', href: '/notas', color: 'text-vt-yellow', tooltip: 'Consulta y calcula tus calificaciones' },
-  { icon: FolderOpen, label: 'Recursos', href: '/recursos', color: 'text-vt-blue', tooltip: 'Accede a materiales de estudio' },
-  { icon: MessageCircle, label: 'Feedback', href: '/ajustes', color: 'text-vt-green', tooltip: 'Envíanos tus sugerencias y comentarios' },
-  { icon: Scale, label: 'Legal', href: '/terminos', color: 'text-muted-foreground', tooltip: 'Términos y condiciones de uso' },
+  { icon: Settings, label: 'Ajustes', href: '/ajustes', color: 'text-vt-purple/80', tooltip: 'Personaliza tu experiencia y preferencias' },
+  { icon: Layout, label: 'Dashboard', href: '/dashboard', color: 'text-vt-blue/80', tooltip: 'Tu centro de control académico' },
+  { icon: BarChart3, label: 'Notas', href: '/notas', color: 'text-vt-yellow/80', tooltip: 'Consulta y calcula tus calificaciones' },
+  { icon: FolderOpen, label: 'Recursos', href: '/recursos', color: 'text-vt-green/80', tooltip: 'Accede a materiales de estudio' },
+  { icon: MessageCircle, label: 'Feedback', href: '/ajustes', color: 'text-muted-foreground/80', tooltip: 'Envíanos tus sugerencias y comentarios' },
+  { icon: Scale, label: 'Legal', href: '/terminos', color: 'text-vt-red/80', tooltip: 'Términos y condiciones de uso' },
 ]
 
 export function FAQSection() {

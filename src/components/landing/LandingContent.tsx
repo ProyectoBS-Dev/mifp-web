@@ -459,7 +459,7 @@ export function LandingContent({ isLoggedIn }: LandingContentProps) {
       </ScrollReveal>
 
       {/* CTA Section - Premium */}
-      <ScrollReveal delay={0.2}>
+      <ScrollReveal delay={0.3}>
         <section className="py-24 sm:py-32 relative overflow-hidden">
           {/* Background gradient layers */}
           <div className="absolute inset-0 bg-gradient-to-br from-vt-green/10 via-transparent to-vt-blue/10" />

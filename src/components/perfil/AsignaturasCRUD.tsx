@@ -67,7 +67,6 @@ interface AsignaturasCRUDProps {
 export function AsignaturasCRUD({
     userAsignaturas: initialUserAsignaturas,
     availableAsignaturas,
-    gradoId
 }: AsignaturasCRUDProps) {
     const router = useRouter()
     const supabase = createClient()

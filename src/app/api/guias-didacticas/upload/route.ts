@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { verifyAdmin } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
 import { withCsrfProtection } from '@/lib/csrf'
@@ -13,18 +12,20 @@ function isPDF(buffer: ArrayBuffer): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  // ✅ Rate limiting (admin: 20 req/min)
-  const rateLimitError = await withRateLimit(request, rateLimiters?.admin || null)
+  // ✅ Rate limiting (user: 60 req/min)
+  const rateLimitError = await withRateLimit(request, rateLimiters?.user || null)
   if (rateLimitError) return rateLimitError
 
   // ✅ CSRF protection
   const csrfError = withCsrfProtection(request)
   if (csrfError) return csrfError
 
-  // Verificar autenticación y rol admin
-  const auth = await verifyAdmin()
-  if ('error' in auth) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status })
+  // Verificar autenticación
+  const supabase = await createClient()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
   }
 
   try {
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'El archivo no es un PDF válido' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    // supabase ya creado arriba para auth
 
     // Obtener semestre activo
     const { data: semestre } = await supabase
@@ -117,7 +118,7 @@ export async function POST(request: NextRequest) {
       .insert({
         asignatura_id: asignaturaId,
         semestre_id: semestre.id,
-        subido_por: auth.user.id,
+        subido_por: user.id,
         archivo_path: fileName,
         estado: 'pendiente',
         procesada: false

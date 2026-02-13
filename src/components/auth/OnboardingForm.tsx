@@ -248,7 +248,6 @@ export function OnboardingForm() {
                   >
                     <Checkbox
                       checked={selectedAsignaturas.includes(asignatura.id)}
-                      onCheckedChange={() => handleAsignaturaToggle(asignatura.id)}
                     />
                     <div className="flex-1">
                       <Label className="font-medium cursor-pointer">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Info, Building2, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react'
+import { Info, Building2, ChevronDown, ChevronRight, Paperclip, ClipboardPen, ArrowUpRightIcon, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { getGradeColor } from '@/lib/grades'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,6 +9,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
 import { NotaInput } from '@/components/ui/nota-input'
 import { type FCTData } from '@/hooks/useNotas'
+import Link from 'next/link'
 
 // ============================================
 // TIPOS
@@ -61,8 +62,8 @@ function FCTCard({
 
   return (
     <Card className={cn(
-      'border-2',
-      puedeHacerFCT ? 'border-emerald-500/30' : 'border-muted'
+      'transition-all',
+      puedeHacerFCT ? 'border-emerald-500/30' : ''
     )}>
       <CardHeader
         className="cursor-pointer hover:bg-muted/50 transition-colors py-4"
@@ -87,7 +88,10 @@ function FCTCard({
           </div>
         </div>
       </CardHeader>
-      {!isCollapsed && (
+      <div className={cn(
+        'overflow-hidden transition-all duration-200',
+        isCollapsed ? 'max-h-0 opacity-0' : 'max-h-96 opacity-100'
+      )}>
         <CardContent className="pt-0 space-y-4">
           <div className="text-sm text-muted-foreground">
             <p>10% de la nota final de cada módulo.</p>
@@ -123,7 +127,7 @@ function FCTCard({
             </div>
           )}
         </CardContent>
-      )}
+      </div>
     </Card>
   )
 }
@@ -153,7 +157,10 @@ function SistemaEvaluacionCard() {
           )}
         </div>
       </CardHeader>
-      {!isCollapsed && (
+      <div className={cn(
+        'overflow-hidden transition-all duration-200',
+        isCollapsed ? 'max-h-0 opacity-0' : 'max-h-96 opacity-100'
+      )}>
         <CardContent className="pt-0">
           <div className="grid gap-2 text-sm text-muted-foreground">
             <p><strong>Nota por RA</strong> = (Media PACs × 40%) + (Examen × 60%)</p>
@@ -170,7 +177,7 @@ function SistemaEvaluacionCard() {
             </div>
           </div>
         </CardContent>
-      )}
+      </div>
     </Card>
   )
 }
@@ -181,18 +188,15 @@ function SistemaEvaluacionCard() {
 
 function DisclaimerCard() {
   return (
-    <Alert variant="warning">
-      <AlertTriangle className="h-4 w-4" />
-      <AlertTitle>Aviso importante sobre los cálculos</AlertTitle>
+    <Alert variant="info">
+      <Paperclip className="h-4 w-4" />
+      <AlertTitle>Información importante sobre los cálculos</AlertTitle>
       <AlertDescription className="space-y-2">
         <p>
-          Esta herramienta es una <strong>estimación</strong> basada en la información proporcionada.
-          Los cálculos pueden contener errores o no reflejar exactamente el sistema de evaluación
-          de tu centro.
+          Esta herramienta realiza una <strong>estimación</strong> basada en la información proporcionada. Recuerda que debes <strong>verificar tus notas oficiales</strong> con tu centro educativo.
         </p>
         <p>
-          <strong>Siempre verifica</strong> tus notas oficiales con tu centro educativo y consulta
-          la guía didáctica de cada asignatura para confirmar los criterios de evaluación.
+          Si tienes alguna duda, consulta nuestros <Link className="text-vt-blue hover:underline" href="/terminos">Términos y Condiciones</Link>.
         </p>
       </AlertDescription>
     </Alert>
@@ -211,6 +215,17 @@ export function NotasDashboard({
   isFCTPending,
   isFCTSuccess
 }: NotasDashboardProps) {
+  const [showCallToAction, setShowCallToAction] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return localStorage.getItem('hideNotasCallToAction') !== 'true'
+  })
+
+  // Función para cerrar y guardar la preferencia
+  const handleCloseCallToAction = () => {
+    localStorage.setItem('hideNotasCallToAction', 'true')
+    setShowCallToAction(false)
+  }
+
   const progressPercent = stats.total > 0
     ? Math.round((stats.media ?? 0) * 10)
     : 0
@@ -276,20 +291,36 @@ export function NotasDashboard({
         />
       </div>
 
+      {/* Call to action */}
+      {showCallToAction && (
+        <Card className="relative">
+          <button
+            onClick={handleCloseCallToAction}
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Cerrar"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <CardContent className="pt-6">
+            <div className="text-muted-foreground">
+              <p className="flex items-center gap-2 text-md font-semibold mb-3 text-foreground">
+                <ClipboardPen className="h-4 w-4 text-muted-foreground" />
+                Guía rápida de uso de esta sección
+              </p>
+              <ul className="text-sm list-disc list-inside space-y-2 text-muted-foreground">
+                <li>En la pestaña de <Link href="/perfil" className="inline-flex items-center gap-1 text-primary hover:underline">Perfil<ArrowUpRightIcon className="h-4 w-4 opacity-50" /></Link> añade y escoge tus asignaturas para cada semestre.</li>
+                <li>En esta sección puedes seleccionar el semestre que quieras visualizar (en el menu de la izquierda).</li>
+                <li>Editar las notas de cada asignatura (PACs y la nota de Examen Final Presencial).</li>
+                <li>En historial podras ver tus notas de semestres anteriores.</li>
+                <li><strong>Nota:</strong> el semestre activo es el semestre que se muestra por defecto.</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Disclaimer */}
       <DisclaimerCard />
-
-      {/* Call to action */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center text-muted-foreground">
-            <p className="text-lg mb-2">Selecciona una asignatura</p>
-            <p className="text-sm">
-              Elige una asignatura en el panel lateral para ver y editar sus notas detalladas.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

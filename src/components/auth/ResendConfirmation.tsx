@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Turnstile } from "@/components/ui/Turnstile";
 import { AlertCircle, CheckCircle2, Mail } from "lucide-react";
 
 export function ResendConfirmation({
@@ -14,12 +15,37 @@ export function ResendConfirmation({
 }) {
   const [email, setEmail] = useState(initialEmail || "");
   const [isLoading, setIsLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
 
+  const handleCaptchaVerify = useCallback((token: string) => {
+    setCaptchaToken(token);
+  }, []);
+
+  const handleCaptchaError = useCallback(() => {
+    setCaptchaToken(null);
+    setMessage({
+      type: "error",
+      text: "Error al verificar CAPTCHA. Por favor, recarga la página.",
+    });
+  }, []);
+
+  const handleCaptchaExpire = useCallback(() => {
+    setCaptchaToken(null);
+  }, []);
+
   const handleResend = async () => {
+    if (!captchaToken) {
+      setMessage({
+        type: "error",
+        text: "Por favor, completa la verificación de seguridad",
+      });
+      return;
+    }
+
     if (!email) {
       setMessage({
         type: "error",
@@ -75,6 +101,7 @@ export function ResendConfirmation({
         email: normalizedEmail,
         options: {
           emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+          captchaToken: captchaToken,
         },
       });
 
@@ -114,9 +141,17 @@ export function ResendConfirmation({
         />
       </div>
 
+      <div className="flex justify-center">
+        <Turnstile
+          onVerify={handleCaptchaVerify}
+          onError={handleCaptchaError}
+          onExpire={handleCaptchaExpire}
+        />
+      </div>
+
       <Button
         onClick={handleResend}
-        disabled={isLoading || !email}
+        disabled={isLoading || !email || !captchaToken}
         className="w-full"
       >
         {isLoading ? (

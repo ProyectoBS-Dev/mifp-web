@@ -12,11 +12,11 @@ import { withCsrfProtection } from '@/lib/csrf'
 import { logAuditEvent } from '@/lib/audit'
 
 export async function DELETE(request: NextRequest) {
-  // ✅ Rate limiting (critical: 5 req/min)
+  // Rate limiting (critical: 5 req/min)
   const rateLimitError = await withRateLimit(request, rateLimiters?.critical || null)
   if (rateLimitError) return rateLimitError
 
-  // ✅ CSRF protection
+  // CSRF protection
   const csrfError = withCsrfProtection(request)
   if (csrfError) return csrfError
 
@@ -44,7 +44,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    // ✅ Audit logging
+    // Audit logging DESPUÉS del delete (solo se registra si el borrado fue exitoso)
     await logAuditEvent({
       action: 'account.delete',
       userId: user.id,

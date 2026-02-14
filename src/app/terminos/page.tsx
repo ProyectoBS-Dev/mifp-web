@@ -180,7 +180,7 @@ export default function TerminosPage() {
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground mt-4">
               <li>Mantenimiento programado o de emergencia</li>
-              <li>Problemas técnicos fuera de nuestro control (caídas de servidores, fallos de red).</li>
+              <li>Problemas técnicos fuera de nuestro control (caídas de servidores, fallos de red)</li>
               <li>Actualizaciones de la plataforma</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
@@ -194,9 +194,10 @@ export default function TerminosPage() {
               El servicio se proporciona &quot;tal cual&quot; (as is) y &quot;según disponibilidad&quot;. En la medida máxima permitida por la ley:
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground mt-4">
-              <li>No garantizamos que el servicio esté libre de errores (bugs).</li>
-              <li>No somos responsables de decisiones académicas (ej. fechas de entrega perdidas) basadas en la información mostrada en la app.</li>
-              <li>No nos hacemos responsables de pérdidas de datos por causas ajenas a nuestra voluntad o fuerza mayor.</li>
+              <li>No garantizamos que el servicio esté libre de errores (bugs)</li>
+              <li>No somos responsables de decisiones académicas tomadas en base a la información mostrada en la app, ni de las consecuencias derivadas de la misma (ej. fechas de entrega perdidas, notas erróneas, etc.)</li>
+              <li>No somos responsables de los datos introducidos por el usuario, y por lo tanto no nos hacemos responsables de los errores que estos puedan contener</li>
+              <li>No nos hacemos responsables de pérdidas de datos por causas ajenas a nuestra voluntad o fuerza mayor</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
               Proporcionamos una herramienta de apoyo, no sustituye la información oficial de tu centro educativo.
@@ -210,12 +211,12 @@ export default function TerminosPage() {
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground mt-4">
               <li>Incumples estos Términos y Condiciones</li>
-              <li>Realizas un uso abusivo, fraudulento o que ponga en riesgo la seguridad de la plataforma.</li>
-              <li>Tu conducta perjudica a otros usuarios.</li>
+              <li>Realizas un uso abusivo, fraudulento o que ponga en riesgo la seguridad de la plataforma</li>
+              <li>Tu conducta perjudica a otros usuarios</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
               Por tu parte, puedes cancelar tu cuenta y borrar tus datos en cualquier momento desde la sección de{' '}
-              <Link href="/ajustes" className="text-primary hover:underline">Ajustes</Link>.
+              <Link href="/ajustes" className="text-primary hover:underline">Ajustes</Link>
             </p>
           </section>
 

@@ -41,7 +41,7 @@ const RECHAZO_MOTIVOS = [
   'Otro motivo',
 ]
 
-export function GDValidationForm({ gdId, asignaturaId, semestreId }: GDValidationFormProps) {
+export function GDValidationForm({ gdId, asignaturaId: _asignaturaId, semestreId: _semestreId }: GDValidationFormProps) {
   const router = useRouter()
   const [isExtracting, setIsExtracting] = useState(false)
   const [isValidating, setIsValidating] = useState(false)
@@ -128,20 +128,19 @@ export function GDValidationForm({ gdId, asignaturaId, semestreId }: GDValidatio
     setError(null)
 
     try {
-      const supabase = createClient()
       const motivo = rechazoMotivo === 'Otro motivo' ? rechazoOtro : rechazoMotivo
 
-      // Marcar como rechazada
-      const { error: updateError } = await supabase
-        .from('guias_didacticas')
-        .update({
-          estado: 'rechazada',
-          motivo_rechazo: motivo,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', gdId)
+      const response = await fetch('/api/admin/guias-didacticas/reject', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
+        body: JSON.stringify({ gdId, motivo }),
+      })
 
-      if (updateError) throw updateError
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al rechazar')
+      }
 
       router.push('/admin/guias-didacticas')
       router.refresh()

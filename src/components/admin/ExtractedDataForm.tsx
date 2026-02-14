@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   CheckCircle2,
+  XCircle,
+  RotateCcw,
   Loader2,
   ChevronDown,
   ChevronUp,
@@ -25,6 +27,19 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { createClient } from '@/lib/supabase/client'
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -33,6 +48,15 @@ import {
 } from '@/components/ui/select'
 import type { ExtractedGDData, ExtractedRA, ExtractedPAC, ExtractedVT } from '@/types/gd'
 import { useCsrfToken } from '@/hooks/useCsrfToken'
+
+const RECHAZO_MOTIVOS = [
+  'El archivo no es una Guía Didáctica válida',
+  'El archivo corresponde a otro semestre',
+  'El archivo está corrupto o ilegible',
+  'La asignatura no coincide',
+  'Los datos extraídos son incorrectos',
+  'Otro motivo',
+]
 
 interface ExtractedDataFormProps {
   gdId: string
@@ -43,6 +67,10 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
   const router = useRouter()
   const [data, setData] = useState<ExtractedGDData>(initialData)
   const [isValidating, setIsValidating] = useState(false)
+  const [isAborting, setIsAborting] = useState(false)
+  const [isRejecting, setIsRejecting] = useState(false)
+  const [rechazoMotivo, setRechazoMotivo] = useState('')
+  const [rechazoOtro, setRechazoOtro] = useState('')
   const [error, setError] = useState<string | null>(null)
   const { csrfHeaders } = useCsrfToken()
   const [openSections, setOpenSections] = useState({
@@ -121,6 +149,62 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
       setError(err instanceof Error ? err.message : 'Error desconocido')
     } finally {
       setIsValidating(false)
+    }
+  }
+
+  // Abortar extracción: devolver a pendiente
+  const handleAbort = async () => {
+    setIsAborting(true)
+    setError(null)
+
+    try {
+      const supabase = createClient()
+
+      const { error: updateError } = await supabase
+        .from('guias_didacticas')
+        .update({
+          estado: 'pendiente',
+          datos_extraidos: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', gdId)
+
+      if (updateError) throw updateError
+
+      router.refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al abortar')
+    } finally {
+      setIsAborting(false)
+    }
+  }
+
+  // Rechazar GD
+  const handleReject = async () => {
+    setIsRejecting(true)
+    setError(null)
+
+    try {
+      const motivo = rechazoMotivo === 'Otro motivo' ? rechazoOtro : rechazoMotivo
+
+      const response = await fetch('/api/admin/guias-didacticas/reject', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
+        body: JSON.stringify({ gdId, motivo }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al rechazar')
+      }
+
+      router.push('/admin/guias-didacticas')
+      router.refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al rechazar')
+    } finally {
+      setIsRejecting(false)
     }
   }
 
@@ -466,8 +550,108 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
         </Card>
       </Collapsible>
 
-      {/* Botón validar */}
-      <div className="sticky bottom-4 flex justify-end">
+      {/* Botones de acción */}
+      <div className="sticky bottom-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          {/* Abortar: devolver a pendiente */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" size="lg">
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Devolver a Pendiente
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>🔄 Devolver a Pendiente</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Se borrarán los datos extraídos y la GD volverá al estado pendiente
+                  para ser extraída de nuevo.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleAbort}
+                  disabled={isAborting}
+                >
+                  {isAborting ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                  )}
+                  Confirmar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          {/* Rechazar GD */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="lg">
+                <XCircle className="h-4 w-4 mr-2" />
+                Rechazar GD
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>⚠️ Rechazar Guía Didáctica</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta acción marcará la GD como rechazada. El usuario será notificado.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label>Motivo del rechazo *</Label>
+                  <Select value={rechazoMotivo} onValueChange={setRechazoMotivo}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona un motivo..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {RECHAZO_MOTIVOS.map((motivo) => (
+                        <SelectItem key={motivo} value={motivo}>
+                          {motivo}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {rechazoMotivo === 'Otro motivo' && (
+                  <div className="space-y-2">
+                    <Label>Especifica el motivo</Label>
+                    <Textarea
+                      value={rechazoOtro}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRechazoOtro(e.target.value)}
+                      placeholder="Describe el motivo del rechazo..."
+                      rows={3}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleReject}
+                  disabled={!rechazoMotivo || isRejecting}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  {isRejecting ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <XCircle className="h-4 w-4 mr-2" />
+                  )}
+                  Confirmar Rechazo
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+
+        {/* Validar y guardar */}
         <Button
           onClick={handleValidate}
           disabled={isValidating || data.ras.length === 0}

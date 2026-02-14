@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 
 import Link from 'next/link'
@@ -36,6 +37,7 @@ interface GDDetail {
   archivo_path: string | null
   motivo_rechazo: string | null
   datos_extraidos: ExtractedGDData | null
+  subido_por: string | null
   asignatura: {
     id: string
     nombre: string
@@ -54,12 +56,12 @@ interface GDDetail {
 }
 
 async function getGD(id: string): Promise<GDDetail | null> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data } = await supabase
     .from('guias_didacticas')
     .select(`
-      id, created_at, estado, procesada, archivo_path, motivo_rechazo, datos_extraidos,
+      id, created_at, estado, procesada, archivo_path, motivo_rechazo, datos_extraidos, subido_por,
       asignatura:asignaturas(id, nombre, codigo),
       semestre:semestres(id, nombre),
       uploader:users!guias_didacticas_subido_por_fkey(id, full_name, email, avatar_url)
@@ -149,7 +151,10 @@ export default async function ValidarGDPage({
             </CardContent>
           </Card>
 
-          <ExtractedDataForm gdId={gd.id} initialData={gd.datos_extraidos} />
+          <ExtractedDataForm
+            gdId={gd.id}
+            initialData={gd.datos_extraidos}
+          />
         </div>
       ) : (
         <div className="grid md:grid-cols-3 gap-6">
@@ -254,7 +259,7 @@ export default async function ValidarGDPage({
             </Card>
 
             {/* Acciones */}
-            {gd.estado === 'pendiente' && !gd.datos_extraidos && (
+            {(gd.estado === 'pendiente' || gd.estado === 'extrayendo' || gd.estado === 'rechazada') && !gd.datos_extraidos && (
               <Card>
                 <CardHeader>
                   <CardTitle>Acciones</CardTitle>

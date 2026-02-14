@@ -110,39 +110,41 @@ export default function PrivacidadPage() {
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground">
               <li><strong className="text-foreground">Datos de cuenta:</strong> Email, nombre y avatar (opcional)</li>
-              <li><strong className="text-foreground">Datos académicos:</strong> Grado (DAM/DAW), asignaturas matriculadas, notas registradas</li>
+              <li><strong className="text-foreground">Datos académicos:</strong> Grado (DAM/DAW), asignaturas matriculadas y notas registradas manualmente</li>
               <li><strong className="text-foreground">Preferencias:</strong> Tema de la interfaz, configuración de notificaciones</li>
               <li><strong className="text-foreground">Datos de uso:</strong> Interacciones con la plataforma para mejorar la experiencia</li>
-              <li><strong className="text-foreground">Datos de terceros:</strong> Si te registras mediante Google o GitHub, recibimos tu email, nombre y avatar asociados a esas cuentas, conforme a sus propias políticas de privacidad.</li>
+              <li><strong className="text-foreground">Datos de terceros:</strong> Si utilizas Google o GitHub para registrarte, recibimos tu email, nombre y avatar de estas fuentes, conforme a sus propias políticas de privacidad</li>
             </ul>
           </section>
 
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">3. Finalidad del tratamiento</h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
-              Utilizamos tus datos para:
+              Utilizamos tus datos exclusivamente para:
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-              <li>Gestionar tu cuenta y proporcionarte acceso a la plataforma</li>
-              <li>Personalizar tu experiencia mostrando información relevante a tu grado y asignaturas</li>
+              <li>Gestionar tu usuario y darte acceso a la herramienta</li>
+              <li>Personalizar la interfaz según tu grado y asignaturas</li>
               <li>Enviarte notificaciones sobre PACs, videotutorías y novedades (si las tienes activadas)</li>
-              <li>Mejorar nuestros servicios basándonos en el uso general de la plataforma</li>
+              <li>Mantenimiento y mejora técnica de la web</li>
             </ul>
+            <p className="text-muted-foreground leading-relaxed mt-4">
+              Decisiones automatizadas: No tomamos decisiones automatizadas con tus datos que puedan tener efectos jurídicos o significativos para ti (como la creación de perfiles de rendimiento académico automáticos sin intervención humana).
+            </p>
           </section>
 
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">4. Base legal</h2>
             <p className="text-muted-foreground leading-relaxed">
               El tratamiento de tus datos se basa en tu <strong className="text-foreground">consentimiento</strong>, 
-              que otorgas al registrarte en la plataforma y aceptar estos términos. Puedes retirar 
-              tu consentimiento en cualquier momento eliminando tu cuenta desde la sección de Ajustes.
+              que otorgas al registrarte en la plataforma y aceptar estos términos. Puedes retirar este consentimiento y borrar tu cuenta en cualquier momento desde la sección de Ajustes.
             </p>
           </section>
 
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">5. Destinatarios de los datos</h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
-              Para el funcionamiento de la plataforma, compartimos datos con los siguientes proveedores de servicios:
+              Para el funcionamiento de la plataforma, utilizamos proveedores técnicos de máxima confianza (encargados del tratamiento):
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground">
               <li><strong className="text-foreground">Supabase:</strong> Almacenamiento de base de datos y autenticación</li>
@@ -150,30 +152,27 @@ export default function PrivacidadPage() {
               <li><strong className="text-foreground">Cloudflare:</strong> Proveedor de seguridad y protección contra bots (Turnstile).</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              Estos proveedores actúan como encargados del tratamiento y están obligados contractualmente 
-              a proteger tus datos conforme al RGPD.
+              Todos ellos cumplen con el RGPD y procesan los datos bajo contrato de confidencialidad. No vendemos ni cedemos tus datos a terceros con fines comerciales.
             </p>
           </section>
 
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">6. Alojamiento de datos y transferencias internacionales</h2>
             <p className="text-muted-foreground leading-relaxed">
-              <strong>Base de datos principal:</strong> Tus datos personales (email, notas, progreso) se almacenan físicamente en Irlanda (Región eu-west-1), dentro del Espacio Económico Europeo (EEE), bajo la estricta protección del RGPD.
+              <strong>Persistencia de datos (Base de datos):</strong> Tus datos personales, notas y progreso académico se almacenan físicamente en Irlanda (Región eu-west-1), dentro del Espacio Económico Europeo (EEE).
             </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              <strong>Alojamiento de la aplicación:</strong> La ejecución del código de MiFP se realiza en servidores de Vercel ubicados mayoritariamente en la Unión Europea (Francia y Alemania).
+              <strong>Procesamiento (Aplicación):</strong> El código y la lógica de MiFP se ejecutan exclusivamente en servidores situados en Frankfurt, Alemania (Región eu-central-1).
             </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              En los casos donde se realice procesamiento técnico en Reino Unido (región de Londres), nos amparamos en la Decisión de Adecuación de la Comisión Europea (adoptada el 28 de junio de 2021), la cual reconoce que Reino Unido ofrece un nivel de protección de datos equivalente al de la Unión Europea, garantizando la seguridad de tu información.
+              Esta arquitectura asegura que operamos bajo la protección del RGPD, sin transferencias internacionales fuera del marco de seguridad europeo.
             </p>
           </section>
 
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">7. Conservación de datos</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Conservamos tus datos mientras tu cuenta esté activa. Si decides eliminar tu cuenta, 
-              todos tus datos personales serán eliminados permanentemente de nuestros sistemas 
-              de forma inmediata.
+              Conservamos tus datos solo mientras tu cuenta esté activa. Si pulsas el botón "Eliminar cuenta" en Ajustes, tus datos personales se borrarán de forma <strong className="text-foreground">inmediata e irreversible</strong> de nuestros sistemas.
             </p>
           </section>
 
@@ -184,15 +183,11 @@ export default function PrivacidadPage() {
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground">
               <li><strong className="text-foreground">Acceso:</strong> Consultar qué datos tenemos sobre ti</li>
-              <li><strong className="text-foreground">Rectificación:</strong> Corregir datos inexactos desde tu perfil</li>
+              <li><strong className="text-foreground">Rectificación:</strong> Corregir datos inexactos directamente desde tu perfil</li>
               <li><strong className="text-foreground">Supresión:</strong> Eliminar tu cuenta y todos tus datos</li>
-              <li><strong className="text-foreground">Portabilidad:</strong> Solicitar una copia de tus datos contactándonos a <ObfuscatedEmail user="contacto" domain="mifp" tld="dev" className="text-primary hover:underline">nuestro correo</ObfuscatedEmail></li>
-              <li><strong className="text-foreground">Oposición:</strong> Oponerte a determinados tratamientos</li>
-              <li><strong className="text-foreground">Limitación:</strong> Solicitar la limitación del tratamiento en ciertos casos</li>
+              <li><strong className="text-foreground">Portabilidad:</strong> Solicitar una copia de tus datos contactándonos a <ObfuscatedEmail user="contacto" domain="mifp" tld="dev" className="text-primary hover:underline">contacto@mifp.dev</ObfuscatedEmail></li>
+              <li><strong className="text-foreground">Oposición y limitación:</strong> Oponerte a determinados tratamientos o solicitar su limitación</li>
             </ul>
-            <p className="text-muted-foreground leading-relaxed mt-4">
-              Puedes ejercer estos derechos desde la sección de <Link href="/ajustes" className="text-primary hover:underline">Ajustes</Link> de tu cuenta.
-            </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
               Si consideras que el tratamiento de tus datos vulnera la normativa, tienes derecho a presentar 
               una reclamación ante la <strong className="text-foreground">Agencia Española de Protección de Datos (AEPD)</strong> en{' '}
@@ -209,10 +204,10 @@ export default function PrivacidadPage() {
             <ul className="list-disc list-inside space-y-2 text-muted-foreground mt-4">
               <li><strong className="text-foreground">Sesión:</strong> Para mantener tu sesión iniciada</li>
               <li><strong className="text-foreground">Preferencias:</strong> Para recordar tu tema (claro/oscuro)</li>
-              <li><strong className="text-foreground">Seguridad:</strong> Utilizamos Cloudflare Turnstile para proteger el registro contra bots. Esta herramienta puede analizar tu comportamiento de navegación de forma anónima para distinguir humanos de robots, siendo estrictamente necesaria para la seguridad.</li>
+              <li><strong className="text-foreground">Seguridad:</strong> Utilizamos Cloudflare Turnstile para proteger el registro contra ataques automatizados. Esta herramienta analiza parámetros técnicos de forma anónima para distinguir humanos de robots.</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              No utilizamos cookies de terceros para publicidad ni seguimiento.
+              No utilizamos cookies de terceros para publicidad, rastreo o analítica comercial.
             </p>
           </section>
 
@@ -222,9 +217,8 @@ export default function PrivacidadPage() {
               Protegemos tus datos mediante:
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground mt-4">
-              <li>Conexiones seguras (HTTPS) en toda la plataforma</li>
-              <li>Almacenamiento en servidores de Supabase con encriptación</li>
-              <li>Autenticación segura para acceder a tu cuenta</li>
+              <li>Cifrado SSL/TLS (HTTPS) en todas las comunicaciones</li>
+              <li>Almacenamiento encriptado en reposo en servidores de Supabase</li>
               <li>Acceso restringido a los datos solo al personal autorizado</li>
             </ul>
           </section>
@@ -232,10 +226,20 @@ export default function PrivacidadPage() {
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">11. Modificaciones</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Podemos actualizar esta política ocasionalmente. Te notificaremos de cualquier cambio 
-              significativo a través de la plataforma. Te recomendamos revisar esta página 
-              periódicamente.
+              Podemos actualizar esta política ocasionalmente para reflejar cambios técnicos o legales. Te notificaremos de cualquier cambio significativo a través de la plataforma. Sin embargo, recomendamos revisar esta página periódicamente.
             </p>
+          </section>
+
+          <section className="mb-10">
+            <h2 className="text-xl font-semibold mb-4 text-foreground">12. Aviso legal e Identificación</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              En cumplimiento del deber de información, se facilitan los datos de los responsables de la plataforma:
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-muted-foreground mt-4">
+              <li>Titulares: Silvia Lopez y Benjamin Rios.</li>
+              <li>Domicilio/Contacto: Oviedo, Asturias, España.</li>
+              <li>Email: <ObfuscatedEmail user="contacto" domain="mifp" tld="dev" className="text-primary hover:underline" />.</li>
+            </ul>
           </section>
 
           {/* Footer de la política */}

@@ -40,7 +40,7 @@ export async function logAuditEvent(
     const adminClient = createAdminClient()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (adminClient as any).from('audit_logs').insert({
+    const { error } = await (adminClient as any).from('audit_logs').insert({
       action: event.action,
       user_id: event.userId,
       resource_type: event.resourceType || null,
@@ -48,8 +48,12 @@ export async function logAuditEvent(
       ip_address: getClientIp(request),
       metadata: event.metadata || {},
     })
-  } catch (error) {
+
+    if (error) {
+      console.error('[Audit] Error registrando evento:', error)
+    }
+  } catch (err) {
     // Nunca fallar por audit logging - solo loguear
-    console.error('[Audit] Error registrando evento:', error)
+    console.error('[Audit] Error inesperado:', err)
   }
 }

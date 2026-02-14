@@ -1,7 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, ArrowUpRightIcon } from 'lucide-react'
-import { ObfuscatedEmail } from '@/components/ui/ObfuscatedEmail'
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
 
@@ -98,14 +97,10 @@ export default function TerminosPage() {
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">1. Información general</h2>
             <p className="text-muted-foreground leading-relaxed">
-              MiFP es una plataforma gratuita de gestión académica diseñada para estudiantes de 
-              Formación Profesional. Al acceder y utilizar esta plataforma, aceptas estos 
-              Términos y Condiciones en su totalidad.
+              MiFP es una plataforma gratuita de gestión académica diseñada para estudiantes de Formación Profesional. Al acceder y utilizar esta plataforma, aceptas estos Términos y Condiciones en su totalidad. Si no estás de acuerdo con alguna parte de estos términos, te rogamos que no utilices nuestros servicios.
             </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              El uso de MiFP está sujeto a la legislación española, en particular a la 
-              Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información 
-              y de Comercio Electrónico (LSSI-CE).
+              El uso de MiFP se rige por la legislación española y, en lo que resulte de aplicación, por la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE).
             </p>
           </section>
 
@@ -139,7 +134,7 @@ export default function TerminosPage() {
               <li>Notificarnos cualquier uso no autorizado de tu cuenta</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              Eres responsable de toda la actividad que ocurra bajo tu cuenta. Al registrarte aceptas expresamente cumplir los requisitos anteriores.
+              Eres el único responsable de toda la actividad que ocurra bajo tu cuenta. Al registrarte, confirmas cumplir los requisitos de edad y capacidad legal mencionados.
             </p>
           </section>
 
@@ -160,26 +155,20 @@ export default function TerminosPage() {
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">5. Propiedad intelectual</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Todos los contenidos de MiFP (diseño, código, textos, logotipos, imágenes) son 
-              propiedad del equipo de MiFP o de sus respectivos titulares y están protegidos 
-              por las leyes de propiedad intelectual.
+              Todos los contenidos de la plataforma (código fuente, diseño, logotipos, textos e imágenes de la interfaz) son propiedad exclusiva del equipo de MiFP o de sus respectivos titulares y están protegidos por las leyes de propiedad intelectual e industrial.
             </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              Los datos académicos que introduces (notas, progreso) son de tu propiedad y 
-              puedes eliminarlos en cualquier momento desde tu cuenta.
+              Los <strong>datos académicos</strong> que introduces (tus notas, comentarios y progreso) son de tu propiedad. MiFP solo actúa como depositario para mostrarte la información, y puedes eliminarlos en cualquier momento cerrando tu cuenta.
             </p>
           </section>
 
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">6. Contenido de terceros</h2>
             <p className="text-muted-foreground leading-relaxed">
-              MiFP puede mostrar información proveniente de fuentes externas (como fechas de 
-              PACs o videotutorías). Aunque nos esforzamos por mantener esta información 
-              actualizada, no garantizamos su exactitud absoluta.
+              MiFP puede mostrar información proveniente de fuentes externas (como fechas de exámenes, PACs o enlaces a videotutorías). Aunque nos esforzamos por mantener esta información actualizada, <strong>no garantizamos su exactitud absoluta</strong>.
             </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              Te recomendamos verificar siempre las fechas oficiales en la plataforma de 
-              tu centro educativo.
+              MiFP es una herramienta de apoyo; te recomendamos verificar siempre las fechas y datos oficiales en la plataforma de tu centro educativo.
             </p>
           </section>
 
@@ -191,42 +180,41 @@ export default function TerminosPage() {
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground mt-4">
               <li>Mantenimiento programado o de emergencia</li>
-              <li>Problemas técnicos fuera de nuestro control</li>
+              <li>Problemas técnicos fuera de nuestro control (caídas de servidores, fallos de red).</li>
               <li>Actualizaciones de la plataforma</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              Intentaremos notificar con antelación cualquier mantenimiento programado.
+              Intentaremos notificar con antelación cualquier mantenimiento programado siempre que sea posible.
             </p>
           </section>
 
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">8. Limitación de responsabilidad</h2>
             <p className="text-muted-foreground leading-relaxed">
-              MiFP se proporciona &quot;tal cual&quot; y &quot;según disponibilidad&quot;. En la medida 
-              permitida por la ley:
+              El servicio se proporciona &quot;tal cual&quot; (as is) y &quot;según disponibilidad&quot;. En la medida máxima permitida por la ley:
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground mt-4">
-              <li>No garantizamos que el servicio esté libre de errores</li>
-              <li>No somos responsables de decisiones académicas basadas en la información mostrada</li>
-              <li>No nos hacemos responsables de pérdidas de datos por causas ajenas a nuestra voluntad</li>
+              <li>No garantizamos que el servicio esté libre de errores (bugs).</li>
+              <li>No somos responsables de decisiones académicas (ej. fechas de entrega perdidas) basadas en la información mostrada en la app.</li>
+              <li>No nos hacemos responsables de pérdidas de datos por causas ajenas a nuestra voluntad o fuerza mayor.</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              MiFP es una herramienta de apoyo, no sustituye la información oficial de tu centro educativo.
+              Proporcionamos una herramienta de apoyo, no sustituye la información oficial de tu centro educativo.
             </p>
           </section>
 
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">9. Suspensión y cancelación</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Nos reservamos el derecho de suspender o cancelar tu cuenta si:
+              Nos reservamos el derecho de suspender o cancelar tu cuenta temporal o definitivamente si:
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground mt-4">
               <li>Incumples estos Términos y Condiciones</li>
-              <li>Realizas un uso abusivo o fraudulento de la plataforma</li>
-              <li>Tu conducta perjudica a otros usuarios o al servicio</li>
+              <li>Realizas un uso abusivo, fraudulento o que ponga en riesgo la seguridad de la plataforma.</li>
+              <li>Tu conducta perjudica a otros usuarios.</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              Puedes cancelar tu cuenta en cualquier momento desde la sección de{' '}
+              Por tu parte, puedes cancelar tu cuenta y borrar tus datos en cualquier momento desde la sección de{' '}
               <Link href="/ajustes" className="text-primary hover:underline">Ajustes</Link>.
             </p>
           </section>
@@ -234,17 +222,22 @@ export default function TerminosPage() {
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4 text-foreground">10. Modificaciones</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Podemos modificar estos Términos ocasionalmente. Los cambios entrarán en vigor 
-              desde su publicación. El uso continuado de la plataforma tras los cambios 
-              implica la aceptación de los nuevos términos.
+              Podemos modificar estos Términos ocasionalmente para adaptarlos a cambios legales o nuevas funcionalidades. Los cambios entrarán en vigor desde su publicación en esta página. El uso continuado de la plataforma tras los cambios implica la aceptación de los nuevos términos.
             </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
-              Para cambios significativos, te notificaremos a través de la plataforma.
+              Para cambios significativos, se procurará notificar a través de la plataforma, siendo esta página la vía principal de actualización de los términos y condiciones.
             </p>
           </section>
 
           <section className="mb-10">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">11. Legislación aplicable</h2>
+            <h2 className="text-xl font-semibold mb-4 text-foreground">11. Nulidad parcial</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Si alguna disposición de estos Términos fuera declarada nula o inaplicable por un tribunal competente, dicha disposición se considerará excluida sin que ello afecte a la validez y exigibilidad de las disposiciones restantes, que seguirán vigentes.
+            </p>
+          </section>
+
+          <section className="mb-10">
+            <h2 className="text-xl font-semibold mb-4 text-foreground">12. Legislación aplicable</h2>
             <p className="text-muted-foreground leading-relaxed">
               Estos Términos se rigen por la legislación española. Para cualquier controversia 
               derivada del uso de MiFP, las partes se someten a los juzgados y tribunales 
@@ -253,22 +246,19 @@ export default function TerminosPage() {
           </section>
 
           <section className="mb-10">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">12. Proyecto y desarrollo</h2>
+            <h2 className="text-xl font-semibold mb-4 text-foreground">13. Proyecto y desarrollo</h2>
             <p className="text-muted-foreground leading-relaxed">
-            MiFP es una herramienta independiente creada por estudiantes de Formación Profesional como proyecto académico. No está afiliada, respaldada ni asociada oficialmente con ningún centro educativo. Los nombres y marcas de instituciones educativas mencionados son propiedad de sus respectivos titulares y se utilizan únicamente con fines descriptivos e informativos bajo el derecho de cita educativa.
+              MiFP es una herramienta independiente creada por estudiantes de Formación Profesional como proyecto académico y técnico. <strong>No está afiliada, respaldada ni asociada oficialmente con ningún centro educativo público o privado.</strong>
+            </p>
+            <p className="text-muted-foreground leading-relaxed mt-4">
+              Los nombres y marcas de instituciones educativas que pudieran aparecer se utilizan únicamente con fines descriptivos e informativos bajo el derecho de cita.
             </p>
           </section>
 
           <section className="mb-10">
-            <h2 className="text-xl font-semibold mb-4 text-foreground">13. Aviso legal</h2>
+            <h2 className="text-xl font-semibold mb-4 text-foreground">14. Aviso legal e Identificación</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Responsable legal y del tratamiento de datos:
-              <br />
-              Titular: Silvia Lopez y Benjamin Rios.
-              <br />
-              Domicilio/Contacto: Oviedo, Asturias, España.
-              <br />
-              Email: <ObfuscatedEmail user="contacto" domain="mifp" tld="dev" className="text-primary hover:underline" />.
+              En cumplimiento del deber de información de la LSSI y el RGPD, los datos identificativos de los responsables de la plataforma, así como la información de contacto y domicilio, se encuentran detallados en nuestra <Link href="/privacidad" className="text-primary hover:underline">Política de Privacidad</Link>.
             </p>
           </section>
 

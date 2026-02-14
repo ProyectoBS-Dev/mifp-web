@@ -238,6 +238,17 @@ export async function PUT(request: NextRequest) {
 
     if (error) throw error
 
+    // ✅ Audit logging
+    await logAuditEvent({
+      action: 'vt.update',
+      userId: auth.user.id,
+      resourceType: 'vt',
+      resourceId: parseResult.data.vtId,
+      metadata: {
+        updatedFields: Object.keys(updateData),
+      },
+    }, request)
+
     return NextResponse.json({ success: true, vt: data })
 
   } catch (error) {

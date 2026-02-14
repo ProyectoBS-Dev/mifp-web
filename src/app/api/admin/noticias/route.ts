@@ -204,6 +204,17 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Error al actualizar la noticia' }, { status: 500 })
     }
 
+    // ✅ Audit logging
+    await logAuditEvent({
+      action: 'noticia.update',
+      userId: auth.user.id,
+      resourceType: 'noticia',
+      resourceId: id,
+      metadata: { 
+        updatedFields: Object.keys(updateData),
+      },
+    }, request)
+
     return NextResponse.json(noticia)
   } catch (error) {
     // ✅ NO exponer detalles internos

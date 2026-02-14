@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import Link from 'next/link'
 import {
   Clock,
@@ -38,7 +38,7 @@ interface GD {
 }
 
 async function getGDs(): Promise<GD[]> {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data } = await supabase
     .from('guias_didacticas')

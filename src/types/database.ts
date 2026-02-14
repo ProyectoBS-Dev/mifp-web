@@ -1109,6 +1109,15 @@ export type Database = {
         Args: { p_año_academico: string; p_codigo: string; p_nombre: string }
         Returns: string
       }
+      delete_gd_data: {
+        Args: {
+          p_asignatura_id: string
+          p_dry_run?: boolean
+          p_force?: boolean
+          p_semestre_id: string
+        }
+        Returns: Json
+      }
       generar_semestres_posibles: { Args: never; Returns: Json }
       generate_pac_reminders: { Args: never; Returns: Json }
       generate_vt_reminders: { Args: never; Returns: Json }
@@ -1139,6 +1148,14 @@ export type Database = {
       recalcular_nota_final: {
         Args: { p_user_asignatura_id: string }
         Returns: undefined
+      }
+      restore_user_gd_data: {
+        Args: {
+          p_asignatura_id: string
+          p_backup_data: Json
+          p_semestre_id: string
+        }
+        Returns: Json
       }
       run_all_notification_generators: { Args: never; Returns: Json }
       sync_all_users_pacs_vts: {

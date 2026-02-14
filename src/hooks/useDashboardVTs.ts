@@ -21,7 +21,7 @@ export function useDashboardVTs() {
           asignatura:asignaturas(id, nombre, codigo),
           semestre:semestres!inner(activo),
           user_vts:user_asignatura_vts(
-            id, vista,
+            id, vista, fecha_personalizada, hora_personalizada,
             vt:asignatura_vts(
               id, numero, titulo, fecha_programada, 
               hora_inicio, duracion_minutos, enlace_grabacion
@@ -42,6 +42,8 @@ export function useDashboardVTs() {
         user_vts: Array<{
           id: string
           vista: boolean | null
+          fecha_personalizada: string | null
+          hora_personalizada: string | null
           vt: {
             id: string
             numero: number
@@ -60,8 +62,8 @@ export function useDashboardVTs() {
             userVtId: uv.id,
             numero: uv.vt.numero,
             titulo: uv.vt.titulo,
-            fecha_programada: uv.vt.fecha_programada ?? '',
-            hora_inicio: uv.vt.hora_inicio,
+            fecha_programada: uv.fecha_personalizada || (uv.vt.fecha_programada ?? ''),
+            hora_inicio: uv.hora_personalizada || uv.vt.hora_inicio,
             duracion_minutos: uv.vt.duracion_minutos ?? 0,
             enlace_grabacion: uv.vt.enlace_grabacion,
             vista: uv.vista ?? false,

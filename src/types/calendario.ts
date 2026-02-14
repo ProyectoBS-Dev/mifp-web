@@ -23,6 +23,10 @@ export interface CalendarEvent {
   sourceId: string
   // Campos extra para eventos personales
   descripcion?: string
+  // Campos para override de fechas PAC/VT
+  hasCustomDate?: boolean    // Indica si la fecha fue sobreescrita por el usuario
+  originalDate?: Date        // Fecha original de PAC/VT para restaurar
+  userRecordId?: string      // ID en user_asignatura_pacs/vts para el UPDATE
 }
 
 // Colores por tipo de evento (coinciden con la paleta vt-*)
@@ -58,4 +62,15 @@ export interface CreateEventoInput {
   fecha_fin?: Date
   todo_el_dia: boolean
   asignatura_id?: string
+}
+
+// Para editar un evento personal existente
+export interface UpdateEventoInput {
+  id: string
+  titulo: string
+  descripcion?: string
+  tipo: EventoTipo
+  fecha_inicio: Date
+  fecha_fin?: Date
+  todo_el_dia: boolean
 }

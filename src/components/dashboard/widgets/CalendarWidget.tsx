@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { ChevronLeft, ChevronRight, Plus, Trash2, Loader2, GraduationCap, Calendar as CalendarIcon, Clock, FileText, Pin, Video } from 'lucide-react'
-import { format, isSameDay } from 'date-fns'
+import { useState, useMemo, useEffect } from 'react'
+import { ChevronLeft, ChevronRight, Plus, Trash2, Loader2, GraduationCap, Calendar as CalendarIcon, Clock, FileText, Pin, Video, Pencil, RotateCcw } from 'lucide-react'
+import { format, isSameDay, eachDayOfInterval, startOfDay } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
-import { useCalendarEvents, useCreateCalendarEvent, useDeleteCalendarEvent } from '@/hooks/useCalendarEvents'
-import type { CalendarEvent, EventoTipo, CreateEventoInput } from '@/types/calendario'
+import { useCalendarEvents, useCreateCalendarEvent, useUpdateCalendarEvent, useDeleteCalendarEvent, useUpdatePacDate, useUpdateVtDate } from '@/hooks/useCalendarEvents'
+import type { CalendarEvent, EventoTipo, CreateEventoInput, UpdateEventoInput } from '@/types/calendario'
 import { eventColors, eventIcons, eventLabels } from '@/types/calendario'
 import {
   Dialog,
@@ -38,6 +38,8 @@ export function CalendarWidget() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [selectedDay, setSelectedDay] = useState<Date | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [editEvent, setEditEvent] = useState<CalendarEvent | null>(null)
+  const [editDateEvent, setEditDateEvent] = useState<CalendarEvent | null>(null)
   
   const { data: events, isLoading } = useCalendarEvents(currentDate)
   
@@ -53,14 +55,20 @@ export function CalendarWidget() {
   const eventsByDay = useMemo(() => {
     const map = new Map<number, CalendarEvent[]>()
     events?.forEach(event => {
-      const day = event.start.getDate()
-      const eventMonth = event.start.getMonth()
-      const eventYear = event.start.getFullYear()
+      // Para eventos multi-día, poner el punto en cada día del rango
+      const rangeStart = startOfDay(event.start)
+      const rangeEnd = startOfDay(event.end)
+      const days = eachDayOfInterval({ start: rangeStart, end: rangeEnd })
       
-      if (eventMonth === month && eventYear === year) {
-        const existing = map.get(day) || []
-        map.set(day, [...existing, event])
-      }
+      days.forEach(d => {
+        if (d.getMonth() === month && d.getFullYear() === year) {
+          const dayNum = d.getDate()
+          const existing = map.get(dayNum) || []
+          if (!existing.some(e => e.id === event.id)) {
+            map.set(dayNum, [...existing, event])
+          }
+        }
+      })
     })
     return map
   }, [events, month, year])
@@ -90,16 +98,14 @@ export function CalendarWidget() {
     days.push(i)
   }
 
+  // Bug 3 fix: siempre abrir DayEventsModal cuando hay ≥1 evento
   const handleDayClick = (day: number) => {
     const dayEvents = eventsByDay.get(day) || []
-    if (dayEvents.length === 1) {
-      // Si solo hay un evento, abrirlo directamente
-      setSelectedEvent(dayEvents[0])
-    } else if (dayEvents.length > 1) {
-      // Si hay múltiples eventos, mostrar selector de día
+    if (dayEvents.length >= 1) {
+      // Siempre mostrar selector de día para poder añadir nuevos eventos
       setSelectedDay(new Date(year, month, day))
     } else {
-      // Si no hay eventos, abrir modal de crear
+      // Si no hay eventos, abrir modal de crear directamente
       setSelectedDay(new Date(year, month, day))
       setShowCreateModal(true)
     }
@@ -109,6 +115,9 @@ export function CalendarWidget() {
     setSelectedDay(new Date())
     setShowCreateModal(true)
   }
+
+  // Bug 1 fix: calcular filas dinámicamente
+  const totalRows = Math.ceil(days.length / 7)
 
   return (
     <div className="h-full flex flex-col">
@@ -151,7 +160,7 @@ export function CalendarWidget() {
       </div>
 
       {/* Calendar container with border */}
-      <div className="flex-1 border border-border/40 rounded-md overflow-hidden">
+      <div className="flex-1 border border-border/40 rounded-md overflow-hidden flex flex-col">
         {/* Days header */}
         <div className="grid grid-cols-7 bg-muted/30 border-b border-border/40">
           {DAYS.map((day, index) => (
@@ -167,8 +176,11 @@ export function CalendarWidget() {
           ))}
         </div>
 
-        {/* Calendar grid */}
-        <div className="grid grid-cols-7">
+        {/* Calendar grid — Bug 1 fix: dynamic rows instead of aspect-square */}
+        <div
+          className="grid grid-cols-7 flex-1"
+          style={{ gridTemplateRows: `repeat(${totalRows}, 1fr)` }}
+        >
           {isLoading ? (
             <div className="col-span-7 flex items-center justify-center py-8">
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -178,12 +190,10 @@ export function CalendarWidget() {
               const dayEvents = day ? eventsByDay.get(day) || [] : []
               const isToday = isCurrentMonth && day === todayDate
               const hasEvents = dayEvents.length > 0
-              // Calcular si es fin de semana basándose en posición en la fila (0-6)
               const colPosition = index % 7
-              const isWeekend = colPosition >= 5 // Sábado (5) y Domingo (6)
+              const isWeekend = colPosition >= 5
               const isLastCol = colPosition === 6
               const rowIndex = Math.floor(index / 7)
-              const totalRows = Math.ceil(days.length / 7)
               const isLastRow = rowIndex === totalRows - 1
 
               return (
@@ -192,7 +202,7 @@ export function CalendarWidget() {
                   onClick={() => day && handleDayClick(day)}
                   disabled={!day}
                   className={cn(
-                    'aspect-square flex flex-col items-center justify-center text-xs relative transition-colors',
+                    'flex flex-col items-center justify-center text-xs relative transition-colors min-h-0',
                     !isLastCol && 'border-r border-border/20',
                     !isLastRow && 'border-b border-border/20',
                     day && 'hover:bg-muted/60 cursor-pointer',
@@ -202,25 +212,26 @@ export function CalendarWidget() {
                   )}
                 >
                   {day && (
-                    <>
+                    <div className="flex flex-col items-center">
                       <span>{day}</span>
-                      
-                      {/* Indicadores de eventos */}
-                      {hasEvents && (
-                        <div className="flex gap-0.5 mt-0.5">
-                          {dayEvents.slice(0, 3).map((event, i) => (
-                            <span
-                              key={i}
-                              className="w-1 h-1 rounded-full"
-                              style={{ backgroundColor: event.color }}
-                            />
-                          ))}
-                          {dayEvents.length > 3 && (
-                            <span className="text-[8px] text-muted-foreground">+</span>
-                          )}
-                        </div>
-                      )}
-                    </>
+                      {/* Contenedor fijo para indicadores — siempre reserva espacio (h-2) */}
+                      <div className="h-2 flex items-center justify-center gap-0.5">
+                        {hasEvents && (
+                          <>
+                            {dayEvents.slice(0, 3).map((event, i) => (
+                              <span
+                                key={i}
+                                className="w-1 h-1 rounded-full"
+                                style={{ backgroundColor: event.color }}
+                              />
+                            ))}
+                            {dayEvents.length > 3 && (
+                              <span className="text-[8px] text-muted-foreground leading-none">+</span>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
                   )}
                 </button>
               )
@@ -253,12 +264,24 @@ export function CalendarWidget() {
       <EventDetailModal 
         event={selectedEvent}
         onClose={() => setSelectedEvent(null)}
+        onEdit={(event) => {
+          setSelectedEvent(null)
+          if (event.source === 'manual') {
+            setEditEvent(event)
+            setShowCreateModal(true)
+          } else {
+            setEditDateEvent(event)
+          }
+        }}
       />
 
       {/* Modal selector de día (múltiples eventos) */}
       <DayEventsModal
         date={selectedDay}
-        events={selectedDay ? events?.filter(e => isSameDay(e.start, selectedDay)) || [] : []}
+        events={selectedDay ? events?.filter(e => {
+          const dayStart = startOfDay(selectedDay)
+          return dayStart >= startOfDay(e.start) && dayStart <= startOfDay(e.end)
+        }) || [] : []}
         onSelectEvent={(event) => {
           setSelectedDay(null)
           setSelectedEvent(event)
@@ -270,14 +293,22 @@ export function CalendarWidget() {
         isOpen={!!selectedDay && !showCreateModal}
       />
 
-      {/* Modal crear evento */}
+      {/* Modal crear/editar evento personal */}
       <CreateEventModal
         isOpen={showCreateModal}
         initialDate={selectedDay}
+        editEvent={editEvent}
         onClose={() => {
           setShowCreateModal(false)
           setSelectedDay(null)
+          setEditEvent(null)
         }}
+      />
+
+      {/* Modal editar fecha PAC/VT */}
+      <EditDateModal
+        event={editDateEvent}
+        onClose={() => setEditDateEvent(null)}
       />
     </div>
   )
@@ -289,14 +320,16 @@ export function CalendarWidget() {
 interface EventDetailModalProps {
   event: CalendarEvent | null
   onClose: () => void
+  onEdit: (event: CalendarEvent) => void
 }
 
-function EventDetailModal({ event, onClose }: EventDetailModalProps) {
+function EventDetailModal({ event, onClose, onEdit }: EventDetailModalProps) {
   const deleteEvent = useDeleteCalendarEvent()
   
   if (!event) return null
 
   const canDelete = event.source === 'manual'
+  const canEdit = true // Todos los eventos se pueden editar (manual = full edit, pac/vt = edit date)
 
   const handleDelete = async () => {
     if (!canDelete) return
@@ -347,9 +380,20 @@ function EventDetailModal({ event, onClose }: EventDetailModalProps) {
             <CalendarIcon className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Fecha:</span>
             <span className="font-medium">
-              {format(event.start, "EEEE, d 'de' MMMM yyyy", { locale: es })}
+              {isSameDay(event.start, event.end)
+                ? format(event.start, "EEEE, d 'de' MMMM yyyy", { locale: es })
+                : `${format(event.start, "d 'de' MMMM", { locale: es })} - ${format(event.end, "d 'de' MMMM yyyy", { locale: es })}`
+              }
             </span>
           </div>
+
+          {/* Indicador de fecha personalizada */}
+          {event.hasCustomDate && event.originalDate && (
+            <div className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-950/30 dark:text-amber-400 p-2 rounded flex items-center gap-2">
+              <Pencil className="h-3 w-3" />
+              Fecha personalizada (original: {format(event.originalDate, "d 'de' MMMM yyyy", { locale: es })})
+            </div>
+          )}
 
           {!event.allDay && (
             <div className="flex items-center gap-2 text-sm">
@@ -387,6 +431,16 @@ function EventDetailModal({ event, onClose }: EventDetailModalProps) {
         </div>
 
         <DialogFooter className="flex gap-2">
+          {canEdit && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => onEdit(event)}
+            >
+              <Pencil className="h-4 w-4 mr-1" />
+              {event.source === 'manual' ? 'Editar' : 'Editar fecha'}
+            </Button>
+          )}
           {canDelete && (
             <Button 
               variant="destructive" 
@@ -423,8 +477,9 @@ interface DayEventsModalProps {
   isOpen: boolean
 }
 
+// Bug 3 fix: quitar early return por events.length === 0
 function DayEventsModal({ date, events, onSelectEvent, onCreateEvent, onClose, isOpen }: DayEventsModalProps) {
-  if (!date || events.length === 0) return null
+  if (!date) return null
 
   return (
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
@@ -440,32 +495,41 @@ function DayEventsModal({ date, events, onSelectEvent, onCreateEvent, onClose, i
         </DialogHeader>
 
         <div className="space-y-2 py-2 overflow-y-auto max-h-[50vh] pr-1">
-          {events.map((event) => (
-            <button
-              key={event.id}
-              onClick={() => onSelectEvent(event)}
-              className="w-full flex items-center gap-3 p-3 rounded-lg border hover:bg-muted transition-colors text-left"
-            >
-              <span 
-                className="w-2 h-2 rounded-full flex-shrink-0" 
-                style={{ backgroundColor: event.color }}
-              />
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm truncate flex items-center gap-1">
-                  {(() => {
-                    const Icon = eventIcons[event.type]
-                    return <Icon className="h-3.5 w-3.5 flex-shrink-0" />
-                  })()}
-                  {event.title}
-                </p>
-                {!event.allDay && (
-                  <p className="text-xs text-muted-foreground">
-                    {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
+          {events.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              No hay eventos este día
+            </p>
+          ) : (
+            events.map((event) => (
+              <button
+                key={event.id}
+                onClick={() => onSelectEvent(event)}
+                className="w-full flex items-center gap-3 p-3 rounded-lg border hover:bg-muted transition-colors text-left"
+              >
+                <span 
+                  className="w-2 h-2 rounded-full flex-shrink-0" 
+                  style={{ backgroundColor: event.color }}
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm truncate flex items-center gap-1">
+                    {(() => {
+                      const Icon = eventIcons[event.type]
+                      return <Icon className="h-3.5 w-3.5 flex-shrink-0" />
+                    })()}
+                    {event.title}
+                    {event.hasCustomDate && (
+                      <Pencil className="h-2.5 w-2.5 text-amber-500 flex-shrink-0" />
+                    )}
                   </p>
-                )}
-              </div>
-            </button>
-          ))}
+                  {!event.allDay && (
+                    <p className="text-xs text-muted-foreground">
+                      {format(event.start, 'HH:mm')} - {format(event.end, 'HH:mm')}
+                    </p>
+                  )}
+                </div>
+              </button>
+            ))
+          )}
         </div>
 
         <DialogFooter className="flex gap-2">
@@ -483,41 +547,84 @@ function DayEventsModal({ date, events, onSelectEvent, onCreateEvent, onClose, i
 }
 
 // ============================================
-// Modal: Crear evento personal
+// Modal: Crear/Editar evento personal
 // ============================================
 interface CreateEventModalProps {
   isOpen: boolean
   initialDate: Date | null
+  editEvent?: CalendarEvent | null
   onClose: () => void
 }
 
-function CreateEventModal({ isOpen, initialDate, onClose }: CreateEventModalProps) {
+function CreateEventModal({ isOpen, initialDate, editEvent, onClose }: CreateEventModalProps) {
   const createEvent = useCreateCalendarEvent()
+  const updateEvent = useUpdateCalendarEvent()
   
+  const isEditMode = !!editEvent
+
   const [formData, setFormData] = useState<{
     titulo: string
     descripcion: string
     tipo: EventoTipo
-    fecha: string
-    hora: string
+    fecha_inicio: string
+    hora_inicio: string
+    fecha_fin: string
+    hora_fin: string
     todo_el_dia: boolean
   }>({
     titulo: '',
     descripcion: '',
     tipo: 'custom',
-    fecha: format(initialDate || new Date(), 'yyyy-MM-dd'),
-    hora: '12:00',
+    fecha_inicio: format(initialDate || new Date(), 'yyyy-MM-dd'),
+    hora_inicio: '12:00',
+    fecha_fin: format(initialDate || new Date(), 'yyyy-MM-dd'),
+    hora_fin: '13:00',
     todo_el_dia: true,
   })
 
-  // Resetear form cuando se abre/cierra
+  // Bug 2 fix + Edit mode: sync form state when modal opens or props change
+  useEffect(() => {
+    if (!isOpen) return
+
+    if (editEvent) {
+      // Modo edición: precargar formulario con datos del evento
+      setFormData({
+        titulo: editEvent.title,
+        descripcion: editEvent.descripcion || '',
+        tipo: editEvent.type,
+        fecha_inicio: format(editEvent.start, 'yyyy-MM-dd'),
+        hora_inicio: editEvent.allDay ? '12:00' : format(editEvent.start, 'HH:mm'),
+        fecha_fin: format(editEvent.end, 'yyyy-MM-dd'),
+        hora_fin: editEvent.allDay ? '13:00' : format(editEvent.end, 'HH:mm'),
+        todo_el_dia: editEvent.allDay,
+      })
+    } else if (initialDate) {
+      // Modo crear: usar la fecha del día seleccionado
+      const fechaStr = format(initialDate, 'yyyy-MM-dd')
+      setFormData(prev => ({
+        ...prev,
+        titulo: '',
+        descripcion: '',
+        tipo: 'custom',
+        fecha_inicio: fechaStr,
+        hora_inicio: '12:00',
+        fecha_fin: fechaStr,
+        hora_fin: '13:00',
+        todo_el_dia: true,
+      }))
+    }
+  }, [isOpen, initialDate, editEvent])
+
   const resetForm = () => {
+    const fechaStr = format(initialDate || new Date(), 'yyyy-MM-dd')
     setFormData({
       titulo: '',
       descripcion: '',
       tipo: 'custom',
-      fecha: format(initialDate || new Date(), 'yyyy-MM-dd'),
-      hora: '12:00',
+      fecha_inicio: fechaStr,
+      hora_inicio: '12:00',
+      fecha_fin: fechaStr,
+      hora_fin: '13:00',
       todo_el_dia: true,
     })
   }
@@ -527,27 +634,61 @@ function CreateEventModal({ isOpen, initialDate, onClose }: CreateEventModalProp
     
     if (!formData.titulo.trim()) return
 
-    const fechaBase = new Date(formData.fecha)
+    // Construir fecha_inicio
+    const fechaInicio = new Date(formData.fecha_inicio)
     if (!formData.todo_el_dia) {
-      const [hours, minutes] = formData.hora.split(':').map(Number)
-      fechaBase.setHours(hours, minutes, 0, 0)
+      const [h, m] = formData.hora_inicio.split(':').map(Number)
+      fechaInicio.setHours(h, m, 0, 0)
     }
 
-    const input: CreateEventoInput = {
-      titulo: formData.titulo.trim(),
-      descripcion: formData.descripcion.trim() || undefined,
-      tipo: formData.tipo,
-      fecha_inicio: fechaBase,
-      todo_el_dia: formData.todo_el_dia,
+    // Construir fecha_fin
+    const fechaFin = new Date(formData.fecha_fin)
+    if (!formData.todo_el_dia) {
+      const [hf, mf] = formData.hora_fin.split(':').map(Number)
+      fechaFin.setHours(hf, mf, 0, 0)
     }
 
     try {
-      await createEvent.mutateAsync(input)
+      if (isEditMode && editEvent) {
+        // Modo edición
+        const input: UpdateEventoInput = {
+          id: editEvent.sourceId,
+          titulo: formData.titulo.trim(),
+          descripcion: formData.descripcion.trim() || undefined,
+          tipo: formData.tipo,
+          fecha_inicio: fechaInicio,
+          fecha_fin: fechaFin,
+          todo_el_dia: formData.todo_el_dia,
+        }
+        await updateEvent.mutateAsync(input)
+      } else {
+        // Modo crear
+        const input: CreateEventoInput = {
+          titulo: formData.titulo.trim(),
+          descripcion: formData.descripcion.trim() || undefined,
+          tipo: formData.tipo,
+          fecha_inicio: fechaInicio,
+          fecha_fin: fechaFin,
+          todo_el_dia: formData.todo_el_dia,
+        }
+        await createEvent.mutateAsync(input)
+      }
       resetForm()
       onClose()
     } catch (error) {
-      console.error('Error al crear evento:', error)
+      console.error('Error al guardar evento:', error)
     }
+  }
+
+  const isPending = isEditMode ? updateEvent.isPending : createEvent.isPending
+
+  // Cuando cambia fecha_inicio, ajustar fecha_fin si es anterior
+  const handleFechaInicioChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      fecha_inicio: value,
+      fecha_fin: prev.fecha_fin < value ? value : prev.fecha_fin,
+    }))
   }
 
   return (
@@ -556,10 +697,10 @@ function CreateEventModal({ isOpen, initialDate, onClose }: CreateEventModalProp
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Pin className="h-5 w-5" />
-            Nuevo evento
+            {isEditMode ? 'Editar evento' : 'Nuevo evento'}
           </DialogTitle>
           <DialogDescription className="sr-only">
-            Formulario para crear un nuevo evento en el calendario
+            {isEditMode ? 'Formulario para editar un evento del calendario' : 'Formulario para crear un nuevo evento en el calendario'}
           </DialogDescription>
         </DialogHeader>
 
@@ -609,28 +750,49 @@ function CreateEventModal({ isOpen, initialDate, onClose }: CreateEventModalProp
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="fecha">Fecha</Label>
+          {/* Apple Calendar-style: Inicio / Fin rows */}
+          <div className="space-y-2 rounded-lg border border-border/60 p-3">
+            {/* Fila Inicio */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground w-12 shrink-0">Inicio:</span>
               <Input
-                id="fecha"
                 type="date"
-                value={formData.fecha}
-                onChange={(e) => setFormData(prev => ({ ...prev, fecha: e.target.value }))}
+                value={formData.fecha_inicio}
+                onChange={(e) => handleFechaInicioChange(e.target.value)}
+                className="flex-1"
               />
-            </div>
-            
-            {!formData.todo_el_dia && (
-              <div className="space-y-2">
-                <Label htmlFor="hora">Hora</Label>
+              {!formData.todo_el_dia && (
                 <Input
-                  id="hora"
                   type="time"
-                  value={formData.hora}
-                  onChange={(e) => setFormData(prev => ({ ...prev, hora: e.target.value }))}
+                  value={formData.hora_inicio}
+                  onChange={(e) => setFormData(prev => ({ ...prev, hora_inicio: e.target.value }))}
+                  className="w-28"
                 />
-              </div>
-            )}
+              )}
+            </div>
+
+            {/* Separador */}
+            <div className="border-t border-border/40" />
+
+            {/* Fila Fin */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground w-12 shrink-0">Fin:</span>
+              <Input
+                type="date"
+                value={formData.fecha_fin}
+                onChange={(e) => setFormData(prev => ({ ...prev, fecha_fin: e.target.value }))}
+                min={formData.fecha_inicio}
+                className="flex-1"
+              />
+              {!formData.todo_el_dia && (
+                <Input
+                  type="time"
+                  value={formData.hora_fin}
+                  onChange={(e) => setFormData(prev => ({ ...prev, hora_fin: e.target.value }))}
+                  className="w-28"
+                />
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -661,16 +823,172 @@ function CreateEventModal({ isOpen, initialDate, onClose }: CreateEventModalProp
             <Button type="button" variant="outline" onClick={() => { resetForm(); onClose(); }}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={createEvent.isPending || !formData.titulo.trim()}>
-              {createEvent.isPending ? (
+            <Button type="submit" disabled={isPending || !formData.titulo.trim()}>
+              {isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              ) : isEditMode ? (
+                <Pencil className="h-4 w-4 mr-1" />
               ) : (
                 <Plus className="h-4 w-4 mr-1" />
               )}
-              Crear evento
+              {isEditMode ? 'Guardar cambios' : 'Crear evento'}
             </Button>
           </DialogFooter>
         </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// ============================================
+// Modal: Editar fecha de PAC/VT
+// ============================================
+interface EditDateModalProps {
+  event: CalendarEvent | null
+  onClose: () => void
+}
+
+function EditDateModal({ event, onClose }: EditDateModalProps) {
+  const updatePacDate = useUpdatePacDate()
+  const updateVtDate = useUpdateVtDate()
+
+  const [fecha, setFecha] = useState('')
+  const [hora, setHora] = useState('')
+
+  // Sync form state when event changes
+  useEffect(() => {
+    if (event) {
+      setFecha(format(event.start, 'yyyy-MM-dd'))
+      setHora(event.allDay ? '' : format(event.start, 'HH:mm'))
+    }
+  }, [event])
+
+  if (!event || !event.userRecordId) return null
+
+  const isPac = event.source === 'pac'
+  const isVt = event.source === 'vt'
+  const isPending = isPac ? updatePacDate.isPending : updateVtDate.isPending
+
+  const handleSave = async () => {
+    if (!event.userRecordId) return
+
+    try {
+      if (isPac) {
+        // Convertir fecha a ISO timestamp
+        const fechaISO = new Date(fecha).toISOString()
+        await updatePacDate.mutateAsync({
+          userPacId: event.userRecordId,
+          fecha: fechaISO,
+        })
+      } else if (isVt) {
+        await updateVtDate.mutateAsync({
+          userVtId: event.userRecordId,
+          fecha: fecha,
+          hora: hora || null,
+        })
+      }
+      onClose()
+    } catch (error) {
+      console.error('Error al actualizar fecha:', error)
+    }
+  }
+
+  const handleReset = async () => {
+    if (!event.userRecordId) return
+
+    try {
+      if (isPac) {
+        await updatePacDate.mutateAsync({
+          userPacId: event.userRecordId,
+          fecha: null,
+        })
+      } else if (isVt) {
+        await updateVtDate.mutateAsync({
+          userVtId: event.userRecordId,
+          fecha: null,
+          hora: null,
+        })
+      }
+      onClose()
+    } catch (error) {
+      console.error('Error al restaurar fecha:', error)
+    }
+  }
+
+  const originalDateStr = event.hasCustomDate && event.originalDate
+    ? format(event.originalDate, "d 'de' MMMM yyyy", { locale: es })
+    : format(event.start, "d 'de' MMMM yyyy", { locale: es })
+
+  return (
+    <Dialog open={!!event} onOpenChange={() => onClose()}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Pencil className="h-5 w-5" />
+            Editar fecha
+          </DialogTitle>
+          <DialogDescription>
+            {event.title}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-2">
+          {/* Referencia: fecha original */}
+          <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded flex items-center gap-2">
+            <CalendarIcon className="h-3 w-3" />
+            Fecha original: {originalDateStr}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="edit-fecha">Nueva fecha</Label>
+            <Input
+              id="edit-fecha"
+              type="date"
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
+            />
+          </div>
+
+          {isVt && (
+            <div className="space-y-2">
+              <Label htmlFor="edit-hora">Nueva hora</Label>
+              <Input
+                id="edit-hora"
+                type="time"
+                value={hora}
+                onChange={(e) => setHora(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-3 pt-2">
+          {event.hasCustomDate && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleReset}
+              disabled={isPending}
+              className="text-amber-600 hover:text-amber-700 w-full"
+            >
+              <RotateCcw className="h-4 w-4 mr-1" />
+              Restaurar fecha original
+            </Button>
+          )}
+          <DialogFooter className="flex gap-2 sm:justify-end">
+            <Button variant="outline" size="sm" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button size="sm" onClick={handleSave} disabled={isPending || !fecha}>
+              {isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              ) : (
+                <Pencil className="h-4 w-4 mr-1" />
+              )}
+              Guardar
+            </Button>
+          </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   )

@@ -17,7 +17,7 @@ export function useDashboardPACs() {
       const { data, error } = await supabase
         .from('user_asignatura_pacs')
         .select(`
-          id, completada, nota,
+          id, completada, nota, fecha_limite_personalizada,
           pac:asignatura_pacs(
             id, numero, titulo, fecha_limite,
             ra:asignatura_ras(numero, titulo),
@@ -40,6 +40,7 @@ export function useDashboardPACs() {
         id: string
         completada: boolean | null
         nota: number | null
+        fecha_limite_personalizada: string | null
         pac: {
           id: string
           numero: number
@@ -55,7 +56,7 @@ export function useDashboardPACs() {
         titulo: item.pac?.titulo || '',
         asignatura: item.pac?.asignatura || { nombre: '', codigo: '' },
         ra: item.pac?.ra || { numero: 0, titulo: '' },
-        fecha_limite: item.pac?.fecha_limite || '',
+        fecha_limite: item.fecha_limite_personalizada || item.pac?.fecha_limite || '',
         completada: item.completada ?? false,
         nota: item.nota,
       })).filter((pac) => pac.id) // Filtrar PACs sin datos

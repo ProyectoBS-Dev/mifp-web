@@ -79,7 +79,7 @@ export function GDDropzone({ file, onFileSelect, onFileRemove }: GDDropzoneProps
           <span className="text-primary font-medium">Suelta el archivo aquí</span>
         ) : (
           <>
-            📄 Arrastra el PDF aquí o{' '}
+            Arrastra el PDF aquí o{' '}
             <span className="text-primary font-medium">selecciona archivo</span>
           </>
         )}

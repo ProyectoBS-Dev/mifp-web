@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Loader2, Upload, CheckCircle2, XCircle } from 'lucide-react'
+import { Loader2, Upload, CheckCircle2, XCircle, UploadCloudIcon, BadgeAlertIcon } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -83,21 +83,21 @@ export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModal
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md overflow-hidden">
         <DialogHeader>
-          <DialogTitle>📤 Subir Guía Didáctica</DialogTitle>
+          <DialogTitle><UploadCloudIcon className="inline h-6 w-6 mr-2" /> Subir Guía Didáctica</DialogTitle>
           <DialogDescription>
-            Sube la GD de una asignatura para extraer los datos de evaluación.
+            Sube la GD de una asignatura para tener actualizada tus PACs y videotutorías.
           </DialogDescription>
         </DialogHeader>
 
         {uploadState === 'idle' && (
-          <div className="space-y-4">
+          <div className="space-y-4 min-w-0">
             {/* Selector de asignatura */}
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <Label>Selecciona la asignatura *</Label>
               <Select value={selectedAsignatura} onValueChange={setSelectedAsignatura}>
-                <SelectTrigger>
+                <SelectTrigger className="overflow-hidden">
                   <SelectValue placeholder="Seleccionar asignatura..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -122,8 +122,8 @@ export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModal
 
             {/* Info */}
             <div className="text-sm text-muted-foreground space-y-1 bg-muted/50 p-3 rounded-lg">
-              <p>ℹ️ La GD debe corresponder al semestre actual</p>
-              <p>ℹ️ Una vez subida, será validada por un administrador</p>
+              <p><BadgeAlertIcon className="inline h-4 w-4 mr-2 text-vt-green" /> La GD debe corresponder al semestre actual</p>
+              <p><BadgeAlertIcon className="inline h-4 w-4 mr-2 text-vt-green" /> Una vez subida, será validada por un administrador</p>
             </div>
 
             {/* Botones */}

@@ -76,7 +76,7 @@ export function NotificationBell() {
       <PopoverContent 
         align="end" 
         sideOffset={8}
-        className="p-0 w-auto"
+        className="p-0 w-[calc(100vw-2rem)] max-w-[480px]"
       >
         <NotificationCenter onClose={() => setIsOpen(false)} />
       </PopoverContent>

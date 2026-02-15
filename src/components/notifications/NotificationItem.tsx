@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { X, ExternalLink, ArrowRight } from 'lucide-react'
+import { X, ExternalLink, ArrowRight, FolderOpen, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { formatTimeAgo } from '@/lib/format'
@@ -101,7 +101,7 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
       )}
 
       {/* Icono del tipo */}
-      <span className="text-xl flex-shrink-0 mt-0.5">{config.icon}</span>
+      <config.icon className={cn('h-5 w-5 flex-shrink-0 mt-0.5', config.color)} />
 
       {/* Contenido */}
       <div className="flex-1 min-w-0 space-y-1">
@@ -113,21 +113,23 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
         </p>
 
         {notification.mensaje && (
-          <p className="text-xs text-muted-foreground line-clamp-2">
+          <p className="text-xs text-muted-foreground line-clamp-3">
             {notification.mensaje}
           </p>
         )}
 
         {/* Info adicional según tipo */}
         {notification.tipo === 'pac_vencimiento' && notification.data?.asignatura_nombre && (
-          <p className="text-xs text-muted-foreground">
-            📁 {notification.data.asignatura_nombre}
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <FolderOpen className="h-3 w-3" />
+            {notification.data.asignatura_nombre}
           </p>
         )}
 
         {notification.tipo === 'vt_recordatorio' && notification.data?.hora_inicio && (
-          <p className="text-xs text-muted-foreground">
-            🕐 {notification.data.hora_inicio}
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            {notification.data.hora_inicio}
           </p>
         )}
 

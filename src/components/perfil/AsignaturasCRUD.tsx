@@ -333,16 +333,16 @@ export function AsignaturasCRUD({
 
             {/* Modal: Añadir asignatura */}
             <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                <DialogContent>
+                <DialogContent className="overflow-hidden">
                     <DialogHeader>
                         <DialogTitle>Añadir Asignatura</DialogTitle>
                         <DialogDescription>
                             Selecciona una asignatura para añadir a este semestre
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="py-4">
+                    <div className="py-4 min-w-0">
                         <Select value={selectedAsignaturaId || ''} onValueChange={setSelectedAsignaturaId}>
-                            <SelectTrigger>
+                            <SelectTrigger className="min-w-0">
                                 <SelectValue placeholder="Selecciona una asignatura" />
                             </SelectTrigger>
                             <SelectContent>

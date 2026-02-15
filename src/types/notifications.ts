@@ -1,5 +1,8 @@
 // Tipos para el sistema de notificaciones
 
+import type { LucideIcon } from 'lucide-react'
+import { ClipboardList, Video, Newspaper, Settings, FileUp } from 'lucide-react'
+
 export type NotificationType =
   | 'pac_vencimiento'  // PAC próxima a vencer (24h, 48h)
   | 'vt_recordatorio'  // VT en X horas
@@ -61,7 +64,7 @@ export interface NotificationSettings {
 export interface GroupedNotifications {
   tipo: NotificationType
   label: string
-  icon: string
+  icon: LucideIcon
   count: number
   notifications: Notification[]
 }
@@ -70,31 +73,31 @@ export interface GroupedNotifications {
 export type NotificationFilter = 'all' | NotificationType
 
 // Configuración de iconos y labels por tipo
-export const NOTIFICATION_CONFIG: Record<NotificationType, { label: string; icon: string; color: string }> = {
+export const NOTIFICATION_CONFIG: Record<NotificationType, { label: string; icon: LucideIcon; color: string }> = {
   pac_vencimiento: {
     label: 'PACs',
-    icon: '📋',
-    color: 'text-orange-500',
+    icon: ClipboardList,
+    color: 'text-vt-orange/50',
   },
   vt_recordatorio: {
     label: 'Videotutorías',
-    icon: '📹',
-    color: 'text-blue-500',
+    icon: Video,
+    color: 'text-vt-blue/50',
   },
   noticia_nueva: {
     label: 'Noticias',
-    icon: '📰',
-    color: 'text-green-500',
+    icon: Newspaper,
+    color: 'text-vt-gray/50',
   },
   sistema: {
     label: 'Sistema',
-    icon: '⚙️',
-    color: 'text-gray-500',
+    icon: Settings,
+    color: 'text-vt-green/50',
   },
   gd_subida: {
     label: 'Guías Didácticas',
-    icon: '📤',
-    color: 'text-purple-500',
+    icon: FileUp,
+    color: 'text-vt-red/50',
   },
 }
 

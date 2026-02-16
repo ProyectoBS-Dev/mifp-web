@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { Loader2, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 
@@ -26,6 +25,8 @@ export function NotaInput({
 }: NotaInputProps) {
     const [localValue, setLocalValue] = useState(value?.toString() ?? '')
     const [showSuccess, setShowSuccess] = useState(false)
+    /** Ref (not state) so mutating it won't re-trigger effects or cause re-renders */
+    const didSaveRef = useRef(false)
     const lastSavedRef = useRef(value)
 
     useEffect(() => {
@@ -35,8 +36,10 @@ export function NotaInput({
         }
     }, [value])
 
+    // Show success only when isSuccess fires AND this specific input triggered the save
     useEffect(() => {
-        if (isSuccess) {
+        if (isSuccess && didSaveRef.current) {
+            didSaveRef.current = false
             setShowSuccess(true)
             const timer = setTimeout(() => setShowSuccess(false), 2000)
             return () => clearTimeout(timer)
@@ -53,31 +56,30 @@ export function NotaInput({
 
         if (numValue !== value) {
             lastSavedRef.current = numValue
+            didSaveRef.current = true
             onSave(numValue)
         }
     }, [localValue, value, onSave])
 
     return (
-        <div className="flex items-center gap-1.5">
-            <Input
-                type="number"
-                inputMode="decimal"
-                min={0}
-                max={10}
-                step={0.1}
-                value={localValue}
-                onChange={(e) => setLocalValue(e.target.value)}
-                onBlur={handleBlur}
-                disabled={disabled || isPending}
-                className={cn('text-center', className)}
-                placeholder={placeholder}
-            />
-            {isPending && (
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground flex-shrink-0" />
+        <Input
+            type="number"
+            inputMode="decimal"
+            min={0}
+            max={10}
+            step={0.1}
+            value={localValue}
+            onChange={(e) => setLocalValue(e.target.value)}
+            onBlur={handleBlur}
+            disabled={disabled || isPending}
+            className={cn(
+                'text-center transition-all duration-500',
+                isPending && didSaveRef.current && 'ring-1 ring-vt-blue/40 border-vt-blue/40',
+                showSuccess && !isPending && 'ring-2 ring-vt-green/50 border-vt-green/50 bg-vt-green/5',
+                className
             )}
-            {showSuccess && !isPending && (
-                <Check className="h-4 w-4 text-vt-green flex-shrink-0" />
-            )}
-        </div>
+            placeholder={placeholder}
+        />
     )
 }
+

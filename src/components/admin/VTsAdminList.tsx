@@ -16,7 +16,7 @@ import {
   Plus
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { formatMinutes } from '@/lib/format'
+import { formatMinutes, formatTimeForInput, normalizeTimeForDB } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -214,7 +214,7 @@ function CreateVTModal({ open, onOpenChange, asignatura, semestreId, nextNumero 
           semestreId,
           ...formData,
           fecha_programada: formData.fecha_programada || null,
-          hora_inicio: formData.hora_inicio || null,
+          hora_inicio: normalizeTimeForDB(formData.hora_inicio),
           enlace_grabacion: formData.enlace_grabacion.trim() || null
         })
       })
@@ -349,7 +349,7 @@ function VTCard({ vt }: { vt: VTData }) {
   const [formData, setFormData] = useState({
     titulo: vt.titulo,
     fecha_programada: vt.fecha_programada || '',
-    hora_inicio: vt.hora_inicio?.slice(0, 5) || '',
+    hora_inicio: formatTimeForInput(vt.hora_inicio),
     duracion_minutos: vt.duracion_minutos || 90,
     enlace_grabacion: vt.enlace_grabacion || ''
   })
@@ -359,7 +359,7 @@ function VTCard({ vt }: { vt: VTData }) {
     setFormData({
       titulo: vt.titulo,
       fecha_programada: vt.fecha_programada || '',
-      hora_inicio: vt.hora_inicio?.slice(0, 5) || '',
+      hora_inicio: formatTimeForInput(vt.hora_inicio),
       duracion_minutos: vt.duracion_minutos || 90,
       enlace_grabacion: vt.enlace_grabacion || ''
     })
@@ -380,7 +380,7 @@ function VTCard({ vt }: { vt: VTData }) {
       vtId: vt.id,
       titulo: formData.titulo,
       fecha_programada: formData.fecha_programada || null,
-      hora_inicio: formData.hora_inicio.trim() || null,
+      hora_inicio: normalizeTimeForDB(formData.hora_inicio),
       duracion_minutos: formData.duracion_minutos,
       enlace_grabacion: formData.enlace_grabacion.trim() || null
     }
@@ -437,7 +437,7 @@ function VTCard({ vt }: { vt: VTData }) {
     setFormData({
       titulo: vt.titulo,
       fecha_programada: vt.fecha_programada || '',
-      hora_inicio: vt.hora_inicio?.slice(0, 5) || '',
+      hora_inicio: formatTimeForInput(vt.hora_inicio),
       duracion_minutos: vt.duracion_minutos || 90,
       enlace_grabacion: vt.enlace_grabacion || ''
     })
@@ -472,7 +472,7 @@ function VTCard({ vt }: { vt: VTData }) {
                     <span className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {fechaFormateada}
-                      {vt.hora_inicio && ` • ${vt.hora_inicio.slice(0, 5)}`}
+                      {vt.hora_inicio && ` • ${formatTimeForInput(vt.hora_inicio)}`}
                     </span>
                   )}
                   {!fechaFormateada && !vt.hora_inicio && (

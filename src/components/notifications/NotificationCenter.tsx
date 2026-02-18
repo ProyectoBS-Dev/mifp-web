@@ -38,7 +38,7 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
   const hasNotifications = notifications && notifications.length > 0
   
   const handleMarkAllAsRead = () => {
-    markAllAsRead()
+    markAllAsRead(filter)
   }
   
   return (
@@ -56,17 +56,6 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
         </div>
         
         <div className="flex items-center gap-1">
-          {/* Toggle filtros */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn('h-7 w-7', showFilters && 'bg-muted')}
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <Filter className="h-3.5 w-3.5" />
-            <span className="sr-only">Filtros</span>
-          </Button>
-          
           {/* Marcar todas como leídas */}
           {unreadCount > 0 && (
             <Button
@@ -84,7 +73,18 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
               Leer todas
             </Button>
           )}
-        </div>
+
+          {/* Toggle filtros */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn('h-7 w-7', showFilters && 'bg-muted')}
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter className="h-3.5 w-3.5" />
+            <span className="sr-only">Filtros</span>
+          </Button>
+        </div> 
       </div>
       
       {/* Filtros (colapsable) */}

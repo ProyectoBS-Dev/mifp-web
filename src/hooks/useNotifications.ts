@@ -128,26 +128,36 @@ export function useMarkAllAsRead() {
   const supabase = createClient()
   
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (filter?: NotificationFilter) => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('No user')
       
-      const { error } = await supabase
+      let query = supabase
         .from('notificaciones')
         .update({ leida: true })
         .eq('user_id', user.id)
         .eq('leida', false)
+
+      if (filter && filter !== 'all') {
+        query = query.eq('tipo', filter)
+      }
+      
+      const { error } = await query
       
       if (error) throw error
     },
-    onMutate: async () => {
+    onMutate: async (filter) => {
       await queryClient.cancelQueries({ queryKey: ['notifications'] })
       
       const previousNotifications = queryClient.getQueryData<Notification[]>(['notifications'])
       
       if (previousNotifications) {
         queryClient.setQueryData<Notification[]>(['notifications'], 
-          previousNotifications.map(n => ({ ...n, leida: true }))
+          previousNotifications.map(n => {
+            if (n.leida) return n
+            if (filter && filter !== 'all' && n.tipo !== filter) return n
+            return { ...n, leida: true }
+          })
         )
       }
       

@@ -14,7 +14,6 @@ import {
   Clock
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { formatTimeAgo, formatSeconds } from '@/lib/format'
 import { getAsignaturaAlias } from '@/lib/asignatura-alias'
@@ -114,12 +113,6 @@ export function RecursoCard({ recurso }: RecursoCardProps) {
                 </h3>
               </div>
               
-              {/* Metadata a la derecha (duración, etc) */}
-              {recurso.tipo === 'podcast' && recurso.duracion && (
-                <Badge color="gray" colorStyle="soft" className="flex-shrink-0">
-                  {formatSeconds(recurso.duracion)}
-                </Badge>
-              )}
             </div>
 
             {/* Descripción */}

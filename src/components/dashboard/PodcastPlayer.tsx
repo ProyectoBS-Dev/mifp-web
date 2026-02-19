@@ -154,7 +154,6 @@ export function PodcastPlayer({ recurso, className }: PodcastPlayerProps) {
     )
   }
 
-  const progressPercent = duration > 0 ? (progress / duration) * 100 : 0
 
   return (
     <div className={cn('space-y-2', className)}>
@@ -243,14 +242,6 @@ export function PodcastPlayer({ recurso, className }: PodcastPlayerProps) {
             className="w-12 sm:w-16"
           />
         </div>
-      </div>
-
-      {/* Barra de progreso visual (mini) */}
-      <div className="h-1 bg-muted rounded-full overflow-hidden">
-        <div
-          className="h-full bg-vt-purple transition-all duration-100"
-          style={{ width: `${progressPercent}%` }}
-        />
       </div>
 
       {/* Audio element (hidden) */}

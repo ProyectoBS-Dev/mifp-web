@@ -9,16 +9,20 @@
  * Facilmente modificable para agregar nuevos alias
  */
 const ASIGNATURA_ALIASES: Record<string, string> = {
-  'Lenguajes de marcas y sistemas de gestión': 'Lenguajes de marcas',
+  'Lenguajes de marcas y sistemas de gestión de información': 'Lenguajes de marcas',
   'Sostenibilidad aplicada al sistema productivo': 'Sostenibilidad',
   'Itinerario personal para la empleabilidad I': 'IPE I',
   'Itinerario personal para la empleabilidad II': 'IPE II',
-  'Proyecto de desarrollo de aplicaciones': 'Proyecto',
+  'Proyecto intermodular de DAM': 'Proyecto DAM',
+  'Proyecto intermodular de DAW': 'Proyecto DAW',
   'Digitalización aplicada a los sectores productivos': 'Digitalización',
-  'Desarrollo web en entorno cliente A': 'Desarrollo cliente A',
-  'Desarrollo web en entorno servidor B': 'Desarrollo servidor B',
-  'Programación multimedia y disp. móviles B': 'Programación B',
+  'Desarrollo web en entorno cliente': 'Web entorno cliente',
+  'Desarrollo web en entorno servidor': 'Web entorno servidor',
+  'Programación multimedia y disp. móviles': 'P. Multimedia y Móv.',
   'Diseño de interfaces WEB': 'Interfaces web',
+  'Programación de servicios y procesos': 'P. Serv. y Procesos',
+  'Despliegue de aplicaciones web': 'Despliegue web',
+  'Sistemas de gestión empresarial': 'Sistemas gestión emp.'
 }
 
 /**

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Calendar, AlertCircle, Loader2, CheckCircle2, ChevronDown, Filter, PartyPopper } from 'lucide-react'
+import { Calendar, AlertCircle, Loader2, CheckCircle2, Circle, ChevronDown, Filter, PartyPopper } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useDashboardPACs, useTogglePACCompletada } from '@/hooks'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -84,8 +84,9 @@ function PacCard({ pac, onToggle, isPending }: {
               <Calendar className="h-3 w-3 text-muted-foreground" />
               <span className="text-muted-foreground">{fechaFormateada}</span>
               <span className="text-muted-foreground/50">•</span>
-              <span className={cn('font-medium', config.color)}>
-                {config.badge} {config.label}
+              <span className={cn('inline-flex items-center gap-1 font-medium', config.color)}>
+                <Circle className={cn('h-2.5 w-2.5', config.dotColor)} />
+                {config.label}
                 {' • '}
                 {diasRestantes <= 0
                   ? 'Vencida'

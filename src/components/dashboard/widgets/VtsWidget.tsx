@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Video, Clock, ExternalLink, Loader2, CheckCircle2, ChevronDown, Filter, PartyPopper } from 'lucide-react'
+import { Video, Clock, ExternalLink, Loader2, CheckCircle2, Calendar, ChevronDown, Filter, PartyPopper, TriangleAlert, Megaphone, CircleAlert } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatMinutes } from '@/lib/format'
 import { useDashboardVTs, useToggleVTVista } from '@/hooks'
@@ -35,6 +35,7 @@ function VtCard({ vt, asignatura, onToggle, isPending }: {
   fechaProgramada.setHours(0, 0, 0, 0)
   const esHoy = fechaProgramada.getTime() === hoy.getTime()
   const esFuturo = fechaProgramada > hoy
+  const esPasada = fechaProgramada < hoy
 
   const fechaFormateada = new Date(vt.fecha_programada).toLocaleDateString('es-ES', {
     day: 'numeric',
@@ -48,8 +49,10 @@ function VtCard({ vt, asignatura, onToggle, isPending }: {
         vt.vista
           ? 'opacity-60 border-border bg-muted/20'
           : esHoy
-            ? 'border-vt-green/50 bg-vt-green/5'
-            : 'border-border'
+            ? 'border-vt-green/50 bg-vt-green/10'
+            : esPasada
+              ? 'border-vt-red/50 bg-vt-red/10'
+              : 'border-border'
       )}
     >
       <div className="flex items-start gap-3">
@@ -73,15 +76,19 @@ function VtCard({ vt, asignatura, onToggle, isPending }: {
           {/* Fecha y hora (solo si no vista) */}
           {!vt.vista && (
             <div className="flex items-center gap-2 mt-1.5 text-xs">
-              <Clock className="h-3 w-3 text-muted-foreground" />
+              <Calendar className="h-3 w-3 text-muted-foreground" />
               <span className="text-muted-foreground">{fechaFormateada}</span>
               <span className="text-muted-foreground/50">•</span>
+              <Clock className="h-3 w-3 text-muted-foreground" />
               <span className="font-medium">{vt.hora_inicio?.slice(0, 5) || '--:--'}</span>
               {esHoy && (
-                <span className="text-vt-green font-medium ml-1">HOY</span>
+                <span className="inline-flex items-center gap-1 text-vt-green font-medium ml-1"><CircleAlert className="text-vt-green h-3 w-3" /> Hoy</span>
               )}
               {esFuturo && !esHoy && (
-                <span className="text-vt-blue font-medium ml-1">Próxima</span>
+                <span className="inline-flex items-center gap-1 text-vt-blue font-medium ml-1"><Megaphone className="text-vt-blue h-3 w-3" /> Próxima</span>
+              )}
+              {!esHoy && !esFuturo && (
+                <span className="inline-flex items-center gap-1 text-vt-red/80 font-medium ml-1"><TriangleAlert className="text-vt-red h-3 w-3" /> Vencida</span>
               )}
             </div>
           )}

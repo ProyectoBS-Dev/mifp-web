@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { X, ExternalLink, ArrowRight, FolderOpen, Clock } from 'lucide-react'
+import { X, ExternalLink, ArrowRight, FolderOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { formatTimeAgo } from '@/lib/format'
@@ -126,12 +126,7 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
           </p>
         )}
 
-        {notification.tipo === 'vt_recordatorio' && notification.data?.hora_inicio && (
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {notification.data.hora_inicio}
-          </p>
-        )}
+
 
         <div className="flex items-center justify-between gap-2 pt-1">
           <span className="text-xs text-muted-foreground">

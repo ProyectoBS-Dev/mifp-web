@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { X, ExternalLink, ArrowRight, FolderOpen, Clock } from 'lucide-react'
+import { X, ExternalLink, ArrowRight, Clock, CalendarClock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { formatTimeAgo } from '@/lib/format'
@@ -112,26 +112,24 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
           {notification.titulo}
         </p>
 
-        {notification.mensaje && (
+        {notification.tipo === 'vt_recordatorio' && notification.data?.asignatura_nombre ? (
+          <p className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
+            {notification.data.asignatura_nombre} - Recuerda, videotutoría a las
+            <Clock className="h-3 w-3" />
+            {notification.data.hora_inicio?.slice(0, 5)}
+          </p>
+        ) : notification.tipo === 'pac_vencimiento' && notification.data?.asignatura_nombre ? (
+          <p className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
+            {notification.data.asignatura_nombre} - &quot;{notification.data.pac_titulo}&quot; vence
+            <CalendarClock className="h-3 w-3" />
+            {notification.data.horas_restantes === 24 ? 'mañana' : 'en 2 días'}
+          </p>
+        ) : notification.mensaje ? (
           <p className="text-xs text-muted-foreground line-clamp-3">
             {notification.mensaje}
           </p>
-        )}
+        ) : null}
 
-        {/* Info adicional según tipo */}
-        {notification.tipo === 'pac_vencimiento' && notification.data?.asignatura_nombre && (
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <FolderOpen className="h-3 w-3" />
-            {notification.data.asignatura_nombre}
-          </p>
-        )}
-
-        {notification.tipo === 'vt_recordatorio' && notification.data?.hora_inicio && (
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {notification.data.hora_inicio}
-          </p>
-        )}
 
         <div className="flex items-center justify-between gap-2 pt-1">
           <span className="text-xs text-muted-foreground">

@@ -31,11 +31,12 @@ function createServiceClient() {
 
 export async function POST(request: NextRequest) {
   try {
-    // ✅ SIEMPRE verificar autenticación (no solo en producción)
+    // SIEMPRE verificar autenticación (no solo en producción)
     const authHeader = request.headers.get('authorization')
+    const vercelCronToken = request.headers.get('x-vercel-cron-auth-token')
     const cronSecret = process.env.CRON_SECRET
     
-    // ✅ CRON_SECRET es OBLIGATORIO
+    // CRON_SECRET es OBLIGATORIO
     if (!cronSecret) {
       console.error('[CRON] CRON_SECRET no configurado')
       return NextResponse.json(
@@ -44,8 +45,14 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // ✅ SIEMPRE verificar token (desarrollo Y producción)
-    if (authHeader !== `Bearer ${cronSecret}`) {
+    // Aceptar AMBOS métodos de autenticación:
+    // - Authorization: Bearer <token> (llamadas manuales / externas)
+    // - x-vercel-cron-auth-token (llamadas automáticas de Vercel Cron)
+    const isAuthorized =
+      authHeader === `Bearer ${cronSecret}` ||
+      vercelCronToken === cronSecret
+
+    if (!isAuthorized) {
       const forwardedFor = request.headers.get('x-forwarded-for')
       const realIp = request.headers.get('x-real-ip')
       const requestIp = forwardedFor?.split(',')[0] || realIp || 'unknown'
@@ -61,7 +68,7 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // ✅ Rate limit CRÍTICO (5 req/min)
+    //  Rate limit CRÍTICO (5 req/min)
     const rateLimitError = await withRateLimit(
       request,
       rateLimiters?.critical || null,
@@ -86,7 +93,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data)
     
   } catch (error) {
-    // ✅ NO exponer detalles internos
+    // NO exponer detalles internos
     console.error('[CRON] Error:', error)
     return NextResponse.json({ error: 'Error al generar notificaciones' }, { status: 500 })
   }

@@ -41,20 +41,20 @@ export const prioridadConfig = {
     color: 'text-vt-red', 
     bgColor: 'bg-vt-red/10', 
     borderColor: 'border-vt-red/50',
-    badge: '🔴' 
+    dotColor: 'text-vt-red fill-vt-red'
   },
   media: { 
     label: 'Media', 
     color: 'text-vt-yellow-dark', 
     bgColor: 'bg-vt-yellow/10', 
     borderColor: 'border-vt-yellow/50',
-    badge: '🟡' 
+    dotColor: 'text-vt-yellow fill-vt-yellow'
   },
   normal: { 
     label: 'Normal', 
     color: 'text-vt-green', 
     bgColor: 'bg-vt-green/10', 
     borderColor: 'border-vt-green/50',
-    badge: '🟢' 
+    dotColor: 'text-vt-green fill-vt-green'
   },
 } as const

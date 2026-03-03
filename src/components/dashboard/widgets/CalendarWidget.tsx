@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { getAsignaturaAlias } from '@/lib/asignatura-alias'
 
 const DAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
 const MONTHS = [
@@ -516,7 +517,7 @@ function DayEventsModal({ date, events, onSelectEvent, onCreateEvent, onClose, i
                       const Icon = eventIcons[event.type]
                       return <Icon className="h-3.5 w-3.5 flex-shrink-0" />
                     })()}
-                    {event.title}
+                    {`${event.title} ${event.asignatura?.nombre ? ' - ' + getAsignaturaAlias(event.asignatura?.nombre) : ''}`}
                     {event.hasCustomDate && (
                       <Pencil className="h-2.5 w-2.5 text-amber-500 flex-shrink-0" />
                     )}

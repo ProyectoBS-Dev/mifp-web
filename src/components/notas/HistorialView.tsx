@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { useGradeProgress, type AsignaturaDetalle } from '@/hooks/useGradeProgress'
+import { useNotas, calcularDatosSemestre } from '@/hooks/useNotas'
 
 // ============================================
 // TIPOS
@@ -48,6 +49,71 @@ function EstadoIndicador({ aprobada, pendiente }: { aprobada: boolean; pendiente
  */
 export function HistorialView() {
     const { data, isLoading, error } = useGradeProgress()
+    // Datos del semestre activo (React Query cache, 0 requests extra)
+    const { data: notasActivas } = useNotas()
+
+    // ============================================
+    // Override: calcular notas del semestre activo client-side
+    // (misma lógica que usa el sidebar)
+    // ============================================
+    const activeSemestreOverrides = useMemo(() => {
+        if (!notasActivas?.asignaturas) return new Map<string, { nota: number | null; enProgreso: boolean; aprobada: boolean }>()
+
+        const { asignaturasCalculadas } = calcularDatosSemestre(
+            notasActivas.asignaturas,
+            notasActivas.fct.nota
+        )
+
+        const map = new Map<string, { nota: number | null; enProgreso: boolean; aprobada: boolean }>()
+        notasActivas.asignaturas.forEach((asig, i) => {
+            const calc = asignaturasCalculadas[i]
+            if (calc && asig.usarCalculoPACs) {
+                map.set(asig.asignaturaId, {
+                    nota: calc.notaModulo,
+                    enProgreso: calc.estado === 'en_progreso' || calc.estado === 'sin_notas',
+                    aprobada: calc.estado === 'aprobada'
+                })
+            }
+        })
+        return map
+    }, [notasActivas])
+
+    // Stats efectivos (recalculados con overrides del semestre activo)
+    const effectiveStats = useMemo(() => {
+        if (!data) return null
+        if (activeSemestreOverrides.size === 0) return data
+
+        let sumaNotas = 0
+        let countNotas = 0
+        let aprobadas = 0
+        let suspensas = 0
+
+        data.detalle.forEach(asig => {
+            const override = activeSemestreOverrides.get(asig.asignatura_id)
+            const nota = override !== undefined ? override.nota : asig.ultima_nota
+            const enProgreso = override !== undefined ? override.enProgreso : false
+            const isAprobada = override !== undefined ? override.aprobada : asig.aprobada
+
+            // En progreso → pendiente (no cuenta en media/aprobadas/suspensas)
+            if (nota !== null && !enProgreso) {
+                sumaNotas += nota
+                countNotas++
+                if (isAprobada) aprobadas++
+                else suspensas++
+            }
+        })
+
+        return {
+            nota_media: countNotas > 0 ? Math.round((sumaNotas / countNotas) * 100) / 100 : null,
+            asignaturas_aprobadas: aprobadas,
+            asignaturas_suspensas: suspensas,
+            asignaturas_pendientes: data.total_asignaturas - aprobadas - suspensas,
+            total_asignaturas: data.total_asignaturas,
+            progreso_porcentaje: data.total_asignaturas > 0
+                ? Math.round((aprobadas / data.total_asignaturas) * 1000) / 10
+                : 0
+        }
+    }, [data, activeSemestreOverrides])
 
     // Agrupar asignaturas por semestre
     const semestreGroups = useMemo((): SemestreGroup[] => {
@@ -121,26 +187,26 @@ export function HistorialView() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="text-center p-4 rounded-lg bg-card border">
                             <p className="text-sm text-muted-foreground">Nota Media</p>
-                            <p className={cn('text-3xl font-bold', getGradeColor(data.nota_media))}>
-                                {data.nota_media?.toFixed(2) ?? '-'}
+                            <p className={cn('text-3xl font-bold', getGradeColor(effectiveStats?.nota_media ?? null))}>
+                                {effectiveStats?.nota_media?.toFixed(2) ?? '-'}
                             </p>
                         </div>
                         <div className="text-center p-4 rounded-lg bg-card border">
                             <p className="text-sm text-muted-foreground">Aprobadas</p>
                             <p className="text-3xl font-bold text-vt-green">
-                                {data.asignaturas_aprobadas}
+                                {effectiveStats?.asignaturas_aprobadas ?? 0}
                             </p>
                         </div>
                         <div className="text-center p-4 rounded-lg bg-card border">
                             <p className="text-sm text-muted-foreground">Suspensas</p>
                             <p className="text-3xl font-bold text-vt-red">
-                                {data.asignaturas_suspensas}
+                                {effectiveStats?.asignaturas_suspensas ?? 0}
                             </p>
                         </div>
                         <div className="text-center p-4 rounded-lg bg-card border">
                             <p className="text-sm text-muted-foreground">Pendientes</p>
                             <p className="text-3xl font-bold text-muted-foreground">
-                                {data.asignaturas_pendientes}
+                                {effectiveStats?.asignaturas_pendientes ?? 0}
                             </p>
                         </div>
                     </div>
@@ -150,10 +216,10 @@ export function HistorialView() {
                         <div className="flex justify-between text-sm">
                             <span>Progreso del grado</span>
                             <span className="font-medium">
-                                {data.asignaturas_aprobadas}/{data.total_asignaturas} ({data.progreso_porcentaje}%)
+                                {effectiveStats?.asignaturas_aprobadas ?? 0}/{effectiveStats?.total_asignaturas ?? 0} ({effectiveStats?.progreso_porcentaje ?? 0}%)
                             </span>
                         </div>
-                        <Progress value={data.progreso_porcentaje} className="h-3" />
+                        <Progress value={effectiveStats?.progreso_porcentaje ?? 0} className="h-3" />
                     </div>
                 </CardContent>
             </Card>
@@ -176,31 +242,40 @@ export function HistorialView() {
                             <Card>
                                 <CardContent className="pt-4 pb-4">
                                     <div className="space-y-2">
-                                        {group.asignaturas.map((asig) => (
-                                            <div
-                                                key={asig.asignatura_id}
-                                                className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors"
-                                            >
-                                                <EstadoIndicador
-                                                    aprobada={asig.aprobada}
-                                                    pendiente={asig.ultima_nota === null}
-                                                />
-                                                <span className="font-medium flex-1 truncate">
-                                                    {asig.asignatura_nombre}
-                                                </span>
-                                                {asig.num_convocatorias > 1 && (
-                                                    <Badge color="gray" colorStyle="outline" className="text-xs flex-shrink-0">
-                                                        {asig.num_convocatorias}ª conv.
-                                                    </Badge>
-                                                )}
-                                                <span className={cn(
-                                                    'font-bold text-right min-w-[3rem]',
-                                                    getGradeColor(asig.ultima_nota)
-                                                )}>
-                                                    {asig.ultima_nota?.toFixed(2) ?? '—'}
-                                                </span>
-                                            </div>
-                                        ))}
+                                        {group.asignaturas.map((asig) => {
+                                            const override = activeSemestreOverrides.get(asig.asignatura_id)
+                                            const nota = override !== undefined ? override.nota : asig.ultima_nota
+                                            const aprobada = override !== undefined ? override.aprobada : asig.aprobada
+                                            const pendiente = override !== undefined
+                                                ? override.enProgreso
+                                                : (asig.ultima_nota === null)
+
+                                            return (
+                                                <div
+                                                    key={asig.asignatura_id}
+                                                    className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors"
+                                                >
+                                                    <EstadoIndicador
+                                                        aprobada={aprobada}
+                                                        pendiente={pendiente && nota === null}
+                                                    />
+                                                    <span className="font-medium flex-1 truncate">
+                                                        {asig.asignatura_nombre}
+                                                    </span>
+                                                    {asig.num_convocatorias > 1 && (
+                                                        <Badge color="gray" colorStyle="outline" className="text-xs flex-shrink-0">
+                                                            {asig.num_convocatorias}ª conv.
+                                                        </Badge>
+                                                    )}
+                                                    <span className={cn(
+                                                        'font-bold text-right min-w-[3rem]',
+                                                        getGradeColor(nota)
+                                                    )}>
+                                                        {nota?.toFixed(2) ?? '—'}
+                                                    </span>
+                                                </div>
+                                            )
+                                        })}
                                     </div>
                                 </CardContent>
                             </Card>

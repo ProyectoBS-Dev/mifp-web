@@ -7,6 +7,7 @@ import { Menu } from 'lucide-react'
 /**
  * Sidebar móvil para el área de administración.
  * Usa CollapsibleSidebar con AdminSidebarContent.
+ * Fecha: 14/07/2026
  */
 export function AdminMobileSidebar() {
   return (

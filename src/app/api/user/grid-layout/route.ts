@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 
     if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
       console.error('[API grid-layout GET] Error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: 'Error al obtener configuración' }, { status: 500 })
     }
 
     return NextResponse.json({ 
@@ -84,7 +84,8 @@ export async function PUT(request: NextRequest) {
       .eq('user_id', user.id)
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('[API grid-layout PUT] Error:', error)
+      return NextResponse.json({ error: 'Error al guardar configuración' }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })

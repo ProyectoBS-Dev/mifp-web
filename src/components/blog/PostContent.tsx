@@ -210,6 +210,7 @@ export function PostContent({ post, prevPost, nextPost }: PostContentProps) {
             src={post.imagen_url}
             alt={post.titulo}
             fill
+            sizes="(max-width: 768px) 100vw, 800px"
             className="object-cover"
             priority
             unoptimized={post.imagen_url.toLowerCase().endsWith('.gif')}

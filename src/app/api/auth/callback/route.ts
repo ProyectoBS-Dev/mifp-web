@@ -45,7 +45,7 @@ export async function GET(request: Request) {
 
       // Otros errores de autenticación
       return NextResponse.redirect(
-        `${origin}/login?error=auth_callback_error&message=${encodeURIComponent(error.message)}`,
+        `${origin}/login?error=auth_callback_error&message=${encodeURIComponent("Error de autenticación. Por favor, intenta de nuevo.")}`,
       );
     }
 

@@ -8,11 +8,23 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { withRateLimit, rateLimiters } from '@/lib/ratelimit'
 
-// ✅ Lista de dominios permitidos (igualdad exacta)
-const ALLOWED_HOSTNAMES = [
-  'pub-bcdb8d6166ed4e9fae5a9258681bafaf.r2.dev',
-  'pub-f626a6b255d24b128756ee07c7fe8cdc.r2.dev',
-]
+/**
+ * Construye la allowlist de hostnames a partir de las URLs públicas de R2
+ * configuradas en variables de entorno, evitando hardcodear bucket IDs.
+ */
+function getAllowedHostnames(): string[] {
+  const urls = [
+    process.env.CLOUDFLARE_R2_PUBLIC_URL_PODCASTS,
+    process.env.CLOUDFLARE_R2_PUBLIC_URL_PDFS,
+  ]
+
+  return urls
+    .filter((url): url is string => !!url)
+    .map((url) => {
+      try { return new URL(url).hostname } catch { return null }
+    })
+    .filter((h): h is string => !!h)
+}
 
 const DOWNLOAD_TIMEOUT_MS = 30_000 // 30 segundos
 
@@ -64,7 +76,8 @@ export async function GET(request: NextRequest) {
     }
 
     // ✅ Validación de hostname por igualdad exacta (no .includes())
-    const isAllowed = ALLOWED_HOSTNAMES.includes(urlObj.hostname)
+    const allowedHostnames = getAllowedHostnames()
+    const isAllowed = allowedHostnames.length > 0 && allowedHostnames.includes(urlObj.hostname)
     if (!isAllowed) {
       return NextResponse.json(
         { error: 'Dominio no permitido' },

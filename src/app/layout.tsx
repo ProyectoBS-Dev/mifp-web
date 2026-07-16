@@ -9,7 +9,7 @@ const onest = Onest({
   variable: '--font-onest',
 })
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL!
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -96,8 +96,8 @@ export default function RootLayout({
               '@type': 'EducationalOrganization',
               name: 'MiFP',
               alternateName: 'Mi Formación Profesional',
-              url: 'https://mifp.dev',
-              logo: 'https://mifp.dev/images/isotipo.png',
+              url: baseUrl,
+              logo: `${baseUrl}/images/isotipo.png`,
               description: 'Plataforma de gestión académica para estudiantes de Formación Profesional Online. Gestiona tu progreso y evaluación continua, videotutorías, notas y más.',
               foundingDate: '2025',
               address: {

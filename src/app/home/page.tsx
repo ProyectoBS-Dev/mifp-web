@@ -2,10 +2,11 @@ import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { LandingContent } from '@/components/landing'
 
-// SEO: Canonical URL pointing to root - tells Google /home is a duplicate of /
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL!
+
 export const metadata: Metadata = {
   alternates: {
-    canonical: 'https://mifp.dev/',
+    canonical: `${baseUrl}/`,
   },
 }
 

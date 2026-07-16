@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { NewsFeed } from '@/components/blog'
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL!
 
 export const metadata: Metadata = {
   title: 'Blog',

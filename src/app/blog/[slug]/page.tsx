@@ -87,7 +87,7 @@ async function getAdjacentPosts(currentSlug: string): Promise<{
   }
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL!
 
 export async function generateMetadata({ 
   params 
@@ -180,14 +180,14 @@ export default async function PostPage({
             author: {
               '@type': 'Organization',
               name: 'Equipo MiFP',
-              url: 'https://mifp.dev',
+              url: baseUrl,
             },
             publisher: {
               '@type': 'EducationalOrganization',
               name: 'MiFP',
               logo: {
                 '@type': 'ImageObject',
-                url: 'https://mifp.dev/images/isotipo.png',
+                url: `${baseUrl}/images/isotipo.png`,
               },
             },
             mainEntityOfPage: {

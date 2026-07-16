@@ -18,7 +18,7 @@ import {
 import { ScrollReveal } from '@/components/ui/scroll-reveal'
 import { createClient } from '@/lib/supabase/server'
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL!
 
 export const metadata: Metadata = {
   title: 'Sobre Nosotros',

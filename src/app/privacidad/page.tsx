@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, ArrowUpRightIcon } from 'lucide-react'
 import { ObfuscatedEmail } from '@/components/ui/ObfuscatedEmail'
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://mifp.dev'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL!
 
 export const metadata: Metadata = {
   title: 'Política de Privacidad',

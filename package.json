@@ -37,13 +37,13 @@
     "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/typography": "^0.5.19",
     "@tanstack/react-query": "^5.90.12",
-    "@tiptap/extension-image": "^3.14.0",
-    "@tiptap/extension-link": "^3.14.0",
-    "@tiptap/extension-placeholder": "^3.14.0",
-    "@tiptap/extension-task-item": "^3.14.0",
-    "@tiptap/extension-task-list": "^3.14.0",
-    "@tiptap/react": "^3.14.0",
-    "@tiptap/starter-kit": "^3.14.0",
+    "@tiptap/extension-image": "^3.31.3",
+    "@tiptap/extension-link": "^3.31.3",
+    "@tiptap/extension-placeholder": "^3.31.3",
+    "@tiptap/extension-task-item": "^3.31.3",
+    "@tiptap/extension-task-list": "^3.31.3",
+    "@tiptap/react": "^3.31.3",
+    "@tiptap/starter-kit": "^3.31.3",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.1",
     "@vercel/analytics": "^1.6.1",
@@ -124,7 +124,11 @@
       "esbuild": ">=0.27.7",
       "nanoid@3": ">=3.3.18 <4",
       "dompurify": ">=3.4.13 <4",
-      "sharp": ">=0.35.0"
+      "sharp": ">=0.35.0",
+      "browserslist@4": ">=4.28.7 <5",
+      "baseline-browser-mapping@2": ">=2.11.0 <3",
+      "postcss-selector-parser@6": ">=6.1.4 <7",
+      "@humanfs/node": ">=0.16.8 <0.17"
     }
   }
 }

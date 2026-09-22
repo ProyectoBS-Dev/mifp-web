@@ -10,6 +10,8 @@
     "type-check": "tsc --noEmit",
     "test": "echo \"No tests configured yet\" && exit 0",
     "sync-resources": "tsx structure/scripts/sync-resources.ts",
+    "structure:sync": "cd structure && git add -A && git commit -m \"docs: actualizar documentacion\" && git push",
+    "structure:pull": "cd structure && git pull",
     "reset": "rm -rf .next && pnpm dev",
     "full-reset": "rm -rf .next node_modules .turbo pnpm-lock.yaml && pnpm install"
   },

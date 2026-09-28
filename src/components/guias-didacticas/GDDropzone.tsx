@@ -5,7 +5,7 @@ import { useDropzone } from 'react-dropzone'
 import { FileText, X, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { GD_MAX_FILE_SIZE } from '@/lib/gd-upload'
+import { GD_MAX_FILE_SIZE, GD_MAX_FILE_SIZE_LABEL } from '@/lib/gd-upload'
 
 interface GDDropzoneProps {
   file: File | null
@@ -84,7 +84,7 @@ export function GDDropzone({ file, onFileSelect, onFileRemove }: GDDropzoneProps
         )}
       </p>
       <p className="text-xs text-muted-foreground mt-2">
-        Formatos: PDF • Tamaño máximo: 10MB
+        Formatos: PDF • Tamaño máximo: {GD_MAX_FILE_SIZE_LABEL}
       </p>
 
       {fileRejections.length > 0 && (

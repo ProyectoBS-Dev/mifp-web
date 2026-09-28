@@ -8,8 +8,11 @@ type AdminClient = ReturnType<typeof createAdminClient>
 /** Bucket privado donde viven los PDFs de las Guías Didácticas */
 export const GD_BUCKET = 'guias-didacticas'
 
-/** Tamaño máximo de una GD en bytes (10MB) */
-export const GD_MAX_FILE_SIZE = 10 * 1024 * 1024
+/** Tamaño máximo de una GD en bytes (15MB) */
+export const GD_MAX_FILE_SIZE = 15 * 1024 * 1024
+
+/** Texto de límite para mensajes de UI y validación */
+export const GD_MAX_FILE_SIZE_LABEL = '15MB'
 
 /** Mensajes de error descriptivos por estado de GD */
 const ESTADO_MESSAGES: Record<string, string> = {

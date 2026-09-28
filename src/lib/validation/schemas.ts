@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { GD_MAX_FILE_SIZE } from '@/lib/gd-upload'
+import { GD_MAX_FILE_SIZE, GD_MAX_FILE_SIZE_LABEL } from '@/lib/gd-upload'
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SCHEMAS DE VALIDACIÓN CON ZOD.STRICT()
@@ -260,7 +260,7 @@ export const gdUploadUrlSchema = z.object({
     .number()
     .int()
     .positive('El archivo está vacío')
-    .max(GD_MAX_FILE_SIZE, 'El archivo excede 10MB'),
+    .max(GD_MAX_FILE_SIZE, `El archivo excede ${GD_MAX_FILE_SIZE_LABEL}`),
 })
 
 /**

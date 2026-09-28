@@ -7,6 +7,7 @@ import { gdConfirmSchema, formatZodErrors } from '@/lib/validation/schemas'
 import {
   GD_BUCKET,
   GD_MAX_FILE_SIZE,
+  GD_MAX_FILE_SIZE_LABEL,
   gdPathPrefix,
   getSemestreActivo,
   isPDF,
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     if (file.size > GD_MAX_FILE_SIZE) {
       await adminClient.storage.from(GD_BUCKET).remove([path])
-      return NextResponse.json({ error: 'El archivo excede 10MB' }, { status: 400 })
+      return NextResponse.json({ error: `El archivo excede ${GD_MAX_FILE_SIZE_LABEL}` }, { status: 400 })
     }
 
     if (!isPDF(await file.arrayBuffer())) {

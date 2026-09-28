@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { GD_MAX_FILE_SIZE } from '@/lib/gd-upload'
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SCHEMAS DE VALIDACIÓN CON ZOD.STRICT()
@@ -240,6 +241,34 @@ export const validateGDDataSchema = z.object({
  */
 export const extractGDSchema = z.object({
   gdId: uuidSchema,
+})
+
+/**
+ * Schema para pedir la URL firmada de subida de una GD
+ *
+ * El tamaño es el declarado por el navegador: sirve para rechazar temprano,
+ * pero el tamaño real se vuelve a comprobar contra Storage al confirmar.
+ */
+export const gdUploadUrlSchema = z.object({
+  asignatura_id: uuidSchema,
+  file_name: z
+    .string()
+    .min(5, 'Nombre de archivo inválido')
+    .max(255, 'Nombre de archivo demasiado largo')
+    .refine(name => name.toLowerCase().endsWith('.pdf'), 'Solo se permiten archivos PDF'),
+  file_size: z
+    .number()
+    .int()
+    .positive('El archivo está vacío')
+    .max(GD_MAX_FILE_SIZE, 'El archivo excede 10MB'),
+})
+
+/**
+ * Schema para confirmar una GD ya subida a Storage
+ */
+export const gdConfirmSchema = z.object({
+  asignatura_id: uuidSchema,
+  path: z.string().min(1).max(512),
 })
 
 // ═══════════════════════════════════════════════════════════════════════════════

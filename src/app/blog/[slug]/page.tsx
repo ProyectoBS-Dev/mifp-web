@@ -19,17 +19,27 @@ function extractCategoria(contenido: string): NoticiaCategoria {
 
 async function getPostBySlug(slug: string): Promise<NoticiaConMeta | null> {
   const supabase = await createClient()
-  
-  const { data, error } = await supabase
-    .from('noticias')
-    .select(`
-      *,
-      autor:users!autor_id(id, full_name, email, avatar_url)
-    `)
-    .eq('slug', slug)
-    .eq('publicada', true)
-    .is('deleted_at', null)
-    .single()
+
+  // El rol `anon` no tiene privilegios sobre `users`, así que el embed del autor
+  // solo se puede pedir con sesión: sin ella la query entera fallaría con
+  // `permission denied for table users` y el post saldría como inexistente.
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { data, error } = user
+    ? await supabase
+        .from('noticias')
+        .select('*, autor:users!autor_id(id, full_name, email, avatar_url)')
+        .eq('slug', slug)
+        .eq('publicada', true)
+        .is('deleted_at', null)
+        .single()
+    : await supabase
+        .from('noticias')
+        .select('*')
+        .eq('slug', slug)
+        .eq('publicada', true)
+        .is('deleted_at', null)
+        .single()
 
   if (error || !data) {
     return null
@@ -39,7 +49,7 @@ async function getPostBySlug(slug: string): Promise<NoticiaConMeta | null> {
     ...data,
     categoria: extractCategoria(data.contenido),
     extracto: extractExtracto(data.contenido),
-  } as NoticiaConMeta
+  } as unknown as NoticiaConMeta
 }
 
 async function getAdjacentPosts(currentSlug: string): Promise<{

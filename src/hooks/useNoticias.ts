@@ -49,22 +49,57 @@ export interface NoticiaConMeta extends Noticia {
   extracto: string
 }
 
+/**
+ * Indica si hay sesión activa y si ya se pudo averiguar.
+ *
+ * El autor de una noticia vive en la tabla `users`, sobre la que el rol `anon`
+ * no tiene privilegios. Pedir el embed sin sesión hace fallar la query entera
+ * con `permission denied for table users`, así que hay que saberlo antes de
+ * construir el select. Comparte queryKey con el resto del blog para que React
+ * Query deduplique la llamada a `getUser()`.
+ */
+function useSessionState() {
+  const { data: currentUser, isPending } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      const { data: { user } } = await getSupabase().auth.getUser()
+      return user
+    },
+    staleTime: 60000 * 5,
+  })
+
+  return { hasSession: !!currentUser, sessionResolved: !isPending }
+}
+
+function withMeta(noticia: Noticia): NoticiaConMeta {
+  return {
+    ...noticia,
+    categoria: extractCategoria(noticia.contenido),
+    extracto: extractExtracto(noticia.contenido),
+  }
+}
+
 // Hook para obtener todas las noticias publicadas
 export function useNoticias(filter?: NoticiaCategoria) {
   const supabase = getSupabase()
+  const { hasSession, sessionResolved } = useSessionState()
 
   const { data: noticias = [], isLoading, error } = useQuery({
-    queryKey: ['noticias', filter],
+    queryKey: ['noticias', filter, hasSession],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('noticias')
-        .select(`
-          *,
-          autor:users!autor_id(id, full_name, email, avatar_url)
-        `)
-        .eq('publicada', true)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false })
+      const { data, error } = hasSession
+        ? await supabase
+            .from('noticias')
+            .select('*, autor:users!autor_id(id, full_name, email, avatar_url)')
+            .eq('publicada', true)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+        : await supabase
+            .from('noticias')
+            .select('*')
+            .eq('publicada', true)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
 
       if (error) {
         console.error('Error fetching noticias:', error)
@@ -72,11 +107,7 @@ export function useNoticias(filter?: NoticiaCategoria) {
       }
 
       // Añadir metadata
-      const noticiasConMeta: NoticiaConMeta[] = (data || []).map((n: Noticia) => ({
-        ...n,
-        categoria: extractCategoria(n.contenido),
-        extracto: extractExtracto(n.contenido),
-      }))
+      const noticiasConMeta = ((data ?? []) as unknown as Noticia[]).map(withMeta)
 
       // Filtrar por categoría si se especifica
       if (filter) {
@@ -85,27 +116,32 @@ export function useNoticias(filter?: NoticiaCategoria) {
 
       return noticiasConMeta
     },
+    enabled: sessionResolved,
     staleTime: 60000, // 1 minuto
   })
 
-  return { noticias, isLoading, error }
+  return { noticias, isLoading: isLoading || !sessionResolved, error }
 }
 
 // Hook para obtener una noticia por ID
 export function useNoticia(id: string) {
   const supabase = getSupabase()
+  const { hasSession, sessionResolved } = useSessionState()
 
   const { data: noticia, isLoading, error } = useQuery({
-    queryKey: ['noticia', id],
+    queryKey: ['noticia', id, hasSession],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('noticias')
-        .select(`
-          *,
-          autor:users!autor_id(id, full_name, email, avatar_url)
-        `)
-        .eq('id', id)
-        .single()
+      const { data, error } = hasSession
+        ? await supabase
+            .from('noticias')
+            .select('*, autor:users!autor_id(id, full_name, email, avatar_url)')
+            .eq('id', id)
+            .single()
+        : await supabase
+            .from('noticias')
+            .select('*')
+            .eq('id', id)
+            .single()
 
       if (error) {
         console.error('Error fetching noticia:', error)
@@ -114,16 +150,12 @@ export function useNoticia(id: string) {
 
       if (!data) return null
 
-      return {
-        ...data,
-        categoria: extractCategoria(data.contenido),
-        extracto: extractExtracto(data.contenido),
-      } as NoticiaConMeta
+      return withMeta(data as unknown as Noticia)
     },
-    enabled: !!id,
+    enabled: !!id && sessionResolved,
   })
 
-  return { noticia, isLoading, error }
+  return { noticia, isLoading: isLoading || !sessionResolved, error }
 }
 
 // Hook para crear/editar noticias (admin/editor)

@@ -22,6 +22,8 @@ import { Label } from '@/components/ui/label'
 import { GDDropzone } from './GDDropzone'
 import type { AsignaturaSinGD } from '@/hooks/useMissingGDs'
 import { useCsrfToken } from '@/hooks/useCsrfToken'
+import { createClient } from '@/lib/supabase/client'
+import { GD_BUCKET } from '@/lib/gd-upload'
 
 interface GDUploadModalProps {
   open: boolean
@@ -30,6 +32,28 @@ interface GDUploadModalProps {
 }
 
 type UploadState = 'idle' | 'uploading' | 'success' | 'error'
+
+/**
+ * Extrae el mensaje de error de una respuesta fallida.
+ *
+ * No toda respuesta de error es JSON: un límite de la plataforma o un proxy
+ * responden con texto plano, y hacer `response.json()` a ciegas oculta el error
+ * real detrás de un fallo de parseo.
+ */
+async function readErrorMessage(response: Response): Promise<string> {
+  const body = await response.text()
+
+  try {
+    const data = JSON.parse(body) as { error?: string }
+    if (data.error) return data.error
+  } catch {
+    // Respuesta no-JSON: se usa el mensaje por estado
+  }
+
+  if (response.status === 413) return 'El archivo es demasiado grande'
+  if (response.status === 401) return 'Tu sesión ha caducado, vuelve a iniciar sesión'
+  return `No se pudo subir la guía (error ${response.status})`
+}
 
 export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModalProps) {
   const [selectedAsignatura, setSelectedAsignatura] = useState<string>('')
@@ -46,19 +70,41 @@ export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModal
     setErrorMessage('')
 
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('asignatura_id', selectedAsignatura)
-
-      const response = await fetch('/api/guias-didacticas/upload', {
+      // El PDF se sube directo a Storage con una URL firmada. Si pasara por la
+      // API route chocaría con el límite de 4.5MB del body de una función.
+      const urlResponse = await fetch('/api/guias-didacticas/upload-url', {
         method: 'POST',
-        headers: { ...csrfHeaders },
-        body: formData,
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
+        body: JSON.stringify({
+          asignatura_id: selectedAsignatura,
+          file_name: file.name,
+          file_size: file.size,
+        }),
       })
 
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Error al subir')
+      if (!urlResponse.ok) {
+        throw new Error(await readErrorMessage(urlResponse))
+      }
+
+      const { path, token } = (await urlResponse.json()) as { path: string; token: string }
+
+      const { error: storageError } = await createClient()
+        .storage
+        .from(GD_BUCKET)
+        .uploadToSignedUrl(path, token, file, { contentType: 'application/pdf' })
+
+      if (storageError) {
+        throw new Error(storageError.message || 'Error al subir el archivo')
+      }
+
+      const confirmResponse = await fetch('/api/guias-didacticas/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
+        body: JSON.stringify({ asignatura_id: selectedAsignatura, path }),
+      })
+
+      if (!confirmResponse.ok) {
+        throw new Error(await readErrorMessage(confirmResponse))
       }
 
       setUploadState('success')

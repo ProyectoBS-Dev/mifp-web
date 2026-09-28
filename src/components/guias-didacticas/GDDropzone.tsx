@@ -5,14 +5,13 @@ import { useDropzone } from 'react-dropzone'
 import { FileText, X, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { GD_MAX_FILE_SIZE } from '@/lib/gd-upload'
 
 interface GDDropzoneProps {
   file: File | null
   onFileSelect: (file: File) => void
   onFileRemove: () => void
 }
-
-const MAX_SIZE = 10 * 1024 * 1024 // 10MB
 
 export function GDDropzone({ file, onFileSelect, onFileRemove }: GDDropzoneProps) {
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -27,7 +26,7 @@ export function GDDropzone({ file, onFileSelect, onFileRemove }: GDDropzoneProps
     accept: {
       'application/pdf': ['.pdf']
     },
-    maxSize: MAX_SIZE,
+    maxSize: GD_MAX_FILE_SIZE,
     multiple: false,
   })
 

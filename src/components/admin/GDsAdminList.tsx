@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
     FileText,
@@ -8,11 +8,14 @@ import {
     CheckCircle2,
     XCircle,
     AlertCircle,
-    ChevronDown
+    AlertTriangle,
+    ChevronDown,
+    Eye
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import type { BadgeColor } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
     Collapsible,
     CollapsibleContent,
@@ -20,15 +23,20 @@ import {
 } from '@/components/ui/collapsible'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { isExtractionStale } from '@/lib/gd-admin'
+import { GDResetButton } from './GDManageActions'
 
 type GDEstado = 'pendiente' | 'extrayendo' | 'extraida' | 'validada' | 'rechazada'
 
-interface GD {
+export interface AdminGD {
     id: string
     created_at: string | null
+    updated_at: string | null
     estado: GDEstado | null
-    procesada: boolean | null
-    archivo_path: string | null
+    error_extraccion: string | null
+    motivo_rechazo: string | null
+    /** Validada pero sin RAs, PACs ni VTs cargados: estado inconsistente que hay que revisar */
+    sinCurriculo: boolean
     asignatura: {
         nombre: string
         codigo: string
@@ -45,43 +53,39 @@ interface GD {
 
 interface GDsByCiclo {
     ciclo: string
-    gds: GD[]
+    gds: AdminGD[]
 }
 
 interface GDsAdminListProps {
-    gds: GD[]
-    showPendientes?: boolean
+    gds: AdminGD[]
+    /** Agrupa por ciclo en secciones plegables (por defecto) o muestra una lista plana */
+    grouped?: boolean
 }
 
 const estadoConfig: Record<GDEstado, { label: string; icon: React.ElementType; color: BadgeColor }> = {
     pendiente: { label: 'Pendiente', icon: Clock, color: 'yellow' },
     extrayendo: { label: 'Extrayendo...', icon: AlertCircle, color: 'blue' },
-    extraida: { label: 'Datos Extraídos', icon: CheckCircle2, color: 'blue' },
+    extraida: { label: 'Por revisar', icon: CheckCircle2, color: 'purple' },
     validada: { label: 'Validada', icon: CheckCircle2, color: 'green' },
     rechazada: { label: 'Rechazada', icon: XCircle, color: 'red' },
 }
 
-export function GDsAdminList({ gds, showPendientes = false }: GDsAdminListProps) {
-    // Filter based on showPendientes prop
-    const filteredGds = showPendientes
-        ? gds.filter(g => g.estado === 'pendiente')
-        : gds
+/** Con extracciones en curso se re-evalúa cada pocos segundos para mostrar «Desbloquear» a los 90 s */
+function useNow(active: boolean): number {
+    const [now, setNow] = useState(() => Date.now())
 
-    // Group by ciclo
-    const gdsByCiclo = new Map<string, GDsByCiclo>()
+    useEffect(() => {
+        if (!active) return
+        const interval = setInterval(() => setNow(Date.now()), 10_000)
+        return () => clearInterval(interval)
+    }, [active])
 
-    for (const gd of filteredGds) {
-        const ciclo = gd.asignatura?.grado?.codigo || 'Sin ciclo'
-        if (!gdsByCiclo.has(ciclo)) {
-            gdsByCiclo.set(ciclo, { ciclo, gds: [] })
-        }
-        gdsByCiclo.get(ciclo)!.gds.push(gd)
-    }
+    return now
+}
 
-    // Sort ciclos alphabetically
-    const sortedCiclos = Array.from(gdsByCiclo.values()).sort((a, b) =>
-        a.ciclo.localeCompare(b.ciclo)
-    )
+export function GDsAdminList({ gds, grouped = true }: GDsAdminListProps) {
+    const hasExtracting = gds.some(g => g.estado === 'extrayendo')
+    const now = useNow(hasExtracting)
 
     // Start collapsed by default
     const [openCiclos, setOpenCiclos] = useState<string[]>([])
@@ -94,7 +98,7 @@ export function GDsAdminList({ gds, showPendientes = false }: GDsAdminListProps)
         )
     }
 
-    if (filteredGds.length === 0) {
+    if (gds.length === 0) {
         return (
             <div className="text-center py-12 text-muted-foreground">
                 <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -106,10 +110,37 @@ export function GDsAdminList({ gds, showPendientes = false }: GDsAdminListProps)
         )
     }
 
+    if (!grouped) {
+        return (
+            <div className="space-y-2">
+                {gds.map(gd => (
+                    <GDRow key={gd.id} gd={gd} now={now} />
+                ))}
+            </div>
+        )
+    }
+
+    // Group by ciclo
+    const gdsByCiclo = new Map<string, GDsByCiclo>()
+
+    for (const gd of gds) {
+        const ciclo = gd.asignatura?.grado?.codigo || 'Sin ciclo'
+        if (!gdsByCiclo.has(ciclo)) {
+            gdsByCiclo.set(ciclo, { ciclo, gds: [] })
+        }
+        gdsByCiclo.get(ciclo)!.gds.push(gd)
+    }
+
+    // Sort ciclos alphabetically
+    const sortedCiclos = Array.from(gdsByCiclo.values()).sort((a, b) =>
+        a.ciclo.localeCompare(b.ciclo)
+    )
+
     return (
         <div className="space-y-4">
             {sortedCiclos.map((grupo) => {
                 const pendientesCount = grupo.gds.filter(g => g.estado === 'pendiente').length
+                const porRevisarCount = grupo.gds.filter(g => g.estado === 'extraida').length
                 const validadasCount = grupo.gds.filter(g => g.estado === 'validada').length
 
                 return (
@@ -131,13 +162,17 @@ export function GDsAdminList({ gds, showPendientes = false }: GDsAdminListProps)
                                                 {grupo.gds.length} GD{grupo.gds.length !== 1 ? 's' : ''}
                                             </Badge>
                                         </div>
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-0.5">
                                             {pendientesCount > 0 && (
                                                 <span className="text-vt-yellow">
                                                     {pendientesCount} pendiente{pendientesCount !== 1 ? 's' : ''}
                                                 </span>
                                             )}
-                                            {pendientesCount > 0 && validadasCount > 0 && <span>•</span>}
+                                            {porRevisarCount > 0 && (
+                                                <span className="text-vt-purple">
+                                                    {porRevisarCount} por revisar
+                                                </span>
+                                            )}
                                             {validadasCount > 0 && (
                                                 <span className="text-vt-green">
                                                     {validadasCount} validada{validadasCount !== 1 ? 's' : ''}
@@ -154,7 +189,7 @@ export function GDsAdminList({ gds, showPendientes = false }: GDsAdminListProps)
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-2 ml-4 space-y-2">
                             {grupo.gds.map((gd) => (
-                                <GDCard key={gd.id} gd={gd} />
+                                <GDRow key={gd.id} gd={gd} now={now} />
                             ))}
                         </CollapsibleContent>
                     </Collapsible>
@@ -164,24 +199,38 @@ export function GDsAdminList({ gds, showPendientes = false }: GDsAdminListProps)
     )
 }
 
-function GDCard({ gd }: { gd: GD }) {
-    const config = estadoConfig[gd.estado ?? 'pendiente']
+/**
+ * Fila de una GD. No va envuelta en un `<Link>`: lleva botones de acción y un
+ * enlace dentro de otro enlace sería HTML inválido.
+ */
+function GDRow({ gd, now }: { gd: AdminGD; now: number }) {
+    const estado = gd.estado ?? 'pendiente'
+    const config = estadoConfig[estado]
     const IconComponent = config.icon
+    const detailHref = `/admin/guias-didacticas/${gd.id}`
+
+    const extractionStale = estado === 'extrayendo' && isExtractionStale(gd.updated_at, now)
+    const canReset = extractionStale || estado === 'rechazada' || (estado === 'validada' && gd.sinCurriculo)
+
+    const detailLabel =
+        estado === 'pendiente' ? 'Extraer'
+        : estado === 'extraida' ? 'Revisar'
+        : 'Ver'
 
     return (
-        <Link
-            href={`/admin/guias-didacticas/${gd.id}`}
-            className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors group"
-        >
-            <div className="flex items-center gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
+        <div className="flex flex-col gap-3 p-4 rounded-lg border hover:bg-muted/30 transition-colors sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4 min-w-0">
+                <div className="p-2 rounded-lg bg-primary/10 shrink-0">
                     <FileText className="h-5 w-5 text-primary" />
                 </div>
-                <div>
-                    <div className="flex items-center gap-2">
-                        <span className="font-medium group-hover:text-primary transition-colors">
+                <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                            href={detailHref}
+                            className="font-medium hover:text-primary transition-colors"
+                        >
                             {gd.asignatura?.nombre || 'Sin asignatura'}
-                        </span>
+                        </Link>
                         {gd.asignatura?.grado?.codigo && (
                             <Badge color="gray" colorStyle="outline" className="text-xs">
                                 {gd.asignatura.grado.codigo}
@@ -193,26 +242,55 @@ function GDCard({ gd }: { gd: GD }) {
                             </span>
                         )}
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-1">
                         <span>{gd.uploader?.full_name || gd.uploader?.email || 'Usuario'}</span>
                         <span>•</span>
                         <span>{gd.semestre?.nombre || 'Sin semestre'}</span>
+                        <span>•</span>
+                        <span>
+                            {formatDistanceToNow(new Date(gd.created_at ?? Date.now()), {
+                                addSuffix: true,
+                                locale: es,
+                            })}
+                        </span>
                     </div>
+                    {estado === 'pendiente' && gd.error_extraccion && (
+                        <p className="flex items-center gap-1 text-xs text-vt-yellow-dark dark:text-vt-yellow mt-1">
+                            <AlertTriangle className="h-3 w-3 shrink-0" />
+                            Última extracción fallida: {gd.error_extraccion}
+                        </p>
+                    )}
+                    {estado === 'rechazada' && gd.motivo_rechazo && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Motivo: {gd.motivo_rechazo}
+                        </p>
+                    )}
                 </div>
             </div>
 
-            <div className="flex items-center gap-4">
-                <div className="text-right text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(gd.created_at ?? Date.now()), {
-                        addSuffix: true,
-                        locale: es,
-                    })}
-                </div>
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end shrink-0">
+                {estado === 'validada' && gd.sinCurriculo && (
+                    <Badge color="yellow" icon={<AlertTriangle className="h-3 w-3" />}>
+                        Sin currículo
+                    </Badge>
+                )}
                 <Badge color={config.color} className="flex items-center gap-1">
                     <IconComponent className="h-3 w-3" />
                     {config.label}
                 </Badge>
+                {canReset && (
+                    <GDResetButton
+                        gdId={gd.id}
+                        label={extractionStale ? 'Desbloquear' : 'Devolver a pendiente'}
+                    />
+                )}
+                <Button asChild size="sm" variant={estado === 'extraida' || estado === 'pendiente' ? 'default' : 'outline'}>
+                    <Link href={detailHref}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        {detailLabel}
+                    </Link>
+                </Button>
             </div>
-        </Link>
+        </div>
     )
 }

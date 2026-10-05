@@ -397,6 +397,42 @@ export type Database = {
           },
         ]
       }
+      gd_backups: {
+        Row: {
+          action: string
+          asignatura_id: string
+          audit: Json
+          backup: Json
+          created_at: string
+          created_by: string | null
+          gd_id: string
+          id: string
+          semestre_id: string
+        }
+        Insert: {
+          action: string
+          asignatura_id: string
+          audit: Json
+          backup: Json
+          created_at?: string
+          created_by?: string | null
+          gd_id: string
+          id?: string
+          semestre_id: string
+        }
+        Update: {
+          action?: string
+          asignatura_id?: string
+          audit?: Json
+          backup?: Json
+          created_at?: string
+          created_by?: string | null
+          gd_id?: string
+          id?: string
+          semestre_id?: string
+        }
+        Relationships: []
+      }
       grados: {
         Row: {
           codigo: Database["public"]["Enums"]["grado_tipo"]
@@ -428,6 +464,7 @@ export type Database = {
           created_at: string | null
           datos_extraidos: Json | null
           deleted_at: string | null
+          error_extraccion: string | null
           estado: Database["public"]["Enums"]["gd_estado"]
           id: string
           motivo_rechazo: string | null
@@ -443,6 +480,7 @@ export type Database = {
           created_at?: string | null
           datos_extraidos?: Json | null
           deleted_at?: string | null
+          error_extraccion?: string | null
           estado?: Database["public"]["Enums"]["gd_estado"]
           id?: string
           motivo_rechazo?: string | null
@@ -458,6 +496,7 @@ export type Database = {
           created_at?: string | null
           datos_extraidos?: Json | null
           deleted_at?: string | null
+          error_extraccion?: string | null
           estado?: Database["public"]["Enums"]["gd_estado"]
           id?: string
           motivo_rechazo?: string | null
@@ -1111,9 +1150,12 @@ export type Database = {
       }
       delete_gd_data: {
         Args: {
+          p_action?: string
           p_asignatura_id: string
+          p_created_by?: string
           p_dry_run?: boolean
           p_force?: boolean
+          p_keep_record?: boolean
           p_semestre_id: string
         }
         Returns: Json
@@ -1141,6 +1183,7 @@ export type Database = {
           p_pacs: Json
           p_ras: Json
           p_semestre_id: string
+          p_validada_por?: string
           p_vts: Json
         }
         Returns: Json

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { CheckCircle2, XCircle, Loader2, Sparkles } from 'lucide-react'
+import { XCircle, Loader2, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -24,8 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { createClient } from '@/lib/supabase/client'
 import { useCsrfToken } from '@/hooks/useCsrfToken'
+import { readErrorMessage } from '@/lib/http'
 
 interface GDValidationFormProps {
   gdId: string
@@ -44,7 +44,6 @@ const RECHAZO_MOTIVOS = [
 export function GDValidationForm({ gdId, asignaturaId: _asignaturaId, semestreId: _semestreId }: GDValidationFormProps) {
   const router = useRouter()
   const [isExtracting, setIsExtracting] = useState(false)
-  const [isValidating, setIsValidating] = useState(false)
   const [isRejecting, setIsRejecting] = useState(false)
   const [rechazoMotivo, setRechazoMotivo] = useState('')
   const [rechazoOtro, setRechazoOtro] = useState('')
@@ -69,16 +68,7 @@ export function GDValidationForm({ gdId, asignaturaId: _asignaturaId, semestreId
 
       if (!response.ok) {
         // Vercel puede devolver HTML en un 504, no JSON
-        let errorMsg = 'Error al extraer datos'
-        try {
-          const data = await response.json()
-          errorMsg = data.error || errorMsg
-        } catch {
-          if (response.status === 504 || response.status === 502) {
-            errorMsg = 'La extracción tardó demasiado. Inténtalo de nuevo.'
-          }
-        }
-        throw new Error(errorMsg)
+        throw new Error(await readErrorMessage(response, 'Error al extraer datos'))
       }
 
       // Recargar la página para ver los datos extraídos
@@ -89,37 +79,11 @@ export function GDValidationForm({ gdId, asignaturaId: _asignaturaId, semestreId
       } else {
         setError(err instanceof Error ? err.message : 'Error desconocido')
       }
+      // El servidor pudo revertir la GD a pendiente guardando el motivo: se recarga para verlo
+      router.refresh()
     } finally {
       clearTimeout(timeout)
       setIsExtracting(false)
-    }
-  }
-
-  const handleValidate = async () => {
-    setIsValidating(true)
-    setError(null)
-
-    try {
-      const supabase = createClient()
-
-      // Marcar como validada
-      const { error: updateError } = await supabase
-        .from('guias_didacticas')
-        .update({
-          estado: 'validada',
-          procesada: true,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', gdId)
-
-      if (updateError) throw updateError
-
-      router.push('/admin/guias-didacticas')
-      router.refresh()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al validar')
-    } finally {
-      setIsValidating(false)
     }
   }
 
@@ -136,10 +100,8 @@ export function GDValidationForm({ gdId, asignaturaId: _asignaturaId, semestreId
         body: JSON.stringify({ gdId, motivo }),
       })
 
-      const result = await response.json()
-
       if (!response.ok) {
-        throw new Error(result.error || 'Error al rechazar')
+        throw new Error(await readErrorMessage(response, 'Error al rechazar'))
       }
 
       router.push('/admin/guias-didacticas')
@@ -181,24 +143,10 @@ export function GDValidationForm({ gdId, asignaturaId: _asignaturaId, semestreId
 
       <p className="text-xs text-muted-foreground text-center">
         🤖 Usa GPT-4o-mini para extraer RAs, PACs y VTs automáticamente.
-        Después podrás revisar y validar los datos extraídos.
+        Hay que extraer antes de validar: después podrás revisar y validar los datos extraídos.
       </p>
 
       <div className="border-t pt-4 space-y-3">
-        {/* Botón validar */}
-        <Button
-          onClick={handleValidate}
-          disabled={isValidating}
-          className="w-full bg-green-600 hover:bg-green-700"
-        >
-          {isValidating ? (
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-          ) : (
-            <CheckCircle2 className="h-4 w-4 mr-2" />
-          )}
-          Validar GD
-        </Button>
-
         {/* Botón rechazar */}
         <AlertDialog>
           <AlertDialogTrigger asChild>

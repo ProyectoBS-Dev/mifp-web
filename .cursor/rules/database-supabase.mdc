@@ -1,0 +1,116 @@
+---
+description: Supabase y PostgreSQL en mifp-web — selección de cliente, RLS, hardening de permisos, API routes, CSRF, rate limiting, upload a Storage y regeneración de tipos
+globs: src/app/api/**, src/lib/supabase/**, src/types/database.ts, src/hooks/**, supabase/**, structure/03-database/**
+alwaysApply: false
+---
+
+# Base de datos y Supabase
+
+## Protocolo anti-alucinación
+
+**Nunca asumas el esquema.** Antes de cualquier operación de BD:
+
+1. Lee `structure/03-database/schema/schema-actual.sql` (DDL completo) y `schema-explicado.md` (anotado)
+2. Si hay duda, consulta `information_schema.columns`
+3. Implementa solo con el esquema verificado
+4. Tras cambiarlo: regenera tipos y actualiza la documentación
+
+Referencias adicionales:
+
+| Archivo | Contenido |
+|---|---|
+| `structure/03-database/security/rls-policies.sql` + `.md` | 57 políticas RLS (post-hardening sept 2026) |
+| `structure/03-database/security/storage-policies.sql` | 4 buckets, 5 políticas de storage |
+| `structure/03-database/logic/calculo-notas.md` | Lógica de cálculo de notas |
+| `structure/03-database/logic/triggers-functions.md` | Triggers y funciones |
+| `structure/07-integraciones/api-routes.md` | Inventario de API routes |
+| `structure/04-auth/` | Auth y permisos |
+
+El proyecto es Supabase hosted: PostgreSQL + Auth (Google y GitHub OAuth, email/password) + Storage (Supabase Storage y Cloudflare R2 para PDFs y media).
+
+## Selección de cliente
+
+| Contexto | Import |
+|---|---|
+| Componente cliente | `createClient()` de `@/lib/supabase/client` |
+| Componente servidor | `await createClient()` de `@/lib/supabase/server` |
+| Admin (bypass RLS) | `createAdminClient()` de `@/lib/supabase/admin` |
+
+## Hardening de permisos (sept 2026)
+
+8 migraciones aplicadas en `structure/03-database/migrations/20260922_*`:
+
+- **`anon` revocado** en 21 tablas. Solo `noticias` y `noticia_reacciones` conservan `SELECT` para `anon` (blog público y sitemap)
+- **Embeds a `users` desde queries sin sesión rompen la query completa.** PostgREST aborta con `permission denied`; no degrada el embed a `null`. Solución: select condicional según sesión
+
+  ```ts
+  const { data } = hasSession
+    ? await supabase.from('noticias').select('*, autor:users!autor_id(id, full_name, avatar_url)')
+    : await supabase.from('noticias').select('*')
+  ```
+
+- **Helpers del schema `private`:** `private.assert_self(p_user_id)` en RPCs de lectura (previene IDOR) y `private.is_admin()` en RPCs de admin (previene escalada de privilegios)
+- **`REVOKE EXECUTE`** en 18 funciones que el navegador no usa. Las 6 que sí usa tienen `GRANT EXECUTE` solo a `authenticated`
+- Al restringir `EXECUTE` o `GRANT`, revoca **primero desde `PUBLIC`** y luego concede a los roles que lo necesitan. Un `REVOKE` a un rol concreto no anula el grant heredado de `PUBLIC`
+
+## Patrón de bypass de RLS en API routes
+
+Úsalo cuando una mutación sobre `users` más una política RLS que consulta `users` provocan recursión infinita.
+
+```ts
+import { createAdminClient, verifyAdminOrEditor } from '@/lib/supabase/admin'
+
+export async function POST(request: NextRequest) {
+  const auth = await verifyAdminOrEditor()
+  if ('error' in auth) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
+  const adminClient = createAdminClient()
+  // auth.user, auth.role y adminClient disponibles
+}
+```
+
+Helpers: `verifyAdminOrEditor()`, `verifyAdmin()`, `createAdminClient()`.
+Referencias: `src/app/api/admin/noticias/route.ts`, `src/app/api/user/grid-layout/route.ts`.
+
+## CSRF y rate limiting
+
+- Toda API route que mute datos **debe** validar CSRF con `withCsrfProtection()` de `@/lib/csrf`. En cliente, hook `useCsrfToken()`
+- Rate limiting con Upstash Redis en `@/lib/ratelimit`. Aplícalo en rutas públicas y sensibles
+
+## Upload directo a Storage
+
+Los archivos **no** pasan por la API route: el body de una función de Vercel está limitado a 4,5 MB en todos los planes, y la plataforma responde `Request Entity Too Large` en texto plano **antes** de ejecutar la función, así que ninguna validación de tamaño del código llega a aplicarse.
+
+1. `POST /api/.../upload-url` → valida permisos y devuelve una URL firmada (`service_role`)
+2. El cliente sube directo a Supabase Storage con esa URL
+3. `POST /api/.../confirm` → lee el archivo de Storage, valida magic bytes y tamaño, crea el registro. Si algo falla, borra el objeto
+
+Referencia: `src/app/api/guias-didacticas/upload-url/` y `confirm/`.
+
+En cliente, **nunca** hagas `response.json()` en la rama de error de un `fetch`: un 413 o un error de proxy no es JSON. Lee `response.text()`, intenta parsear y usa mensajes por `response.status` como fallback.
+
+## Regeneración de tipos
+
+Obligatoria tras `ALTER TABLE`, cambios de `ENUM`, crear o modificar RPCs, `SET`/`DROP NOT NULL` y cambios de `DEFAULT`.
+
+1. Token temporal en https://supabase.com/dashboard/account/tokens (expira en 1 h)
+2. `export SUPABASE_ACCESS_TOKEN=token`
+3. `pnpm dlx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/types/database.ts`
+
+El project ID se obtiene del dashboard (Settings → General) o de `.env.local`. **Nunca hardcodearlo.** Después, sugiere al usuario que ejecute `pnpm type-check`.
+
+## Operaciones que no se hacen por SQL
+
+Los buckets de Storage (crear, borrar) se gestionan por la Storage API, el CLI o el dashboard. `storage.protect_delete()` aborta cualquier `DELETE FROM storage.buckets`. Por SQL solo se gestionan las políticas RLS de `storage.objects`.
+
+Tras un fallo parcial en una migración multi-bloque, vuelve a consultar el estado real (`pg_policies`, `storage.buckets`) antes de dar por aplicado cualquier bloque: el rollback puede haber revertido cambios anteriores del mismo script.
+
+## Anti-patrones
+
+- ❌ Asumir nombres o tipos de columna sin leer el esquema
+- ❌ `as any` en respuestas de Supabase
+- ❌ Modificar el esquema sin regenerar tipos y sin actualizar `structure/03-database/`
+- ❌ Olvidar que un campo nullable en BD es `| null` en la interfaz TypeScript
+- ❌ Hacer embed de `users` en queries anónimas
+- ❌ Insert o update sin verificar los campos requeridos
+- ❌ API routes sin revisar `structure/03-database/security/rls-policies.md`

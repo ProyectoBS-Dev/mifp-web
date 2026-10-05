@@ -1,0 +1,46 @@
+---
+description: Componentes y diseño en mifp-web — paleta VT, Badge, iconos, formularios, naming y wireframes de referencia
+globs: src/components/**/*.tsx, src/app/**/*.tsx, tailwind.config.*, src/app/globals.css
+alwaysApply: false
+---
+
+# Componentes y diseño
+
+## Antes de crear un componente
+
+Revisa `structure/06-componentes/wireframes/` y `structure/15-rediseños/`. **No asumas que un wireframe sigue vigente** sin comprobar si hay un plan de rediseño que lo sustituya. Usa los primitivos de `src/components/ui/` (shadcn/ui, estilo `new-york`) antes de escribir uno nuevo.
+
+## Color: paleta VT
+
+- **Fuente de verdad:** `tailwind.config.ts` (líneas 56-123)
+- **Paleta:** `vt-green`, `vt-blue`, `vt-yellow`, `vt-red`, `vt-purple`, `vt-gray-*`
+- **Semánticos:** `background`, `foreground`, `primary`, etc. vía `hsl(var(--primary))`
+- ✅ `bg-vt-green`, `text-vt-blue-light`
+- ❌ Hex arbitrarios (`bg-[#42b883]`) o estilos inline
+
+## Patrones
+
+**Badge:** `<Badge color="green" colorStyle="soft">`. Para notas, con el helper de `@/lib/grades`:
+
+```tsx
+<Badge color={getGradeBadge(nota).color}>{getGradeBadge(nota).label}</Badge>
+```
+
+**Iconos:** `lucide-react`. Verifica `structure/09-diseno/iconos.md`.
+
+**Formularios:** `react-hook-form` + Zod + primitivos de `ui/`. Siempre `id` y `name` en `<Input>` (autofill y accesibilidad).
+
+**Mobile first:** maqueta primero móvil, luego breakpoints con `md:` y `lg:`.
+
+**DRY:** lógica repetida → hook en `src/hooks/` o utilidad en `src/lib/`. Las utilidades ya existentes están listadas en `AGENTS.md`.
+
+## Naming
+
+Componentes en `PascalCase` · hooks en `camelCase` con prefijo `use` · utilidades en `camelCase` · carpetas en `kebab-case`.
+
+## Anti-patrones
+
+- ❌ Crear componentes sin revisar wireframes ni planes de rediseño
+- ❌ Hex arbitrarios en lugar de la paleta `vt-*`
+- ❌ `dangerouslySetInnerHTML`
+- ❌ Modificar la lógica de notas sin leer `structure/03-database/logic/calculo-notas.md`

@@ -1,0 +1,102 @@
+---
+description: Rigor de TypeScript en mifp-web — nullability, sincronización con los tipos generados de Supabase, tipo Json, cuándo sugerir type-check y configuración de ESLint
+globs: src/**/*.ts, src/**/*.tsx
+alwaysApply: false
+---
+
+# TypeScript
+
+## Cuándo sugerir `pnpm type-check`
+
+**Nunca lo ejecutes tú.** Sugiérelo al usuario y pide el resultado cuando hayas:
+
+- Modificado el esquema o columnas de Supabase
+- Creado o modificado interfaces
+- Añadido hooks o componentes
+- Modificado API routes que interactúan con la BD
+- Regenerado los tipos de Supabase
+
+No hace falta tras cambios en CSS, markdown, documentación o refactors que no toquen tipos.
+
+## Nullability: causa número uno de errores
+
+**Los tipos generados en `src/types/database.ts` son la fuente de verdad. Las interfaces locales deben coincidir.**
+
+Un campo nullable en BD es nullable en la interfaz:
+
+```ts
+// ❌ MAL
+interface GD { created_at: string; estado: GDEstado }
+
+// ✅ BIEN
+interface GD { created_at: string | null; estado: GDEstado | null }
+```
+
+Usa nullish coalescing para los defaults:
+
+```ts
+const fecha = new Date(item.created_at ?? Date.now())
+```
+
+Usa type guards al filtrar, para que el tipo se estreche:
+
+```ts
+// ❌ MAL — el tipo sigue siendo `Item[]`
+.filter(item => item.asignatura)
+
+// ✅ BIEN
+.filter((item): item is ItemWithAsignatura => item.asignatura !== null)
+```
+
+Convierte `null` a `undefined` cuando la interfaz usa `?:`, que no acepta `null`:
+
+```ts
+return { ...data, titulo: data.titulo ?? undefined }
+```
+
+## Tipo `Json` de Supabase
+
+```ts
+interface RpcResponse { success: boolean; error?: string }
+
+const result = data as unknown as RpcResponse
+
+if (result && typeof result === 'object' && 'error' in result) {
+  console.error(result.error)
+}
+```
+
+## Anti-patrones
+
+- ❌ `as any` → usa `as unknown as Type`
+- ❌ `@ts-ignore` sin comentario que lo justifique
+- ❌ Interfaces que no coinciden con los tipos generados
+- ❌ Asumir non-null sin verificar
+- ❌ Ignorar los errores de type-check que el usuario te proporcione
+
+## `eslint-disable` no es una solución
+
+No uses `eslint-disable` para "arreglar" problemas de imports o SSR. Orden de preferencia:
+
+1. Buscar un paquete isomórfico (`isomorphic-*`, `universal-*`)
+2. Si no existe o falla en el entorno, usar guard `typeof window` + `require()`
+3. Para componentes completos, `next/dynamic` con `ssr: false`
+
+```ts
+// Patrón aceptable cuando no hay alternativa isomórfica funcional.
+// isomorphic-dompurify falla en Windows.
+function sanitizeHTML(html: string): string {
+  if (typeof window === 'undefined') return html // SSR: contenido de admins
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const DOMPurify = require('dompurify')
+  return DOMPurify.sanitize(html, {})
+}
+```
+
+Documenta siempre en un comentario por qué se recurre a este patrón.
+
+## ESLint
+
+`no-explicit-any`: warn · `no-unused-vars`: warn (ignora prefijo `_`) · `no-console`: warn (permite `warn` y `error`) · `react-hooks/rules-of-hooks`: error · `react-hooks/exhaustive-deps`: warn.
+
+Además: JSDoc en los exports, errores manejados con elegancia, estados de carga explícitos, inputs sanitizados, sin `dangerouslySetInnerHTML`.

@@ -1,0 +1,25 @@
+---
+description: Metadata y SEO en mifp-web — plantilla de title del root layout, OpenGraph, sitemap y robots
+globs: src/app/**/page.tsx, src/app/**/layout.tsx, src/app/sitemap.ts, src/app/robots.ts, src/app/**/opengraph-image.tsx
+alwaysApply: false
+---
+
+# Metadata y SEO
+
+El root layout define `title: { template: '%s | MiFP' }`, así que **las páginas no repiten "MiFP"** en su `title`.
+
+```ts
+// ❌ MAL → "Blog | MiFP | MiFP"
+export const metadata = { title: 'Blog | MiFP' }
+
+// ✅ BIEN → "Blog | MiFP"
+export const metadata = { title: 'Blog' }
+```
+
+**Excepción:** los campos de OpenGraph y Twitter sí llevan el branding "MiFP" completo, porque no pasan por la plantilla.
+
+Detalle completo en `structure/16-seo/seo-metadatos.md`.
+
+El sitemap y el blog son las únicas superficies públicas que leen de la BD sin sesión: `noticias` y `noticia_reacciones` son las dos tablas que conservan `SELECT` para `anon`. No añadas embeds a otras tablas en esas queries sin comprobar permisos (ver `.cursor/rules/database-supabase.mdc`).
+
+Tras añadir una ruta o página nueva, actualiza `structure/05-vistas/rutas.md`.

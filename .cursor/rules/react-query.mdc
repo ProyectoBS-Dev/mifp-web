@@ -1,0 +1,60 @@
+---
+description: Patrones de TanStack Query en mifp-web — hooks de query y mutación, query keys e invalidación
+globs: src/hooks/**/*.ts, src/providers/**/*.tsx
+alwaysApply: false
+---
+
+# React Query
+
+## Hook de query
+
+```ts
+import { useQuery } from '@tanstack/react-query'
+import { createClient } from '@/lib/supabase/client'
+
+export function useEntity(id?: string) {
+  return useQuery({
+    queryKey: id ? ['entity', id] : ['entities'],
+    queryFn: async () => {
+      const { data, error } = await createClient().from('entities').select('*')
+      if (error) throw error
+      return data
+    }
+  })
+}
+```
+
+## Hook de mutación
+
+Las mutaciones van contra una API route, no directas a Supabase.
+
+```ts
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+
+export function useEntityMutation() {
+  const queryClient = useQueryClient()
+
+  return {
+    create: useMutation({
+      mutationFn: async (data) => {
+        const res = await fetch('/api/entities', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+        if (!res.ok) throw new Error((await res.json()).message || 'Error')
+        return res.json()
+      },
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: ['entities'] })
+    }).mutate
+  }
+}
+```
+
+En la rama de error, si el endpoint puede devolver respuestas que no vengan de la aplicación (413 de Vercel, errores de proxy), lee `res.text()` y parsea con cuidado en lugar de `res.json()`.
+
+## Convenciones
+
+- **Query keys:** `['entities']`, `['entity', id]`, `['entities', { filter }]`
+- **Optimistic updates:** referencia en `src/hooks/useReactions.ts`
+- El provider está en `src/providers/` (`QueryProvider`)

@@ -1,0 +1,88 @@
+---
+description: Protocolo del knowledge base structure/ de mifp-web. Léelo para saber qué documentación consultar antes de una tarea, qué archivos actualizar tras un cambio, dónde guardar planes y análisis, y cómo sincronizar el repo privado de docs. También contiene el árbol de carpetas del proyecto.
+alwaysApply: false
+---
+
+# Knowledge base: `structure/`
+
+## Qué es
+
+Repo privado `mifp-structure`, clonado dentro de `mifp-web` y listado en su `.gitignore`. **No es un submódulo:** tiene su propio `.git/`. La carpeta va en la raíz del proyecto, nunca en la raíz directa del disco. Documentación técnica completa: arquitectura, decisiones, wireframes y esquemas.
+
+- **Índice completo:** `structure/README.md` (tabla con las carpetas 01-20, rules, scripts y security)
+- **Sincronizar:** `pnpm structure:sync` (add + commit + push) · `pnpm structure:pull` (git pull)
+- **Detalles del repo:** `structure/README-REPO.md`
+- **Seguridad:** el hook `.githooks/pre-commit` bloquea commits con credenciales. Se activa una vez por clon: `git config core.hooksPath .githooks`
+
+Si no existe documentación para un área, avisa al usuario y procede con buenas prácticas.
+
+## Qué leer antes de actuar
+
+| Tarea | Lee primero |
+|---|---|
+| Cualquier query o mutación de BD | `structure/03-database/schema/` |
+| Crear archivos o carpetas | `structure/12-estructura-proyecto/` |
+| Trabajo de UI | `structure/06-componentes/wireframes/` + `structure/15-rediseños/` |
+| Auth y permisos | `structure/04-auth/` |
+| API routes | `structure/07-integraciones/api-routes.md` |
+| Cálculo de notas | `structure/03-database/logic/calculo-notas.md` |
+| SEO | `structure/16-seo/seo-metadatos.md` |
+| Crear una feature | `structure/01-proyecto/` → `structure/03-database/schema/` → `structure/06-componentes/wireframes/` |
+
+## Qué actualizar tras un cambio
+
+| Cambio | Archivo |
+|---|---|
+| Tabla o columna | `structure/03-database/schema/schema-explicado.md` |
+| Política RLS | `structure/03-database/security/rls-policies.md` |
+| Trigger o función SQL | `structure/03-database/logic/triggers-functions.md` |
+| Ruta o página nueva | `structure/05-vistas/rutas.md` |
+| Lógica de cálculo de notas | `structure/03-database/logic/calculo-notas.md` |
+| Decisión arquitectónica | `structure/decisions.md` |
+| **Cualquier cambio** | **`structure/changelog.md`** (siempre) |
+
+Protocolo: lee el archivo, aplica la actualización y añade la entrada en `structure/changelog.md`.
+
+## Dónde guardar planes y análisis
+
+Cuando generes un plan, análisis o refactorización en `.md`, guárdalo **automáticamente, sin pedir permiso**. Si la carpeta no existe, créala.
+
+| Tipo | Destino |
+|---|---|
+| Plan de optimización o análisis técnico general | `structure/14-planes-optimizacion/{mes}-{año}/` |
+| Plan de rediseño | `structure/15-rediseños/` |
+| Plan de testing | `structure/17-testing/` |
+| Análisis de seguridad | `structure/security/` |
+
+Naming: `{TIPO}_{NOMBRE}_{AÑO}.md`, por ejemplo `PLAN_MIGRACION_POSTGRES_2026.md`.
+
+> `docs/` está en el `.gitignore` del repo web: lo que guardes ahí no se versiona en ningún sitio y se pierde al cambiar de máquina.
+
+## Árbol del proyecto
+
+```
+src/
+├── app/                 # Páginas (App Router)
+│   ├── (auth)/          # Login, registro
+│   ├── (dashboard)/     # Dashboard protegido
+│   ├── actions/         # Server Actions
+│   ├── admin/           # Panel de administración
+│   ├── api/             # API routes
+│   ├── blog/            # Blog público
+│   ├── home/            # Landing
+│   └── maintenance/     # Modo mantenimiento
+├── components/          # Organizados por feature
+│   ├── ui/              # Primitivos shadcn/ui
+│   └── {feature}/       # admin, ajustes, auth, blog, dashboard,
+│                        # guias-didacticas, landing, layout, notas,
+│                        # notifications, perfil, recursos, semester
+├── hooks/               # Hooks de React Query
+├── lib/                 # Utilidades (ver AGENTS.md)
+│   ├── supabase/        # client.ts, server.ts, admin.ts
+│   ├── cloudflare/
+│   └── validation/      # Esquemas Zod
+├── providers/           # QueryProvider
+└── types/               # Tipos + database.ts (autogenerado)
+```
+
+El detalle vigente está en `structure/12-estructura-proyecto/`.

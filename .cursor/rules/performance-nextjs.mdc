@@ -1,0 +1,66 @@
+---
+description: Rendimiento en Next.js 16 para mifp-web — eliminar waterfalls de await, bundle splitting, caching de servidor y control de re-renders
+globs: src/app/**/*.tsx, src/app/**/*.ts, src/components/**/*.tsx
+alwaysApply: false
+---
+
+# Rendimiento (Next.js 16)
+
+## Awaits en paralelo
+
+Los awaits secuenciales duplican o triplican el tiempo de carga.
+
+```ts
+// ❌ MAL — waterfall de 3 requests secuenciales
+const user = await getUser()
+const posts = await getPosts(user.id)
+const comments = await getComments()
+
+// ✅ BIEN
+const [user, comments] = await Promise.all([getUser(), getComments()])
+const posts = await getPosts(user.id) // solo este depende de user
+```
+
+- `Promise.all()` para operaciones independientes
+- Mueve el `await` solo a la rama donde se usa el resultado
+- En API routes, lanza las promesas temprano y haz `await` tarde
+- Suspense boundaries para streaming en Server Components
+
+## Bundle
+
+```ts
+// ❌ MAL — el import pesado bloquea la hidratación
+import { HeavyChart } from '@/components/charts'
+
+// ✅ BIEN
+const HeavyChart = dynamic(() => import('@/components/charts/HeavyChart'), {
+  loading: () => <Skeleton className="h-64" />
+})
+```
+
+- `next/dynamic` para componentes de más de 100 KB (charts, editores, mapas)
+- Carga analytics y GTM después de la hidratación
+- Barrel imports ya aplicados en `components/{feature}/index.ts`
+
+## Caching de servidor
+
+`React.cache()` deduplica la misma consulta dentro de un mismo request:
+
+```ts
+import { cache } from 'react'
+
+export const getUser = cache(async (id: string) => {
+  return await supabase.from('users').select('*').eq('id', id).single()
+})
+```
+
+Estructura los componentes para que los fetches sean paralelos (varios Suspense). Evita el prop drilling de datos: vuelve a pedirlos con `cache()`.
+
+## Re-renders
+
+- `useMemo` y `useCallback` solo si el cálculo es costoso o la prop va a un componente memoizado
+- Extrae componentes con estado local para aislar re-renders
+- `useTransition` para updates no urgentes (búsquedas, filtros)
+- ❌ No uses `useMemo` para primitivos ni cálculos simples
+
+Referencia: [Vercel React Best Practices](https://skills.sh/vercel-labs/agent-skills/vercel-react-best-practices)

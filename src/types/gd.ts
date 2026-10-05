@@ -18,6 +18,8 @@ export interface ExtractedGDData {
   vts: ExtractedVT[]
   /** Datos de evaluación */
   evaluacion: ExtractedEvaluacion
+  /** Avisos de la extracción para quien revisa (no se guardan al validar) */
+  advertencias?: string[]
 }
 
 export interface ExtractedModulo {
@@ -118,6 +120,8 @@ export interface GuiaDidactica {
   procesada: boolean
   datos_extraidos?: ExtractedGDData | null
   motivo_rechazo?: string | null
+  /** Motivo (genérico) del último fallo de extracción */
+  error_extraccion?: string | null
   created_at: string
   updated_at: string
   deleted_at?: string | null
@@ -165,5 +169,7 @@ export interface ValidateGDResponse {
   insertedRAs?: number
   insertedPACs?: number
   insertedVTs?: number
+  /** PACs descartadas porque su RA no existe entre los RAs enviados */
+  skippedPACs?: number
   error?: string
 }

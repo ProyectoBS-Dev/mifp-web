@@ -182,8 +182,30 @@ export const broadcastNotificationSchema = z.object({
 // GUÍAS DIDÁCTICAS
 // ═══════════════════════════════════════════════════════════════════════════════
 
+/** Los inputs vacíos del formulario llegan como "" y la BD espera NULL */
+const emptyToNull = (value: unknown) => (value === '' ? null : value)
+
+/** Fecha ISO `AAAA-MM-DD` opcional (las RPC la castean con `::DATE`) */
+const optionalIsoDate = z.preprocess(
+  emptyToNull,
+  z.string().regex(/^\d{4}-\d{2}-\d{2}/, 'Fecha inválida (AAAA-MM-DD)').nullable().optional()
+)
+
+/** Hora `HH:MM` o `HH:MM:SS` opcional (las RPC la castean con `::TIME`) */
+const optionalTime = z.preprocess(
+  emptyToNull,
+  z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Hora inválida (HH:MM)').nullable().optional()
+)
+
 /**
- * Schema para validar datos extraídos de GD
+ * Schema para validar datos extraídos de GD.
+ *
+ * Alineado con `ExtractedDataForm`: fechas, hora y duración son anulables.
+ * `ras` exige al menos un elemento: validar sin RAs dejaría una GD «validada»
+ * sin currículo, que es justo lo que este flujo debe impedir.
+ *
+ * La asignatura y el semestre NO viajan en el body: se leen de la fila de la GD
+ * en el servidor, para que no se pueda insertar currículo en otra asignatura.
  */
 export const validateGDDataSchema = z.object({
   gdId: uuidSchema,
@@ -195,35 +217,37 @@ export const validateGDDataSchema = z.object({
         ciclo: z.string().optional(),
       })
       .optional(),
-    ras: z.array(
-      z.object({
-        numero: z.number().int().positive(),
-        codigo: z.string(),
-        titulo: z.string(),
-        descripcion: z.string().optional().nullable(),
-        fecha_inicio: z.string().optional().nullable(),
-        fecha_fin: z.string().optional().nullable(),
-      })
-    ),
+    ras: z
+      .array(
+        z.object({
+          numero: z.number().int().positive(),
+          codigo: z.string().min(1, 'El RA necesita un código'),
+          titulo: z.string().min(1, 'El RA necesita un título'),
+          descripcion: z.string().optional().nullable(),
+          fecha_inicio: optionalIsoDate,
+          fecha_fin: optionalIsoDate,
+        })
+      )
+      .min(1, 'Hace falta al menos un RA para validar'),
     pacs: z.array(
       z.object({
         numero_global: z.number().int().positive(),
         ra_numero: z.number().int().positive(),
         numero_en_ra: z.number().int().positive(),
         tipo: z.enum(['interactiva', 'desarrollo']),
-        titulo: z.string(),
+        titulo: z.string().min(1, 'La PAC necesita un título'),
         peso_en_ra: z.number().min(0).max(100),
-        fecha_limite: z.string().optional().nullable(),
+        fecha_limite: optionalIsoDate,
         nota_minima: z.number().min(0).max(10).optional().nullable(),
       })
     ),
     vts: z.array(
       z.object({
         numero: z.number().int().positive(),
-        titulo: z.string(),
-        fecha: z.string().optional().nullable(),
-        hora_inicio: z.string().optional().nullable(),
-        duracion_minutos: z.number().int().positive(),
+        titulo: z.string().min(1, 'La VT necesita un título'),
+        fecha: optionalIsoDate,
+        hora_inicio: optionalTime,
+        duracion_minutos: z.number().int().positive().optional().nullable(),
       })
     ),
     evaluacion: z
@@ -234,6 +258,14 @@ export const validateGDDataSchema = z.object({
       })
       .optional(),
   }),
+})
+
+/**
+ * Schema para rechazar una GD
+ */
+export const rejectGDSchema = z.object({
+  gdId: uuidSchema,
+  motivo: z.string().trim().min(3, 'Indica el motivo del rechazo').max(500, 'Motivo demasiado largo'),
 })
 
 /**

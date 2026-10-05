@@ -38,7 +38,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { createClient } from '@/lib/supabase/client'
 import {
   Select,
   SelectContent,
@@ -48,6 +47,7 @@ import {
 } from '@/components/ui/select'
 import type { ExtractedGDData, ExtractedRA, ExtractedPAC, ExtractedVT } from '@/types/gd'
 import { useCsrfToken } from '@/hooks/useCsrfToken'
+import { readErrorMessage } from '@/lib/http'
 
 const RECHAZO_MOTIVOS = [
   'El archivo no es una Guía Didáctica válida',
@@ -136,10 +136,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
         body: JSON.stringify({ gdId, datos: data }),
       })
 
-      const result = await response.json()
-
       if (!response.ok) {
-        throw new Error(result.error || 'Error al validar')
+        throw new Error(await readErrorMessage(response, 'Error al validar'))
       }
 
       // Éxito - redirigir a lista
@@ -158,18 +156,17 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
     setError(null)
 
     try {
-      const supabase = createClient()
+      // La escritura la hace el servidor (/manage): el navegador ya no modifica
+      // guias_didacticas directamente
+      const response = await fetch('/api/admin/guias-didacticas/manage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...csrfHeaders },
+        body: JSON.stringify({ action: 'reset', gdId }),
+      })
 
-      const { error: updateError } = await supabase
-        .from('guias_didacticas')
-        .update({
-          estado: 'pendiente',
-          datos_extraidos: null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', gdId)
-
-      if (updateError) throw updateError
+      if (!response.ok) {
+        throw new Error(await readErrorMessage(response, 'Error al devolver a pendiente'))
+      }
 
       router.refresh()
     } catch (err) {
@@ -193,10 +190,8 @@ export function ExtractedDataForm({ gdId, initialData }: ExtractedDataFormProps)
         body: JSON.stringify({ gdId, motivo }),
       })
 
-      const result = await response.json()
-
       if (!response.ok) {
-        throw new Error(result.error || 'Error al rechazar')
+        throw new Error(await readErrorMessage(response, 'Error al rechazar'))
       }
 
       router.push('/admin/guias-didacticas')

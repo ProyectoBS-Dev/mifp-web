@@ -72,7 +72,8 @@ export default async function AdminLayout({
 
         {/* Main content */}
         <main className="flex-1 p-6">
-          <div className="mx-auto max-w-6xl">
+          {/* Las páginas que necesitan más ancho (p. ej. revisar una GD junto al PDF) añaden `data-admin-wide` */}
+          <div className="mx-auto max-w-6xl has-[[data-admin-wide]]:max-w-[1800px]">
             {children}
           </div>
         </main>

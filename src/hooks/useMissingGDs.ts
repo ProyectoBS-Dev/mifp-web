@@ -7,6 +7,8 @@ export interface AsignaturaSinGD {
   id: string
   nombre: string
   codigo: string
+  /** Código del grado. Solo lo rellena el panel de admin, donde se listan asignaturas de todos los ciclos */
+  gradoCodigo?: string | null
 }
 
 export function useMissingGDs() {

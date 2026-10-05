@@ -29,6 +29,8 @@ interface GDUploadModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   asignaturas: AsignaturaSinGD[]
+  /** Se llama tras una subida confirmada (p. ej. para refrescar un listado del servidor) */
+  onUploaded?: () => void
 }
 
 type UploadState = 'idle' | 'uploading' | 'success' | 'error'
@@ -55,7 +57,7 @@ async function readErrorMessage(response: Response): Promise<string> {
   return `No se pudo subir la guía (error ${response.status})`
 }
 
-export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModalProps) {
+export function GDUploadModal({ open, onOpenChange, asignaturas, onUploaded }: GDUploadModalProps) {
   const [selectedAsignatura, setSelectedAsignatura] = useState<string>('')
   const [file, setFile] = useState<File | null>(null)
   const [uploadState, setUploadState] = useState<UploadState>('idle')
@@ -109,6 +111,7 @@ export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModal
 
       setUploadState('success')
       queryClient.invalidateQueries({ queryKey: ['missing-gds'] })
+      onUploaded?.()
     } catch (error) {
       setUploadState('error')
       setErrorMessage(error instanceof Error ? error.message : 'Error desconocido')
@@ -149,6 +152,7 @@ export function GDUploadModal({ open, onOpenChange, asignaturas }: GDUploadModal
                 <SelectContent>
                   {asignaturas.map((asig) => (
                     <SelectItem key={asig.id} value={asig.id}>
+                      {asig.gradoCodigo ? `${asig.gradoCodigo} · ` : ''}
                       {asig.nombre} ({asig.codigo})
                     </SelectItem>
                   ))}

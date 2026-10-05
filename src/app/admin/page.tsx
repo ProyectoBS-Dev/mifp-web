@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 interface PendingGD {
   id: string
   created_at: string | null
+  estado: string | null
   asignatura: {
     nombre: string
     codigo: string
@@ -37,11 +38,11 @@ async function getPendingGDs(): Promise<PendingGD[]> {
   const { data } = await supabase
     .from('guias_didacticas')
     .select(`
-      id, created_at,
+      id, created_at, estado,
       asignatura:asignaturas(nombre, codigo),
       uploader:users!guias_didacticas_subido_por_fkey(full_name, avatar_url)
     `)
-    .eq('estado', 'pendiente')
+    .in('estado', ['pendiente', 'extraida'])
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
     .limit(5)
@@ -68,7 +69,10 @@ async function getStats() {
   ])
 
   const gds = gdsResult.data || []
-  const pendientes = gds.filter((g: { estado: string | null }) => g.estado === 'pendiente').length
+  // «Por atender» = pendientes de extraer + extraídas pendientes de revisar
+  const pendientes = gds.filter(
+    (g: { estado: string | null }) => g.estado === 'pendiente' || g.estado === 'extraida'
+  ).length
 
   return {
     gdsPendientes: pendientes,
@@ -99,13 +103,13 @@ export default async function AdminPage() {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <div>
             <CardTitle className="flex items-center gap-2">
-              📋 GDs Pendientes de Validación
+              📋 GDs por atender
               {stats.gdsPendientes > 0 && (
                 <Badge color="red">{stats.gdsPendientes}</Badge>
               )}
             </CardTitle>
             <CardDescription>
-              Guías didácticas subidas por usuarios esperando validación
+              Guías didácticas pendientes de extraer o con datos extraídos por revisar
             </CardDescription>
           </div>
           <Button asChild variant="outline" size="sm">
@@ -118,7 +122,7 @@ export default async function AdminPage() {
           {pendingGDs.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No hay GDs pendientes de validación</p>
+              <p>No hay GDs por atender</p>
               <p className="text-sm mt-1">¡Todo al día! 🎉</p>
             </div>
           ) : (
@@ -148,6 +152,9 @@ export default async function AdminPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Badge color={gd.estado === 'extraida' ? 'purple' : 'yellow'} size="sm">
+                        {gd.estado === 'extraida' ? 'Por revisar' : 'Pendiente'}
+                      </Badge>
                       <Clock className="h-3 w-3" />
                       {formatDistanceToNow(new Date(gd.created_at ?? Date.now()), {
                         addSuffix: true,

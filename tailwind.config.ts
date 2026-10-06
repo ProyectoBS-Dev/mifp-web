@@ -15,11 +15,11 @@ const config: Config = {
 			},
 			colors: {
 				background: 'hsl(var(--background))',
-				'background-soft': 'var(--background-soft)',
-				'background-mute': 'var(--background-mute)',
+				'background-soft': 'hsl(var(--background-soft))',
+				'background-mute': 'hsl(var(--background-mute))',
 				foreground: 'hsl(var(--foreground))',
-				'foreground-soft': 'var(--foreground-soft)',
-				'foreground-mute': 'var(--foreground-mute)',
+				'foreground-soft': 'hsl(var(--foreground-soft))',
+				'foreground-mute': 'hsl(var(--foreground-mute))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					light: 'var(--primary-light)',
@@ -51,7 +51,7 @@ const config: Config = {
 					foreground: 'hsl(var(--popover-foreground))'
 				},
 				border: 'hsl(var(--border))',
-				'border-hover': 'var(--border-hover)',
+				'border-hover': 'hsl(var(--border-hover))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 				grade: {
@@ -84,11 +84,11 @@ const config: Config = {
 					'white-soft': '#f9f9f9',
 					'white-mute': '#f1f1f1',
 
-					// ─── Neutrals: Black (Dark mode backgrounds) ───
-					black: '#1a1a1a',
+					// ─── Neutrals: Black (Dark mode backgrounds, slate frío) ───
+					black: '#13161b',
 					'black-pure': '#000000',
-					'black-soft': '#242424',
-					'black-mute': '#2f2f2f',
+					'black-soft': '#1d2026',
+					'black-mute': '#262a31',
 
 					// ─── Neutrals: Gray Scale ───
 					gray: '#8e8e8e',

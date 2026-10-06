@@ -13,11 +13,11 @@
     --vt-c-white-soft: #f9f9f9;
     --vt-c-white-mute: #f1f1f1;
 
-    /* Neutrals - Negros */
-    --vt-c-black: #1a1a1a;
+    /* Neutrals - Negros (slate frío, alineado con .dark) */
+    --vt-c-black: #13161b;
     --vt-c-black-pure: #000000;
-    --vt-c-black-soft: #242424;
-    --vt-c-black-mute: #2f2f2f;
+    --vt-c-black-soft: #1d2026;
+    --vt-c-black-mute: #262a31;
 
     /* Indigo - Texto principal light mode */
     --vt-c-indigo: #213547;
@@ -153,55 +153,55 @@
      DARK MODE - Colores Semánticos
      ───────────────────────────────────────── */
   .dark {
-    /* Backgrounds */
-    --background: 0 0% 10%;
-    --background-soft: 0 0% 14%;
-    --background-mute: 0 0% 18%;
+    /* Backgrounds — slate frío (hue 217–220°) */
+    --background: 220 16% 9%;
+    --background-soft: 217 14% 13%;
+    --background-mute: 217 12% 17%;
 
     /* Texto */
-    --foreground: 0 0% 93%;
-    --foreground-soft: 0 0% 75%;
-    --foreground-mute: 0 0% 55%;
+    --foreground: 210 18% 94%;
+    --foreground-soft: 215 12% 75%;
+    --foreground-mute: 215 10% 55%;
 
     /* Bordes */
-    --border: 0 0% 20%;
-    --border-hover: 0 0% 30%;
-    --input: 0 0% 20%;
+    --border: 217 12% 21%;
+    --border-hover: 217 10% 30%;
+    --input: 217 12% 21%;
 
     /* Primary - Verde Vue más brillante #42d392 */
     --primary: 153 60% 55%;
-    --primary-foreground: 0 0% 10%;
+    --primary-foreground: 220 16% 9%;
 
     /* Secondary - Azul Vue más brillante #549ced */
     --secondary: 216 77% 63%;
-    --secondary-foreground: 0 0% 10%;
+    --secondary-foreground: 220 16% 9%;
 
     /* Muted */
-    --muted: 0 0% 18%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 217 12% 17%;
+    --muted-foreground: 215 10% 62%;
 
     /* Accent */
-    --accent: 0 0% 18%;
-    --accent-foreground: 0 0% 93%;
+    --accent: 217 12% 17%;
+    --accent-foreground: 210 18% 94%;
 
     /* Destructive - Rojo más brillante #f43771 */
     --destructive: 344 89% 59%;
-    --destructive-foreground: 0 0% 10%;
+    --destructive-foreground: 220 16% 9%;
 
     /* Card */
-    --card: 0 0% 14%;
-    --card-foreground: 0 0% 93%;
+    --card: 217 14% 13%;
+    --card-foreground: 210 18% 94%;
 
     /* Popover */
-    --popover: 0 0% 14%;
-    --popover-foreground: 0 0% 93%;
+    --popover: 217 14% 13%;
+    --popover-foreground: 210 18% 94%;
 
     /* Ring */
     --ring: 153 60% 55%;
 
     /* Warning (para alertas) - Amarillo Vue */
     --warning: 51 100% 62%;
-    --warning-foreground: 0 0% 10%;
+    --warning-foreground: 220 16% 9%;
 
     /* Charts */
     --chart-1: 153 60% 55%;
